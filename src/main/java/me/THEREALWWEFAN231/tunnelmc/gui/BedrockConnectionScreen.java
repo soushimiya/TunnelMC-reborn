@@ -1,6 +1,8 @@
 package me.THEREALWWEFAN231.tunnelmc.gui;
 
 import net.minecraft.client.gui.widget.CheckboxWidget;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
@@ -8,12 +10,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class BedrockConnectionScreen extends Screen {
@@ -27,7 +26,7 @@ public class BedrockConnectionScreen extends Screen {
 	private final Screen parent;
 
 	public BedrockConnectionScreen(Screen parent) {
-		super(new LiteralText("Bedrock Connection"));
+		super(Text.of("Bedrock Connection"));
 		this.parent = parent;
 	}
 
@@ -36,7 +35,7 @@ public class BedrockConnectionScreen extends Screen {
 			return;
 		}
 		this.client.keyboard.setRepeatEvents(true);
-		this.joinServerButton = this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 100 + 12, 204, 20, new TranslatableText("selectServer.select"), button -> {
+		this.joinServerButton = this.addDrawable(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 100 + 12, 204, 20, Text.translatable("selectServer.select"), button -> {
 			if (BedrockConnectionScreen.this.addressField.getText().isEmpty()) {
 				return;
 			}
@@ -51,10 +50,10 @@ public class BedrockConnectionScreen extends Screen {
 			Client.instance.initialize(BedrockConnectionScreen.this.addressField.getText(), port, BedrockConnectionScreen.this.onlineModeWidget.isChecked());
 		}));
 
-		this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.openScreen(BedrockConnectionScreen.this.parent)));
-		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 16, 200, 20, new LiteralText("Enter IP"));
-		this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 46, 200, 20, new LiteralText("Enter Port"));
-		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 200, 20, new LiteralText("Online mode"), true);
+		this.addDrawable(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));
+		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 16, 200, 20, Text.of("Enter IP"));
+		this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 46, 200, 20, Text.of("Enter Port"));
+		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 200, 20, Text.of("Online mode"), true);
 		this.addressField.setMaxLength(128);
 		this.portField.setMaxLength(6);
 		this.addressField.setTextFieldFocused(true);
@@ -62,8 +61,8 @@ public class BedrockConnectionScreen extends Screen {
 		this.addressField.setText("127.0.0.1");
 		this.portField.setText("19132");
 		this.addressField.setChangedListener(text -> BedrockConnectionScreen.this.onAddressFieldChanged());
-		this.children.add(this.addressField);
-		this.children.add(this.portField);
+		this.addDrawableChild(this.addressField);
+		this.addDrawableChild(this.portField);
 		this.setInitialFocus(this.addressField);
 		this.onAddressFieldChanged();
 	}
@@ -76,7 +75,7 @@ public class BedrockConnectionScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		Screen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		Screen.drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Enter IP and Port"), this.width / 2 - 100, this.height / 4, 10526880);
+		Screen.drawTextWithShadow(matrices, this.textRenderer, Text.of("Enter IP and Port"), this.width / 2 - 100, this.height / 4, 10526880);
 		this.addressField.render(matrices, mouseX, mouseY, delta);
 		this.portField.render(matrices, mouseX, mouseY, delta);
 		this.onlineModeWidget.render(matrices, mouseX, mouseY, delta);
@@ -111,7 +110,7 @@ public class BedrockConnectionScreen extends Screen {
 	}
 
 	public void onClose() {
-		this.client.openScreen(this.parent);
+		this.client.setScreen(this.parent);
 	}
 
 	public void removed() {

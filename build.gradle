@@ -31,11 +31,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	api("com.nukkitx.protocol:bedrock-v577:2.9.14-SNAPSHOT") {
+	compileOnly("com.nukkitx.protocol:bedrock-v557:2.9.14-SNAPSHOT") {
 		exclude group: 'com.nukkitx.fastutil'
 		exclude group: 'io.netty'
 	}
-	shadow("com.nukkitx.protocol:bedrock-v577:2.9.14-SNAPSHOT") {
+	shadow("com.nukkitx.protocol:bedrock-v557:2.9.14-SNAPSHOT") {
 		exclude group: 'com.nukkitx.fastutil'
 		exclude group: 'io.netty'
 	}

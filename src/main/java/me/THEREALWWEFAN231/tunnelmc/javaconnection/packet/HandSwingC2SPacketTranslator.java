@@ -16,7 +16,7 @@ public class HandSwingC2SPacketTranslator extends PacketTranslator<HandSwingC2SP
 		}
 		AnimatePacket animatePacket = new AnimatePacket();
 		animatePacket.setAction(AnimatePacket.Action.SWING_ARM);
-		animatePacket.setRuntimeEntityId(TunnelMC.mc.player.getEntityId());
+		animatePacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 		Client.instance.sendPacket(animatePacket);
 	}
 

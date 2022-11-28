@@ -11,7 +11,7 @@ public class UpdatePlayerGameTypeTranslator extends PacketTranslator<UpdatePlaye
 
     @Override
     public void translate(UpdatePlayerGameTypePacket packet) {
-        GameMode javaGameMode = GameModeTranslator.bedrockToJava(packet.getGameType(), Client.instance.defaultGameMode);
+        GameMode javaGameMode = GameModeTranslator.bedrockToJava(packet.getGameType());
 
         Client.instance.javaConnection.processServerToClientPacket(new GameStateChangeS2CPacket(
                 GameStateChangeS2CPacket.GAME_MODE_CHANGED,

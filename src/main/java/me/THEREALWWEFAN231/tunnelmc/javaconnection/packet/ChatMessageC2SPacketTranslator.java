@@ -13,9 +13,9 @@ public class ChatMessageC2SPacketTranslator extends PacketTranslator<ChatMessage
 
 	@Override
 	public void translate(ChatMessageC2SPacket packet) {
-		if (packet.getChatMessage().startsWith("/")) {
+		if (packet.chatMessage().startsWith("/")) {
 			CommandRequestPacket commandPacket = new CommandRequestPacket();
-			commandPacket.setCommand(packet.getChatMessage());
+			commandPacket.setCommand(packet.chatMessage());
 			commandPacket.setInternal(false); // ???
 			commandPacket.setCommandOriginData(new CommandOriginData(CommandOriginType.PLAYER, Client.instance.authData.getIdentity(), "", 0));
 
@@ -25,7 +25,7 @@ public class ChatMessageC2SPacketTranslator extends PacketTranslator<ChatMessage
 			textPacket.setType(TextPacket.Type.CHAT);
 			textPacket.setNeedsTranslation(false);
 			textPacket.setSourceName(Client.instance.authData.getDisplayName());
-			textPacket.setMessage(packet.getChatMessage());
+			textPacket.setMessage(packet.chatMessage());
 			textPacket.setXuid(Client.instance.authData.getXuid());
 
 			Client.instance.sendPacket(textPacket);

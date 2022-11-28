@@ -4,19 +4,19 @@ import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket.LookOnly;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket.LookAndOnGround;
 
-public class LookOnlyTranslator extends PacketTranslator<PlayerMoveC2SPacket.LookOnly> {
+public class LookOnlyTranslator extends PacketTranslator<PlayerMoveC2SPacket.LookAndOnGround> {
 
 	@Override
-	public void translate(LookOnly packet) {
+	public void translate(LookAndOnGround packet) {
 		PlayerMoveTranslator.translateMovementPacket(packet, MovePlayerPacket.Mode.HEAD_ROTATION);
 
 	}
 
 	@Override
 	public Class<?> getPacketClass() {
-		return PlayerMoveC2SPacket.LookOnly.class;
+		return PlayerMoveC2SPacket.LookAndOnGround.class;
 	}
 
 }

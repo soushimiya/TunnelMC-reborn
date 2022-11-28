@@ -40,11 +40,11 @@ public class AddEntityPacketTranslator extends PacketTranslator<AddEntityPacket>
 			return;
 		}
 
-		entity.setEntityId(id);
+		entity.setId(id);
 		entity.setPos(x, y, z);
 		entity.setVelocity(motionX, motionY, motionZ);
-		entity.yaw = yaw;
-		entity.pitch = pitch;
+		entity.setYaw(yaw);
+		entity.setPitch(pitch);
 
 		Client.instance.javaConnection.processServerToClientPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
 	}

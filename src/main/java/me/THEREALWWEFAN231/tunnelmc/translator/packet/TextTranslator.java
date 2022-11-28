@@ -4,9 +4,8 @@ import com.nukkitx.protocol.bedrock.packet.TextPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.UUID;
 
@@ -19,7 +18,7 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 				System.out.println("Falling back to raw translation for " + packet.toString());
 			}
 			case RAW: {
-				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(new LiteralText(packet.getMessage()), MessageType.CHAT, new UUID(0, 0));
+				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(Text.of(packet.getMessage()), false);
 				Client.instance.javaConnection.processServerToClientPacket(gameMessageS2CPacket);
 				break;
 			}
@@ -29,7 +28,7 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 					formattedChatMessage = "<" + packet.getSourceName() + "> " + formattedChatMessage;
 				}
 
-				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(new LiteralText(formattedChatMessage), MessageType.CHAT, null);
+				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(Text.of(formattedChatMessage), false);
 				Client.instance.javaConnection.processServerToClientPacket(gameMessageS2CPacket);
 				break;
 			}

@@ -39,7 +39,7 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		Client.instance.entityRuntimeId = (int) packet.getRuntimeEntityId();
 		Client.instance.defaultGameMode = packet.getLevelGameType();
 
-		GameMode gameMode = GameModeTranslator.bedrockToJava(packet.getPlayerGameType(), packet.getLevelGameType());
+		GameMode gameMode = GameModeTranslator.bedrockToJava(packet.getPlayerGameType());
 		GameMode previousGameMode = GameMode.NOT_SET;
 		Set<RegistryKey<World>> dimensionIds = new HashSet<>();
 		dimensionIds.add(World.NETHER);

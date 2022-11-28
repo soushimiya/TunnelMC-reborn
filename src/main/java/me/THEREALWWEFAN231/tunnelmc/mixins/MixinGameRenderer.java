@@ -17,13 +17,12 @@ public class MixinGameRenderer {
 	public void updateTargetedEntity(float tickDelta, CallbackInfo callbackInfo) {
 		ScaffoldPlace.setRaycastRsult();
 	}*/
-	
-	@Inject(method = "updateTargetedEntity", at = @At("RETURN"))
-	public void updateTargetedEntity(float tickDelta, CallbackInfo callbackInfo) {
-		if(TunnelMC.mc.getCameraEntity() == null || !Client.instance.isConnectionOpen()) {
-			return;
-		}
-		ScaffoldPlace.setRaycastResult();
-	}
+//	@Inject(method = "updateTargetedEntity", at = @At("RETURN"))
+//	public void updateTargetedEntity(float tickDelta, CallbackInfo callbackInfo) {
+//		if(TunnelMC.mc.getCameraEntity() == null || !Client.instance.isConnectionOpen()) {
+//			return;
+//		}
+//		ScaffoldPlace.setRaycastResult();
+//	}
 	
 }

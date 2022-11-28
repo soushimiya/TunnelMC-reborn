@@ -2,43 +2,39 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet.world;
 
 import com.darkmagician6.eventapi.EventManager;
 import com.darkmagician6.eventapi.EventTarget;
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NBTInputStream;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtMapBuilder;
-import com.nukkitx.nbt.util.stream.NetworkDataInputStream;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
-import net.minecraft.util.collection.IndexedIterable;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeArray;
+import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.light.LightingProvider;
+import net.minecraft.world.tick.ChunkTickScheduler;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * For more information, check out the following gist:
- * https://gist.github.com/dktapps/8a4f23d2bf32ea7091ef14e4aac46170
+ * <a href="https://gist.github.com/dktapps/8a4f23d2bf32ea7091ef14e4aac46170">Block Changes in Beta 1.2.13</a>
  */
 public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 
-	private static final IndexedIterable<Biome> BIOMES_REGISTRY = DynamicRegistryManager.create().get(Registry.BIOME_KEY);
+	private static final Registry<Biome> BIOMES_REGISTRY = BuiltinRegistries.BIOME;
 
 	private final List<LevelChunkPacket> chunksOutOfRenderDistance = new ArrayList<>();
 
@@ -64,7 +60,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		byteBuf.writeBytes(packet.getData());
 
 		for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
-			chunkSections[sectionIndex] = new ChunkSection(sectionIndex);
+			chunkSections[sectionIndex] = new ChunkSection(sectionIndex, BIOMES_REGISTRY);
 			int chunkVersion = byteBuf.readByte();
 			if (chunkVersion != 1 && chunkVersion != 8) {
 				System.out.println("Decoding a version zero chunk...");
@@ -101,14 +97,27 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 			javaBiomes[javaBiomesCount++] = desiredBiome;
 		}
 
-		BiomeArray biomeArray = new BiomeArray(BIOMES_REGISTRY, javaBiomes);
-		WorldChunk worldChunk = new WorldChunk(null, new ChunkPos(chunkX, chunkZ), biomeArray);
+		WorldChunk worldChunk = new WorldChunk(null, new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler(), new ChunkTickScheduler(), 0, chunkSections, null, null);
 
 		for (int i = 0; i < worldChunk.getSectionArray().length; i++) {
 			worldChunk.getSectionArray()[i] = chunkSections[i];
 		}
 
-		ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, 65535);
+		ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, new LightingProvider(new ChunkProvider() {
+			@Nullable
+			@Override
+			public BlockView getChunk(int x, int z) {
+				if(chunkX == x && chunkZ == z) {
+					return worldChunk;
+				}
+				return null;
+			}
+
+			@Override
+			public BlockView getWorld() {
+				return null;
+			}
+		}, true, TunnelMC.mc.world.getDimension().hasSkyLight()), null, null, true);
 		Client.instance.javaConnection.processServerToClientPacket(chunkDeltaUpdateS2CPacket);
 	}
 
@@ -123,7 +132,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		}
 		int playerChunkX = MathHelper.floor(TunnelMC.mc.player.getX()) >> 4;
 		int playerChunkZ = MathHelper.floor(TunnelMC.mc.player.getZ()) >> 4;
-		return Math.abs(chunkX - playerChunkX) > TunnelMC.mc.options.viewDistance || Math.abs(chunkZ - playerChunkZ) > TunnelMC.mc.options.viewDistance;
+		return Math.abs(chunkX - playerChunkX) > TunnelMC.mc.options.getViewDistance().getValue() || Math.abs(chunkZ - playerChunkZ) > TunnelMC.mc.options.getViewDistance().getValue();
 	}
 
 	@EventTarget

@@ -10,7 +10,6 @@ import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 @Mixin(MultiplayerScreen.class)
@@ -22,9 +21,7 @@ public class MixinMultiplayerScreen extends Screen {
 
 	@Inject(method = "init", at = @At(value = "RETURN"))
 	public void init(CallbackInfo callback) {
-		this.addButton(new ButtonWidget(5, 5, 150, 20, new LiteralText("Connect To Bedrock Server"), (buttonWidget) -> {
-			TunnelMC.mc.openScreen(new BedrockConnectionScreen(this));
-		}));
+		this.addDrawable(new ButtonWidget(5, 5, 150, 20, Text.of("Connect To Bedrock Server"), buttonWidget -> TunnelMC.mc.setScreen(new BedrockConnectionScreen(this))));
 	}
 
 }

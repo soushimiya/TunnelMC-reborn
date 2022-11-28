@@ -10,7 +10,7 @@ import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.type.ContainerTypeTranslator;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class ContainerOpenPacketTranslator extends PacketTranslator<ContainerOpenPacket> {
 
@@ -39,7 +39,7 @@ public class ContainerOpenPacketTranslator extends PacketTranslator<ContainerOpe
 			name = blockEntityData.getString("CustomName");
 		}
 
-		OpenScreenS2CPacket openScreenS2CPacket = new OpenScreenS2CPacket(packet.getId() & 0xff, screenHandlerType, new LiteralText(name));
+		OpenScreenS2CPacket openScreenS2CPacket = new OpenScreenS2CPacket(packet.getId() & 0xff, screenHandlerType, Text.of(name));
 		Client.instance.javaConnection.processServerToClientPacket(openScreenS2CPacket);
 
 		Client.instance.containers.setCurrentlyOpenContainer(new BedrockContainer(27, packet.getId()));

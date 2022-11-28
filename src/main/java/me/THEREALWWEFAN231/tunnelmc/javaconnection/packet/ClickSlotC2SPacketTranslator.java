@@ -39,7 +39,7 @@ public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SP
 
 		inventoryTransactionPacket.setTransactionType(TransactionType.NORMAL);
 		inventoryTransactionPacket.setActionType(0);
-		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getEntityId());
+		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 
 		BedrockContainer cursorContainer = Client.instance.containers.getPlayerContainerCursorContainer();
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(screenHandler, clickedSlotId);
@@ -79,7 +79,7 @@ public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SP
 
 		inventoryTransactionPacket.setTransactionType(TransactionType.NORMAL);
 		inventoryTransactionPacket.setActionType(0);//I have no idea
-		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getEntityId());
+		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 
 		{
 			BedrockContainer cursorContainer = Client.instance.containers.getPlayerContainerCursorContainer();
@@ -112,12 +112,11 @@ public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SP
 	}
 
 	public void onHoverOverStackDropItem(ScreenHandler screenHandler, int clickedSlotId, int clickData) {
-
 		InventoryTransactionPacket inventoryTransactionPacket = new InventoryTransactionPacket();
 
 		inventoryTransactionPacket.setTransactionType(TransactionType.NORMAL);
 		inventoryTransactionPacket.setActionType(0);//I have no idea
-		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getEntityId());
+		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(screenHandler, clickedSlotId);
 

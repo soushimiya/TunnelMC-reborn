@@ -27,7 +27,7 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 		if (TunnelMC.mc.world == null || TunnelMC.mc.player == null || MinecraftClient.getInstance().interactionManager == null) {
 			return;
 		}
-		int runtimeId = TunnelMC.mc.player.getEntityId();
+		int runtimeId = TunnelMC.mc.player.getId();
 
 		Vector3i blockPosition = Vector3i.from(packet.getPos().getX(), packet.getPos().getY(), packet.getPos().getZ());
 		switch (packet.getAction()) {
@@ -82,8 +82,8 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 				inventoryTransactionPacket.setActionType(2);
 				inventoryTransactionPacket.setBlockPosition(blockPosition);
 				inventoryTransactionPacket.setBlockFace(packet.getDirection().ordinal());
-				inventoryTransactionPacket.setHotbarSlot(TunnelMC.mc.player.inventory.selectedSlot);
-				inventoryTransactionPacket.setItemInHand(Client.instance.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.inventory.selectedSlot));
+				inventoryTransactionPacket.setHotbarSlot(TunnelMC.mc.player.getInventory().selectedSlot);
+				inventoryTransactionPacket.setItemInHand(Client.instance.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot));
 				inventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y, TunnelMC.mc.player.getPos().z));
 				inventoryTransactionPacket.setClickPosition(Vector3f.ZERO);
 
@@ -115,7 +115,7 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 		if (TunnelMC.mc.player == null) {
 			return;
 		}
-		int runtimeId = TunnelMC.mc.player.getEntityId();
+		int runtimeId = TunnelMC.mc.player.getId();
 		PlayerActionType action = PlayerActionType.CONTINUE_BREAK;
 
 		PlayerActionPacket playerActionPacket = new PlayerActionPacket();

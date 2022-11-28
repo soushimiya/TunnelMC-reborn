@@ -4,18 +4,18 @@ import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket.PositionOnly;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket.PositionAndOnGround;
 
-public class PositionOnlyTranslator extends PacketTranslator<PlayerMoveC2SPacket.PositionOnly> {
+public class PositionOnlyTranslator extends PacketTranslator<PlayerMoveC2SPacket.PositionAndOnGround> {
 
 	@Override
-	public void translate(PositionOnly packet) {
-		PlayerMoveTranslator.translateMovementPacket((PlayerMoveC2SPacket.PositionOnly) packet, MovePlayerPacket.Mode.NORMAL);
+	public void translate(PositionAndOnGround packet) {
+		PlayerMoveTranslator.translateMovementPacket(packet, MovePlayerPacket.Mode.NORMAL);
 	}
 
 	@Override
 	public Class<?> getPacketClass() {
-		return PlayerMoveC2SPacket.PositionOnly.class;
+		return PlayerMoveC2SPacket.PositionAndOnGround.class;
 	}
 
 }

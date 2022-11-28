@@ -10,9 +10,6 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 @Mixin(PlayerListS2CPacket.class)
 public interface IMixinPlayerListS2CPacket {
 
-	@Accessor("action")
-	void setAction(PlayerListS2CPacket.Action newValue);
-
 	/**
 	 * Needed because the constructor only takes in ServerPlayerEntity
 	 */

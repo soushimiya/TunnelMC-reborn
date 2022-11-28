@@ -38,11 +38,11 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 		Vec3d velocity = new Vec3d(packet.getMotion().getX(), packet.getMotion().getY(), packet.getMotion().getZ());
 
 		Runnable runnable = () -> {
-			OtherClientPlayerEntity player = new OtherClientPlayerEntity(TunnelMC.mc.world, new GameProfile(uuid, name));
-			player.setEntityId(id);
+			OtherClientPlayerEntity player = new OtherClientPlayerEntity(TunnelMC.mc.world, new GameProfile(uuid, name), null);
+			player.setId(id);
 			player.setPos(x, y, z);
-			player.yaw = yaw;
-			player.pitch = pitch;
+			player.setYaw(yaw);
+			player.setPitch(pitch);
 			player.setVelocity(velocity);
 
 			PlayerSpawnS2CPacket playerSpawnS2CPacket = new PlayerSpawnS2CPacket(player);

@@ -67,7 +67,7 @@ public class Client {
 		this.bedrockClient = new BedrockClient(bindAddress);
 		this.bedrockClient.bind().join();
 		this.connectScreen = new BedrockConnectingScreen(MinecraftClient.getInstance().currentScreen, MinecraftClient.getInstance(), this.bedrockClient);
-		TunnelMC.mc.openScreen(this.connectScreen);
+		TunnelMC.mc.setScreen(this.connectScreen);
 
 		InetSocketAddress addressToConnect = new InetSocketAddress(ip, port);
 		this.bedrockClient.connect(addressToConnect).whenComplete((BiConsumer<BedrockSession, Throwable>) (session, throwable) -> {
