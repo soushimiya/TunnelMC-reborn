@@ -9,10 +9,9 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 
 @Mixin(PlayerListS2CPacket.class)
 public interface IMixinPlayerListS2CPacket {
-
 	/**
 	 * Needed because the constructor only takes in ServerPlayerEntity
 	 */
-	@Accessor("entries")
-	void setEntries(List<PlayerListS2CPacket.Entry> newValue);
+	@Accessor
+	List<PlayerListS2CPacket.Entry> getEntries();
 }

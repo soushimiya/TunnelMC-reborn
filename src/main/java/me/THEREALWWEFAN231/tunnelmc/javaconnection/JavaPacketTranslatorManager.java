@@ -34,6 +34,7 @@ public class JavaPacketTranslatorManager {
 		this.addTranslator(this.clickSlotTranslator = new ClickSlotC2SPacketTranslator());
 		this.addTranslator(new UpdatePlayerAbilitiesTranslator());
 		this.addTranslator(new ClientStatusC2SPacketTranslator());
+		this.addTranslator(new CommandExecutionC2SPacketTranslator());
 	}
 
 	private void addTranslator(PacketTranslator<?> translator) {
@@ -49,5 +50,4 @@ public class JavaPacketTranslatorManager {
 			//System.out.println("Could not find a packet translator for the packet: " + packet.getClass());
 		}
 	}
-
 }

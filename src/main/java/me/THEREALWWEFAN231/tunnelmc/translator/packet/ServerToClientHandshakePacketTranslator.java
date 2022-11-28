@@ -1,10 +1,10 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.packet;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.nukkitx.protocol.bedrock.packet.ClientToServerHandshakePacket;
 import com.nukkitx.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
-import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 
@@ -20,10 +20,10 @@ public class ServerToClientHandshakePacketTranslator extends PacketTranslator<Se
 		try {
 			String[] jwtSplit = packet.getJwt().split("\\.");
 			String header = new String(Base64.getDecoder().decode(jwtSplit[0]));
-			JsonObject headerObject = TunnelMC.instance.fileManagement.jsonParser.parse(header).getAsJsonObject();
+			JsonObject headerObject = JsonParser.parseString(header).getAsJsonObject();
 			
 			String payload = new String(Base64.getDecoder().decode(jwtSplit[1]));
-			JsonObject payloadObject = TunnelMC.instance.fileManagement.jsonParser.parse(payload).getAsJsonObject();
+			JsonObject payloadObject = JsonParser.parseString(payload).getAsJsonObject();
 			
 			ECPublicKey serverKey = EncryptionUtils.generateKey(headerObject.get("x5u").getAsString());
 			SecretKey key = EncryptionUtils.getSecretKey(Client.instance.authData.getPrivateKey(), serverKey, Base64.getDecoder().decode(payloadObject.get("salt").getAsString()));
@@ -38,8 +38,7 @@ public class ServerToClientHandshakePacketTranslator extends PacketTranslator<Se
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ServerToClientHandshakePacket> getPacketClass() {
 		return ServerToClientHandshakePacket.class;
 	}
-
 }

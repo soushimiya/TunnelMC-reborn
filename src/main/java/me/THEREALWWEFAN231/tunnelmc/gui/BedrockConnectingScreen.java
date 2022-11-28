@@ -34,7 +34,7 @@ public class BedrockConnectingScreen extends Screen {
             return;
         }
 
-        this.addDrawable(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, (buttonWidget) -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, (buttonWidget) -> {
             if (this.connection != null) {
                 this.connection.close(true);
             }

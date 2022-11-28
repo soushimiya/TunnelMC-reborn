@@ -16,7 +16,7 @@ public class SetTimePacketTranslator extends PacketTranslator<SetTimePacket> {
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<SetTimePacket> getPacketClass() {
 		return SetTimePacket.class;
 	}
 	
@@ -24,5 +24,4 @@ public class SetTimePacketTranslator extends PacketTranslator<SetTimePacket> {
 	public boolean idleUntil() {
 		return TunnelMC.mc.world == null;
 	}
-
 }

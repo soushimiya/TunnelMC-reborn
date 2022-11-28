@@ -20,13 +20,9 @@ import net.minecraft.util.math.BlockPos;
 
 @Mixin(ClientPlayerInteractionManager.class)
 public class MixinClientPlayerInteractionHandler {
+	@Shadow private BlockPos currentBreakingPos;
 
-	@Shadow
-	private BlockPos currentBreakingPos;
-
-	@Shadow
-	@Final
-	private MinecraftClient client;
+	@Shadow @Final private MinecraftClient client;
 
 	@Redirect(method = "updateBlockBreakingProgress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sound/SoundManager;play(Lnet/minecraft/client/sound/SoundInstance;)V"))
 	public void cancelBlockSound(SoundManager soundManager, SoundInstance sound) {

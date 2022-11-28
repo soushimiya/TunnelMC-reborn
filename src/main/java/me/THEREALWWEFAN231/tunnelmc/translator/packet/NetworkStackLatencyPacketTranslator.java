@@ -16,8 +16,7 @@ public class NetworkStackLatencyPacketTranslator extends PacketTranslator<Networ
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<NetworkStackLatencyPacket> getPacketClass() {
         return NetworkStackLatencyPacket.class;
     }
-
 }

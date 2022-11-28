@@ -5,28 +5,24 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "MixinAbstractClientPlayerEntity",
+    "MixinBlock",
+    "MixinBlockItem",
+    "MixinClientPlayerInteractionHandler",
+    "MixinClientWorld",
     "MixinClientConnection",
     "MixinClientPlayerEntity",
-    "MixinGameRenderer",
     "MixinHandledScreen",
     "MixinKeyboard",
     "MixinMinecraftClient",
     "MixinMultiplayerScreen",
     "MixinScreenHandler",
+    "MixinWorldRenderer",
     "interfaces.IMixinCloseHandledScreenC2SPacket",
+    "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinEntityPositionS2CPacket",
     "interfaces.IMixinEntitySetHeadYawS2CPacket",
     "interfaces.IMixinPlayerInteractEntityC2SPacket",
     "interfaces.IMixinPlayerListS2CPacket",
-    "interfaces.IMixinSlot"
-  ],
-  "mixins": [
-    "MixinBlock",
-    "MixinBlockItem",
-    "MixinClientPlayerInteractionHandler",
-    "MixinClientWorld",
-    "MixinWorldRenderer",
-    "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinWorldRenderer"
   ]
 }

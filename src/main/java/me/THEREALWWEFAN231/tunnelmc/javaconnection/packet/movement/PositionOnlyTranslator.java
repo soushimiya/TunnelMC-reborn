@@ -14,8 +14,7 @@ public class PositionOnlyTranslator extends PacketTranslator<PlayerMoveC2SPacket
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<PositionAndOnGround> getPacketClass() {
 		return PlayerMoveC2SPacket.PositionAndOnGround.class;
 	}
-
 }

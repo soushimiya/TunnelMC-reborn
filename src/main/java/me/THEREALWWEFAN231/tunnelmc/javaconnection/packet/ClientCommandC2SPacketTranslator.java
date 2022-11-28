@@ -50,8 +50,7 @@ public class ClientCommandC2SPacketTranslator extends PacketTranslator<ClientCom
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ClientCommandC2SPacket> getPacketClass() {
 		return ClientCommandC2SPacket.class;
 	}
-
 }

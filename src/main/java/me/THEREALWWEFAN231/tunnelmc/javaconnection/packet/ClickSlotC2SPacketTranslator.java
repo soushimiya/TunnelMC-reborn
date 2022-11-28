@@ -17,16 +17,13 @@ import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 
 public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SPacket> {
-
 	// TODO: Re-review this code and clean it up later on, seems incorrect.
 
 	@Override
-	public void translate(ClickSlotC2SPacket packet) {
-
-	}
+	public void translate(ClickSlotC2SPacket packet) {}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ClickSlotC2SPacket> getPacketClass() {
 		return ClickSlotC2SPacket.class;
 	}
 
@@ -199,5 +196,4 @@ public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SP
 		
 		Client.instance.sendPacket(inventoryTransactionPacket);*/
 	}
-
 }

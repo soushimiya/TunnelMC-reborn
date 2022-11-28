@@ -62,8 +62,7 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<AddPlayerPacket> getPacketClass() {
 		return AddPlayerPacket.class;
 	}
-
 }

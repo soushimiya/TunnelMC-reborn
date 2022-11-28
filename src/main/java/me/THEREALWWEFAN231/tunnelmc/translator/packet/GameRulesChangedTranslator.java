@@ -20,7 +20,7 @@ public class GameRulesChangedTranslator extends PacketTranslator<GameRulesChange
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<GameRulesChangedPacket> getPacketClass() {
         return GameRulesChangedPacket.class;
     }
 
@@ -31,16 +31,9 @@ public class GameRulesChangedTranslator extends PacketTranslator<GameRulesChange
 
         for (GameRuleData<?> gameRule : gamerules) {
             switch (gameRule.getName()) {
-                case "dodaylightcycle": {
-                    MinecraftClient.getInstance().world.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(((Boolean) gameRule.getValue()), null);
-                    break;
-                }
-                case "doimmediaterespawn": {
-                    MinecraftClient.getInstance().player.setShowsDeathScreen(!((Boolean) gameRule.getValue()));
-                    break;
-                }
+                case "dodaylightcycle" -> MinecraftClient.getInstance().world.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(((Boolean) gameRule.getValue()), null);
+                case "doimmediaterespawn" -> MinecraftClient.getInstance().player.setShowsDeathScreen(!((Boolean) gameRule.getValue()));
             }
         }
     }
-
 }

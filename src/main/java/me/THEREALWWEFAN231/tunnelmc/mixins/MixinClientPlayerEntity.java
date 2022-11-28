@@ -12,10 +12,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
 
 @Mixin(ClientPlayerEntity.class)
 public class MixinClientPlayerEntity {
-
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;tick()V"))
 	public void tick(CallbackInfo callbackInfo) {
 		EventManager.call(new EventPlayerTick());
 	}
-	
 }

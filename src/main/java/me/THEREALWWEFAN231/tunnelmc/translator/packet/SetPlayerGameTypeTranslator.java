@@ -32,8 +32,7 @@ public class SetPlayerGameTypeTranslator extends PacketTranslator<SetPlayerGameT
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<SetPlayerGameTypePacket> getPacketClass() {
         return SetPlayerGameTypePacket.class;
     }
-
 }

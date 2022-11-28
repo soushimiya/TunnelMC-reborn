@@ -16,7 +16,7 @@ public class MixinClientWorld {
     @Inject(method = "setTimeOfDay", at = @At("HEAD"), cancellable = true)
     public void setTimeOfDay(long l, CallbackInfo ci) {
         if (Client.instance.isConnectionOpen()) {
-            // Don't allow the gamemode to be overwritten
+            // Don't allow the gamerule to be overwritten
             this.clientWorldProperties.setTimeOfDay(l);
             ci.cancel();
         }

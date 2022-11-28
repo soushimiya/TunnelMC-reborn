@@ -16,8 +16,7 @@ public class NetworkChunkPublisherUpdateTranslator extends PacketTranslator<Netw
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<NetworkChunkPublisherUpdatePacket> getPacketClass() {
         return NetworkChunkPublisherUpdatePacket.class;
     }
-
 }

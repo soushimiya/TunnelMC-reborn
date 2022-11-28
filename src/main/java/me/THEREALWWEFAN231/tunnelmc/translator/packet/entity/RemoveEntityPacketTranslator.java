@@ -18,8 +18,7 @@ public class RemoveEntityPacketTranslator extends PacketTranslator<RemoveEntityP
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<RemoveEntityPacket> getPacketClass() {
 		return RemoveEntityPacket.class;
 	}
-
 }

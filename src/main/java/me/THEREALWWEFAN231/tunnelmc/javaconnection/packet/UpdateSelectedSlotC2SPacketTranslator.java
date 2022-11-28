@@ -17,12 +17,11 @@ public class UpdateSelectedSlotC2SPacketTranslator extends PacketTranslator<Upda
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<UpdateSelectedSlotC2SPacket> getPacketClass() {
 		return UpdateSelectedSlotC2SPacket.class;
 	}
 	
 	public static void updateHotbarItem(int hotbarSlot) {
-		
 		if(hotbarSlot < 0 || hotbarSlot > 8) {
 			System.out.println("Can not send an invalid hotbar slot");
 			return;
@@ -42,5 +41,4 @@ public class UpdateSelectedSlotC2SPacketTranslator extends PacketTranslator<Upda
 
 		Client.instance.sendPacket(mobEquipmentPacket);
 	}
-
 }

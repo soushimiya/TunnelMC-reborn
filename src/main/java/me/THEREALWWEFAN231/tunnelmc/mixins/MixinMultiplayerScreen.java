@@ -14,14 +14,12 @@ import net.minecraft.text.Text;
 
 @Mixin(MultiplayerScreen.class)
 public class MixinMultiplayerScreen extends Screen {
-
 	protected MixinMultiplayerScreen(Text title) {
 		super(title);
 	}
 
 	@Inject(method = "init", at = @At(value = "RETURN"))
 	public void init(CallbackInfo callback) {
-		this.addDrawable(new ButtonWidget(5, 5, 150, 20, Text.of("Connect To Bedrock Server"), buttonWidget -> TunnelMC.mc.setScreen(new BedrockConnectionScreen(this))));
+		this.addDrawableChild(new ButtonWidget(5, 5, 150, 20, Text.of("Connect To Bedrock Server"), buttonWidget -> TunnelMC.mc.setScreenAndRender(new BedrockConnectionScreen(this))));
 	}
-
 }

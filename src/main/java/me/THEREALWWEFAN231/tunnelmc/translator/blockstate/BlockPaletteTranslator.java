@@ -42,7 +42,7 @@ public class BlockPaletteTranslator {
 					WATER_BEDROCK_BLOCK_ID = runtimeId;
 				}
 			} else {
-				System.out.println("Unable to find suitable block state for " + bedrockBlockState.toString());
+				System.out.println("Unable to find suitable block state for " + bedrockBlockState);
 				RUNTIME_ID_TO_BLOCK_STATE.put(runtimeId, Blocks.STONE.getDefaultState());//we could probably put the default state, but for now we will use stone
 			}
 

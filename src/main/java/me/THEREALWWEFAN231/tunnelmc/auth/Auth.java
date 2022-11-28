@@ -12,17 +12,14 @@ import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 
 /**
  * Referenced from the resource below:
- * https://github.com/Sandertv/gophertunnel/tree/master/minecraft/auth
+ * <a href="https://github.com/Sandertv/gophertunnel/tree/master/minecraft/auth">gophertunnel</a>
  */
 public class Auth {
 
@@ -50,12 +47,12 @@ public class Auth {
 		this.privateKey = (ECPrivateKey) ecdsa384KeyPair.getPrivate();
 
 		String chainData = xbox.requestMinecraftChain(xsts, this.publicKey);
-		JsonObject chainDataObject = TunnelMC.instance.fileManagement.jsonParser.parse(chainData).getAsJsonObject();
+		JsonObject chainDataObject = JsonParser.parseString(chainData).getAsJsonObject();
 		JsonArray minecraftNetChain = chainDataObject.get("chain").getAsJsonArray();
 		String firstChainHeader = minecraftNetChain.get(0).getAsString();
 		firstChainHeader = firstChainHeader.split("\\.")[0];
 		firstChainHeader = new String(Base64.getDecoder().decode(firstChainHeader.getBytes()));
-		String firstKeyx5u = TunnelMC.instance.fileManagement.jsonParser.parse(firstChainHeader).getAsJsonObject().get("x5u").getAsString();
+		String firstKeyx5u = JsonParser.parseString(firstChainHeader).getAsJsonObject().get("x5u").getAsString();
 
 		JsonObject newFirstChain = new JsonObject();
 		newFirstChain.addProperty("certificateAuthority", true);
@@ -82,7 +79,7 @@ public class Auth {
 		String lastChainPayload = lastChain.split("\\.")[1];
 		lastChainPayload = new String(Base64.getDecoder().decode(lastChainPayload.getBytes()));
 
-		JsonObject payloadObject = TunnelMC.instance.fileManagement.jsonParser.parse(lastChainPayload).getAsJsonObject();
+		JsonObject payloadObject = JsonParser.parseString(lastChainPayload).getAsJsonObject();
 		JsonObject extraData = payloadObject.get("extraData").getAsJsonObject();
 		this.xuid = extraData.get("XUID").getAsString();
 		this.identity = UUID.fromString(extraData.get("identity").getAsString());
@@ -92,8 +89,8 @@ public class Auth {
 	}
 
 	public String getOfflineChainData(String username) throws Exception {
-		//So we need to assign the a uuid from a username, or else everytime we join a server with the same name, we will get reset(as if we are a new player)
-		//Java does it this way, I'm not sure if bedrock does but it gets our goal accomplished, PlayerEntity.getOfflinePlayerUuid
+		//So we need to assign the uuid from a username, or else everytime we join a server with the same name, we will get reset(as if we are a new player)
+		//Java does it this way, I'm not sure if bedrock does, but it gets our goal accomplished, PlayerEntity.getOfflinePlayerUuid
 		UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
 		String xuid = Long.toString(offlineUUID.getLeastSignificantBits());
 

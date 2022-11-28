@@ -11,12 +11,10 @@ public class LookOnlyTranslator extends PacketTranslator<PlayerMoveC2SPacket.Loo
 	@Override
 	public void translate(LookAndOnGround packet) {
 		PlayerMoveTranslator.translateMovementPacket(packet, MovePlayerPacket.Mode.HEAD_ROTATION);
-
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<LookAndOnGround> getPacketClass() {
 		return PlayerMoveC2SPacket.LookAndOnGround.class;
 	}
-
 }

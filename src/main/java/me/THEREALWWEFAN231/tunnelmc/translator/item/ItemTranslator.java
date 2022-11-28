@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.nukkitx.nbt.NbtMap;
@@ -27,17 +28,25 @@ public class ItemTranslator {
 	public static final HashMap<String, Item> BEDROCK_ITEM_INFO_TO_JAVA_ITEM = new HashMap<>();
 
 	public static void load() {
-		JsonObject jsonObject = TunnelMC.instance.fileManagement.getJsonObjectFromResource("geyser/items.json");
-		if (jsonObject == null) {
+		JsonObject itemsObject = TunnelMC.instance.fileManagement.getJsonFromResource("geyser/items.json").getAsJsonObject();
+		JsonArray statesArray = TunnelMC.instance.fileManagement.getJsonFromResource("geyser/runtime_item_states.json").getAsJsonArray();
+		if (itemsObject == null || statesArray == null) {
 			throw new RuntimeException("Items list not found!");
 		}
 
-		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+		HashMap<String, Integer> identifierToIntId = new HashMap<>();
+		for(JsonElement jsonElement : statesArray) {
+			JsonObject entry = jsonElement.getAsJsonObject();
+			identifierToIntId.put(entry.get("name").getAsString(), entry.get("id").getAsInt());
+		}
+
+		for (Map.Entry<String, JsonElement> entry : itemsObject.entrySet()) {
 			String javaStringIdentifier = entry.getKey();
 			Identifier javaIdentifier = new Identifier(javaStringIdentifier);
 
 			JsonObject bedrockItemData = entry.getValue().getAsJsonObject();
-			int bedrockId = bedrockItemData.get("bedrock_id").getAsInt();
+			String bedrockIdentifier = bedrockItemData.get("bedrock_identifier").getAsString();
+			int bedrockId = identifierToIntId.get(bedrockIdentifier);
 			int bedrockData = bedrockItemData.get("bedrock_data").getAsInt();
 
 			Item item = Registry.ITEM.get(javaIdentifier);

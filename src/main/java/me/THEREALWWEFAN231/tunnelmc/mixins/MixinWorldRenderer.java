@@ -23,9 +23,7 @@ import java.util.SortedSet;
 
 @Mixin(WorldRenderer.class)
 public class MixinWorldRenderer {
-
     @Shadow @Final private Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions;
-
     @Shadow @Final private MinecraftClient client;
 
     @Inject(method = "setBlockBreakingInfo", at = @At("HEAD"), cancellable = true)

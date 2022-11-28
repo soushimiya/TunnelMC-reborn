@@ -14,8 +14,7 @@ public class ChunkRadiusUpdatedTranslator extends PacketTranslator<ChunkRadiusUp
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ChunkRadiusUpdatedPacket> getPacketClass() {
 		return ChunkRadiusUpdatedPacket.class;
 	}
-
 }

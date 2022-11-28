@@ -21,8 +21,7 @@ public class TakeItemEntityPacketTranslator extends PacketTranslator<TakeItemEnt
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<TakeItemEntityPacket> getPacketClass() {
 		return TakeItemEntityPacket.class;
 	}
-
 }

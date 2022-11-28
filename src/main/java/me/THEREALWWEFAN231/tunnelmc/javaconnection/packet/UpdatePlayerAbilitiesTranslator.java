@@ -23,7 +23,7 @@ public class UpdatePlayerAbilitiesTranslator extends PacketTranslator<UpdatePlay
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<UpdatePlayerAbilitiesC2SPacket> getPacketClass() {
         return UpdatePlayerAbilitiesC2SPacket.class;
     }
 }

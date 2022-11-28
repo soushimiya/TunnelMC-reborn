@@ -7,8 +7,6 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 
 @Mixin(PlayerInteractEntityC2SPacket.class)
 public interface IMixinPlayerInteractEntityC2SPacket {
-	
 	@Accessor("entityId")
 	public int getEntityId();
-	
 }

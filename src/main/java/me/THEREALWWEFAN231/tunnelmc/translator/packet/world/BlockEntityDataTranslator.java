@@ -42,8 +42,7 @@ public class BlockEntityDataTranslator extends PacketTranslator<BlockEntityDataP
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<BlockEntityDataPacket> getPacketClass() {
         return BlockEntityDataPacket.class;
     }
-
 }

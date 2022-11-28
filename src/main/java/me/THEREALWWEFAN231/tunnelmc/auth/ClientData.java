@@ -43,7 +43,7 @@ public class ClientData {
 			skinData.addProperty("CapeImageHeight", 0);
 			skinData.addProperty("CapeImageWidth", 0);
 			skinData.addProperty("CapeOnClassicSkin", false);
-			skinData.addProperty("ClientRandomId", new Random().nextLong());//erm? i hope this works?
+			skinData.addProperty("ClientRandomId", new Random().nextLong());//erm? I hope this works?
 			skinData.addProperty("CurrentInputMode", 1);
 			skinData.addProperty("DefaultInputMode", 1);
 			skinData.addProperty("DeviceId", UUID.randomUUID().toString());

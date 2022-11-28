@@ -7,8 +7,6 @@ import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.text.Text;
 
-import java.util.UUID;
-
 public class TextTranslator extends PacketTranslator<TextPacket> {
 
 	@Override
@@ -36,8 +34,7 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<TextPacket> getPacketClass() {
 		return TextPacket.class;
 	}
-
 }

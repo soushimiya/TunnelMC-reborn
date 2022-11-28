@@ -29,12 +29,11 @@ public class MobArmorEquipmentTranslator extends PacketTranslator<MobArmorEquipm
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<MobArmorEquipmentPacket> getPacketClass() {
         return MobArmorEquipmentPacket.class;
     }
 
     private Pair<EquipmentSlot, ItemStack> translateArmorSlot(ItemData bedrockItem, EquipmentSlot slot) {
         return new Pair<>(slot, ItemTranslator.itemDataToItemStack(bedrockItem));
     }
-
 }

@@ -18,15 +18,12 @@ public class MobEquipmentTranslator extends PacketTranslator<MobEquipmentPacket>
     public void translate(MobEquipmentPacket packet) {
         EquipmentSlot equipmentSlot;
         switch (packet.getContainerId()) {
-            case ContainerId.INVENTORY:
-                equipmentSlot = EquipmentSlot.MAINHAND;
-                break;
-            case ContainerId.OFFHAND:
-                equipmentSlot = EquipmentSlot.OFFHAND;
-                break;
-            default:
+            case ContainerId.INVENTORY -> equipmentSlot = EquipmentSlot.MAINHAND;
+            case ContainerId.OFFHAND -> equipmentSlot = EquipmentSlot.OFFHAND;
+            default -> {
                 System.out.println("Not sure how to handle MobEquipmentPacket: " + packet.toString());
                 return;
+            }
         }
 
         Pair<EquipmentSlot, ItemStack> itemStackPair = new Pair<>(equipmentSlot, ItemTranslator.itemDataToItemStack(packet.getItem()));
@@ -36,8 +33,7 @@ public class MobEquipmentTranslator extends PacketTranslator<MobEquipmentPacket>
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<MobEquipmentPacket> getPacketClass() {
         return MobEquipmentPacket.class;
     }
-
 }

@@ -16,8 +16,7 @@ public class ResourcePackStackPacketTranslator extends PacketTranslator<Resource
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ResourcePackStackPacket> getPacketClass() {
 		return ResourcePackStackPacket.class;
 	}
-
 }

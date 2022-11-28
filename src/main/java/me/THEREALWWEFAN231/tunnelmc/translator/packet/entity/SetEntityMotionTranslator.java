@@ -23,8 +23,7 @@ public class SetEntityMotionTranslator extends PacketTranslator<SetEntityMotionP
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<SetEntityMotionPacket> getPacketClass() {
 		return SetEntityMotionPacket.class;
 	}
-
 }

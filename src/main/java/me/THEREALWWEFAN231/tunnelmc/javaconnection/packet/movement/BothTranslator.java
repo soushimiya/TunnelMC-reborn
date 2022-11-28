@@ -14,8 +14,7 @@ public class BothTranslator extends PacketTranslator<Full> {
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<Full> getPacketClass() {
 		return PlayerMoveC2SPacket.Full.class;
 	}
-
 }

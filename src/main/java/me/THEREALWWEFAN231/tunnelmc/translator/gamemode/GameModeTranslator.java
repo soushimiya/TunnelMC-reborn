@@ -7,20 +7,12 @@ import net.minecraft.world.GameMode;
 public class GameModeTranslator {
 
 	public static GameMode bedrockToJava(GameType gameType) {
-		switch (gameType) {
-			case SURVIVAL:
-			case SURVIVAL_VIEWER:
-			case DEFAULT:
-				return GameMode.SURVIVAL;
-			case CREATIVE:
-			case CREATIVE_VIEWER:
-			case SPECTATOR:
-				return GameMode.CREATIVE;
-			case ADVENTURE:
-				return GameMode.ADVENTURE;
-		}
+		return switch (gameType) {
+			case SURVIVAL, SURVIVAL_VIEWER, DEFAULT -> GameMode.SURVIVAL;
+			case CREATIVE, CREATIVE_VIEWER, SPECTATOR -> GameMode.CREATIVE;
+			case ADVENTURE -> GameMode.ADVENTURE;
+		};
 
-		return GameMode.DEFAULT;
 	}
 
 }

@@ -16,8 +16,6 @@ public class PlayerInteractEntityC2SPacketTranslator extends PacketTranslator<Pl
 
 	@Override
 	public void translate(PlayerInteractEntityC2SPacket packet) {
-
-		
 		ItemData holdingItem = Client.instance.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 		
 		InventoryTransactionPacket inventoryTransactionPacket = new InventoryTransactionPacket();
@@ -33,8 +31,7 @@ public class PlayerInteractEntityC2SPacketTranslator extends PacketTranslator<Pl
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<PlayerInteractEntityC2SPacket> getPacketClass() {
 		return PlayerInteractEntityC2SPacket.class;
 	}
-
 }

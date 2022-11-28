@@ -8,6 +8,7 @@ import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -22,13 +23,12 @@ public class LevelSoundEventTranslator extends PacketTranslator<LevelSoundEventP
             BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
             MinecraftClient.getInstance().getSoundManager().play(
                     new PositionedSoundInstance(blockSoundGroup.getHitSound(), SoundCategory.BLOCKS,
-                            (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, pos));
+                            (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, SoundInstance.createRandom(), pos));
         }
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<LevelSoundEventPacket> getPacketClass() {
         return LevelSoundEventPacket.class;
     }
-
 }

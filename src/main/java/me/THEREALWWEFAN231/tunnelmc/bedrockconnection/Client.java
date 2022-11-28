@@ -7,7 +7,7 @@ import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockSession;
 import com.nukkitx.protocol.bedrock.data.GameType;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
-import com.nukkitx.protocol.bedrock.v431.Bedrock_v431;
+import com.nukkitx.protocol.bedrock.v545.Bedrock_v545;
 import io.netty.util.AsciiString;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.auth.Auth;
@@ -33,7 +33,7 @@ public class Client {
 
 	public static Client instance = new Client();
 
-	public BedrockPacketCodec bedrockPacketCodec = Bedrock_v431.V431_CODEC;
+	public final BedrockPacketCodec bedrockPacketCodec = Bedrock_v545.V545_CODEC;
 	private final Logger logger = LogManager.getLogger(ClientBatchHandler.class);
 
 	private String ip;
@@ -54,6 +54,7 @@ public class Client {
 
 	public int entityRuntimeId;
 	public byte openContainerId = 0;
+	private int revision = 0;
 
 	public void initialize(String ip, int port, boolean onlineMode) {
 		this.ip = ip;
@@ -187,4 +188,8 @@ public class Client {
 		}
 	}
 
+	public int nextRevision() {
+		this.revision = this.revision + 1 & Short.MAX_VALUE;
+		return this.revision;
+	}
 }

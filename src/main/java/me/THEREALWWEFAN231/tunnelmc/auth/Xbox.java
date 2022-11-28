@@ -23,16 +23,16 @@ import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 
 /**
  * Referenced from the resource below:
- * https://github.com/Sandertv/gophertunnel/tree/master/minecraft/auth
+ * <a href="https://github.com/Sandertv/gophertunnel/tree/master/minecraft/auth">gophertunnel</a>
  */
 public class Xbox {
 
 	/**
 	 * To generate your own access token (for now), login at the following link:
-	 * https://login.live.com/oauth20_authorize.srf?client_id=00000000441cc96b&redirect_uri=https://login.live.com/oauth20_desktop.srf&response_type=token&display=touch&scope=service::user.auth.xboxlive.com::MBI_SSL&locale=en
+	 * <a href="https://login.live.com/oauth20_authorize.srf?client_id=00000000441cc96b&redirect_uri=https://login.live.com/oauth20_desktop.srf&response_type=token&display=touch&scope=service::user.auth.xboxlive.com::MBI_SSL&locale=en">access token link</a>
 	 * When you're redirected to the blank page, check the URL parameters. Look for the one that says access token, and then set
 	 * the "XBOX_ACCESS_TOKEN" environment variable to your access token.
-	 *
+	 * <p>
 	 * This will be changed and simplified later on.
 	 */
 	private final String accessToken;
@@ -42,8 +42,6 @@ public class Xbox {
 	private static final String xboxDeviceAuthURL = "https://device.auth.xboxlive.com/device/authenticate";
 	private static final String xboxTitleAuthURL = "https://title.auth.xboxlive.com/title/authenticate";
 	private static final String minecraftAuthURL = "https://multiplayer.minecraft.net/authentication";
-
-	private final JsonParser jsonParser = TunnelMC.instance.fileManagement.jsonParser;
 
 	public Xbox(String accessToken) {
 		this.accessToken = accessToken;
@@ -80,7 +78,7 @@ public class Xbox {
 		this.writeJsonObjectToPost(connection, jsonObject);
 
 		String responce = TunnelMC.instance.fileManagement.getTextFromInputStream(connection.getInputStream());
-		JsonObject responceJsonObject = this.jsonParser.parse(responce).getAsJsonObject();
+		JsonObject responceJsonObject = JsonParser.parseString(responce).getAsJsonObject();
 
 		return responceJsonObject.get("Token").getAsString();
 	}
@@ -118,7 +116,7 @@ public class Xbox {
 		this.writeJsonObjectToPost(connection, jsonObject);
 
 		String responce = TunnelMC.instance.fileManagement.getTextFromInputStream(connection.getInputStream());
-		JsonObject responceJsonObject = this.jsonParser.parse(responce).getAsJsonObject();
+		JsonObject responceJsonObject = JsonParser.parseString(responce).getAsJsonObject();
 
 		return responceJsonObject.get("Token").getAsString();
 	}
@@ -154,10 +152,10 @@ public class Xbox {
 
 		this.writeJsonObjectToPost(connection, jsonObject);
 
-		String responce = TunnelMC.instance.fileManagement.getTextFromInputStream(connection.getInputStream());
-		JsonObject responceJsonObject = this.jsonParser.parse(responce).getAsJsonObject();
+		String response = TunnelMC.instance.fileManagement.getTextFromInputStream(connection.getInputStream());
+		JsonObject responseJsonObject = JsonParser.parseString(response).getAsJsonObject();
 
-		return responceJsonObject.get("Token").getAsString();
+		return responseJsonObject.get("Token").getAsString();
 	}
 
 	public String getXstsToken(String userToken, String deviceToken, String titleToken, ECPublicKey publicKey, ECPrivateKey privateKey) throws Exception {
@@ -200,7 +198,7 @@ public class Xbox {
 	}
 
 	public String requestMinecraftChain(String xsts, ECPublicKey publicKey) throws Exception {
-		JsonObject xstsObject = this.jsonParser.parse(xsts).getAsJsonObject();
+		JsonObject xstsObject = JsonParser.parseString(xsts).getAsJsonObject();
 
 		String pubKeyData = Base64.getEncoder().encodeToString(publicKey.getEncoded());
 

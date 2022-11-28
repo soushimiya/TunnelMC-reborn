@@ -60,6 +60,7 @@ public class PacketTranslatorManager {
 		this.addTranslator(new LevelSoundEventTranslator());
 		this.addTranslator(new BlockEntityDataPacketTranslator());
 		this.addTranslator(new RespawnPacketTranslator());
+		this.addTranslator(new PlayStatusTranslator());
 		
 		EventManager.register(this);
 	}
@@ -91,29 +92,12 @@ public class PacketTranslatorManager {
 				continue;
 			}
 
-			idlePacket.getPacketTranslator().translate(idlePacket.getBedrockPacket());
+			idlePacket.packetTranslator().translate(idlePacket.bedrockPacket());
 			this.idlePackets.remove(i);
 			i--;
 		}
 	}
 
-	private static class IdlePacket {
-
-		private final PacketTranslator<BedrockPacket> packetTranslator;
-		private final BedrockPacket bedrockPacket;
-
-		public IdlePacket(PacketTranslator<BedrockPacket> packetTranslator, BedrockPacket bedrockPacket) {
-			this.packetTranslator = packetTranslator;
-			this.bedrockPacket = bedrockPacket;
-		}
-
-		public PacketTranslator<BedrockPacket> getPacketTranslator() {
-			return this.packetTranslator;
-		}
-
-		public BedrockPacket getBedrockPacket() {
-			return this.bedrockPacket;
-		}
+	private record IdlePacket(PacketTranslator<BedrockPacket> packetTranslator, BedrockPacket bedrockPacket) {
 	}
-
 }

@@ -35,7 +35,7 @@ public class BedrockConnectionScreen extends Screen {
 			return;
 		}
 		this.client.keyboard.setRepeatEvents(true);
-		this.joinServerButton = this.addDrawable(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 100 + 12, 204, 20, Text.translatable("selectServer.select"), button -> {
+		this.joinServerButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 100 + 12, 204, 20, Text.translatable("selectServer.select"), button -> {
 			if (BedrockConnectionScreen.this.addressField.getText().isEmpty()) {
 				return;
 			}
@@ -50,7 +50,7 @@ public class BedrockConnectionScreen extends Screen {
 			Client.instance.initialize(BedrockConnectionScreen.this.addressField.getText(), port, BedrockConnectionScreen.this.onlineModeWidget.isChecked());
 		}));
 
-		this.addDrawable(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));
 		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 16, 200, 20, Text.of("Enter IP"));
 		this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 46, 200, 20, Text.of("Enter Port"));
 		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 200, 20, Text.of("Online mode"), true);

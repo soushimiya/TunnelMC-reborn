@@ -15,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerInteractBlockC2SPacketTranslator extends PacketTranslator<PlayerInteractBlockC2SPacket> {
-
 	//TODO: so when ever we jump then place a block under us, our head freaks out(to other players), on nukkit servers(probably all), not fully sure why, maybe because we aren't sending PlayerActionPacket.JUMP
 
 	@Override
@@ -56,8 +55,7 @@ public class PlayerInteractBlockC2SPacketTranslator extends PacketTranslator<Pla
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<PlayerInteractBlockC2SPacket> getPacketClass() {
 		return PlayerInteractBlockC2SPacket.class;
 	}
-
 }

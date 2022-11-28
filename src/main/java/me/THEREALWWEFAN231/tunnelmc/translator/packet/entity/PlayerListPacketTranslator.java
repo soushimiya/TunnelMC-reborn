@@ -22,19 +22,17 @@ public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacke
 		List<Entry> entries = new ArrayList<>();
 
 		PlayerListS2CPacket playerListS2CPacket = new PlayerListS2CPacket(add ? PlayerListS2CPacket.Action.ADD_PLAYER : PlayerListS2CPacket.Action.REMOVE_PLAYER);
-		((IMixinPlayerListS2CPacket) playerListS2CPacket).setEntries(entries);
-
 		for (PlayerListPacket.Entry entry : packet.getEntries()) {
 			// gamemode says nullable but is used in ClientGameSession/:
 			entries.add(new Entry(new GameProfile(entry.getUuid(), entry.getName()), 0, GameMode.SURVIVAL, Text.of(entry.getName()), null));
 		}
 
+		((IMixinPlayerListS2CPacket) playerListS2CPacket).getEntries().addAll(entries);
 		Client.instance.javaConnection.processServerToClientPacket(playerListS2CPacket);
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<PlayerListPacket> getPacketClass() {
 		return PlayerListPacket.class;
 	}
-
 }

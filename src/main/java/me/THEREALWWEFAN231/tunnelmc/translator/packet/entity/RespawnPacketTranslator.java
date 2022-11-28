@@ -43,8 +43,7 @@ public class RespawnPacketTranslator extends PacketTranslator<RespawnPacket> {
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<RespawnPacket> getPacketClass() {
 		return RespawnPacket.class;
 	}
-
 }

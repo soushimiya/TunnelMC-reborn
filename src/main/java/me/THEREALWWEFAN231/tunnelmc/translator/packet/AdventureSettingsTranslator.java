@@ -22,8 +22,7 @@ public class AdventureSettingsTranslator extends PacketTranslator<AdventureSetti
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<AdventureSettingsPacket> getPacketClass() {
         return AdventureSettingsPacket.class;
     }
-
 }

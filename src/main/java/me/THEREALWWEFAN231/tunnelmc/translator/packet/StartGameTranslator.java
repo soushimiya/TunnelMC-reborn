@@ -2,13 +2,12 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet;
 
 import com.nukkitx.protocol.bedrock.data.GameRuleData;
 import com.nukkitx.protocol.bedrock.packet.RequestChunkRadiusPacket;
-import com.nukkitx.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.packet.TickSyncPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.translator.dimension.DimensionTranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.dimension.Dimension;
 import me.THEREALWWEFAN231.tunnelmc.translator.gamemode.GameModeTranslator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -22,8 +21,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
@@ -40,16 +41,12 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		Client.instance.defaultGameMode = packet.getLevelGameType();
 
 		GameMode gameMode = GameModeTranslator.bedrockToJava(packet.getPlayerGameType());
-		GameMode previousGameMode = GameMode.NOT_SET;
-		Set<RegistryKey<World>> dimensionIds = new HashSet<>();
-		dimensionIds.add(World.NETHER);
-		dimensionIds.add(World.OVERWORLD);
-		dimensionIds.add(World.END);
-		DynamicRegistryManager.Impl registryManager = DynamicRegistryManager.create();
-		DimensionType dimensionType = DimensionTranslator.bedrockToJava(packet.getDimensionId());
-		RegistryKey<World> dimensionId = DimensionTranslator.bedrockToJavaRegistryKey(packet.getDimensionId());
 
-		int seed = packet.getSeed();
+		Dimension dimension = Dimension.getDimensionFromId(packet.getDimensionId()).orElse(Dimension.OVERWORLD);
+		RegistryKey<DimensionType> dimensionRegistryKey = dimension.getDimensionRegistryKey();
+		RegistryKey<World> worldRegistryKey = dimension.getWorldRegistryKey();
+
+		long seed = packet.getSeed();
 		int maxPlayers = 999;
 		int chunkLoadDistance = 3;
 		boolean showDeathScreen = true;
@@ -61,7 +58,9 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 			}
 		}
 
-		GameJoinS2CPacket gameJoinS2CPacket = new GameJoinS2CPacket(Client.instance.entityRuntimeId, gameMode, previousGameMode, seed, false, dimensionIds, registryManager, dimensionType, dimensionId, maxPlayers, chunkLoadDistance, false, showDeathScreen, false, false);
+		Set<RegistryKey<World>> dimensionIds = Stream.of(World.OVERWORLD, World.NETHER, World.END).collect(Collectors.toSet());
+
+		GameJoinS2CPacket gameJoinS2CPacket = new GameJoinS2CPacket(Client.instance.entityRuntimeId, false, GameMode.ADVENTURE, gameMode, dimensionIds, DynamicRegistryManager.BUILTIN.get(), dimensionRegistryKey, worldRegistryKey, seed, maxPlayers, chunkLoadDistance, chunkLoadDistance, false, showDeathScreen, false, false, Optional.empty());
 		Client.instance.javaConnection.processServerToClientPacket(gameJoinS2CPacket);
 		
 		Client.instance.onPlayerInitialized();
@@ -75,9 +74,8 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		float z = packet.getPlayerPosition().getZ();
 		float yaw = packet.getRotation().getX();
 		float pitch = packet.getRotation().getY();
-		int teleportId = 0;
 
-		PlayerPositionLookS2CPacket playerPositionLookS2CPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), teleportId);
+		PlayerPositionLookS2CPacket playerPositionLookS2CPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), 0, false);
 		Client.instance.javaConnection.processServerToClientPacket(playerPositionLookS2CPacket);
 
 		int chunkX = MathHelper.floor(x) >> 4;
@@ -87,19 +85,14 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		Client.instance.javaConnection.processServerToClientPacket(chunkRenderDistanceCenterS2CPacket);
 
 		RequestChunkRadiusPacket requestChunkRadiusPacket = new RequestChunkRadiusPacket();
-		requestChunkRadiusPacket.setRadius(TunnelMC.mc.options.viewDistance);
+		requestChunkRadiusPacket.setRadius(TunnelMC.mc.options.getViewDistance().getValue());
 		Client.instance.sendPacketImmediately(requestChunkRadiusPacket);
 
 		Client.instance.sendPacketImmediately(new TickSyncPacket());
-
-		SetLocalPlayerAsInitializedPacket setLocalPlayerAsInitializedPacket = new SetLocalPlayerAsInitializedPacket();
-		setLocalPlayerAsInitializedPacket.setRuntimeEntityId(Client.instance.entityRuntimeId);
-		Client.instance.sendPacketImmediately(setLocalPlayerAsInitializedPacket);
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<StartGamePacket> getPacketClass() {
 		return StartGamePacket.class;
 	}
-
 }

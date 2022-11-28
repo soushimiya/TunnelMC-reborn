@@ -24,12 +24,10 @@ public class ClientStatusC2SPacketTranslator extends PacketTranslator<ClientStat
 
 			Client.instance.sendPacket(respawnPacket);
 		}
-		
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ClientStatusC2SPacket> getPacketClass() {
 		return ClientStatusC2SPacket.class;
 	}
-
 }

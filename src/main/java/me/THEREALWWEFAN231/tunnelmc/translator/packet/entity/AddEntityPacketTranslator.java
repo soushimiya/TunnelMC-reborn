@@ -12,7 +12,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class AddEntityPacketTranslator extends PacketTranslator<AddEntityPacket> {
-	
 	// TODO: Handle non living entities differently, with the EntitySpawnS2CPacket.
 	
 	@SuppressWarnings("unchecked")
@@ -50,8 +49,7 @@ public class AddEntityPacketTranslator extends PacketTranslator<AddEntityPacket>
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<AddEntityPacket> getPacketClass() {
 		return AddEntityPacket.class;
 	}
-
 }

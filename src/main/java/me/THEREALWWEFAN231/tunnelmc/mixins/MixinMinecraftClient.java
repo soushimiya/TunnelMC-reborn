@@ -19,12 +19,6 @@ import net.minecraft.util.math.Direction;
 
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient {
-
-	@Inject(method = "<init>", at = @At("RETURN"))
-	public void init(CallbackInfo callback) {
-		TunnelMC.instance.initialize();
-	}
-
 	@Redirect(method = "handleBlockBreaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleManager;addBlockBreakingParticles(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;)V"))
 	public void onBlockBreaking(ParticleManager particleManager, BlockPos pos, Direction direction) {
 		if (!Client.instance.isConnectionOpen()) {
@@ -33,11 +27,10 @@ public class MixinMinecraftClient {
 		}
 	}
 
-	//inventory opened, I could have swore there was some packet for this(that could be translated) I can't find it, I am so confused, found it!!! ClientCommandC2SPacket ClientCommandC2SPacket.Mode.OPEN_INVENTORY, packet might only be sent when the player is riding an entity/
-	@Inject(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V", ordinal = 1))
+	//inventory opened, I could have sworn there was some packet for this(that could be translated) I can't find it, I am so confused, found it!!! ClientCommandC2SPacket ClientCommandC2SPacket.Mode.OPEN_INVENTORY, packet might only be sent when the player is riding an entity/
+	@Inject(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setScreen(Lnet/minecraft/client/gui/screen/Screen;)V", ordinal = 1))
 	private void handleInputEvents(CallbackInfo callbackInfo) {
 		if (Client.instance.isConnectionOpen()) {
-			
 			InteractPacket interactPacket = new InteractPacket();
 			interactPacket.setAction(Action.OPEN_INVENTORY);
 			interactPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
@@ -45,5 +38,4 @@ public class MixinMinecraftClient {
 			Client.instance.sendPacket(interactPacket);
 		}
 	}
-
 }

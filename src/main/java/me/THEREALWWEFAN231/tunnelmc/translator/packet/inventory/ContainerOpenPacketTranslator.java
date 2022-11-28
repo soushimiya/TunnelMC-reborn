@@ -46,8 +46,7 @@ public class ContainerOpenPacketTranslator extends PacketTranslator<ContainerOpe
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ContainerOpenPacket> getPacketClass() {
 		return ContainerOpenPacket.class;
 	}
-
 }

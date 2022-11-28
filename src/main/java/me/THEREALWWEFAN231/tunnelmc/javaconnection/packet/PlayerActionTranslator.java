@@ -18,7 +18,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 
 public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPacket> {
-
 	private Direction lastDirection;
 	private Vector3i lastBlockPosition;
 
@@ -106,7 +105,7 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<PlayerActionC2SPacket> getPacketClass() {
 		return PlayerActionC2SPacket.class;
 	}
 
@@ -126,5 +125,4 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 
 		Client.instance.sendPacket(playerActionPacket);
 	}
-
 }

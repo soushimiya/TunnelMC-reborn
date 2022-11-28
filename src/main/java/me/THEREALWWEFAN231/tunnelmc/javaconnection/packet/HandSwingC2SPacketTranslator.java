@@ -21,8 +21,7 @@ public class HandSwingC2SPacketTranslator extends PacketTranslator<HandSwingC2SP
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<HandSwingC2SPacket> getPacketClass() {
 		return HandSwingC2SPacket.class;
 	}
-
 }

@@ -7,6 +7,7 @@ import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinEntityPositionS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinEntitySetHeadYawS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
@@ -20,7 +21,6 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 
 	@Override
 	public void translate(MovePlayerPacket packet) {
-
 		int id = (int) packet.getRuntimeEntityId();
 		double x = packet.getPosition().getX();
 		double y = packet.getPosition().getY() - TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING);
@@ -32,14 +32,14 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 		byte pitch = (byte) ((int) (realPitch * 256.0F / 360.0F));
 		boolean onGround = packet.isOnGround();
 
-		if (id == TunnelMC.mc.player.getEntityId()) {
+		if (id == TunnelMC.mc.player.getId()) {
 			// This works best
-			PlayerPositionLookS2CPacket positionPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), teleportId.getAndIncrement());
+			PlayerPositionLookS2CPacket positionPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), teleportId.getAndIncrement(), false);
 			Client.instance.javaConnection.processServerToClientPacket(positionPacket);
 			return;
 		}
 
-		EntityPositionS2CPacket entityPositionS2CPacket = new EntityPositionS2CPacket();
+		EntityPositionS2CPacket entityPositionS2CPacket = new EntityPositionS2CPacket((Entity) null);
 		IMixinEntityPositionS2CPacket iMixinEntityPositionS2CPacket = (IMixinEntityPositionS2CPacket) entityPositionS2CPacket;
 
 		iMixinEntityPositionS2CPacket.setId(id);
@@ -52,17 +52,16 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 
 		Client.instance.javaConnection.processServerToClientPacket(entityPositionS2CPacket);
 
-		EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket = new EntitySetHeadYawS2CPacket();
+		EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket = new EntitySetHeadYawS2CPacket(null, yaw);
 		IMixinEntitySetHeadYawS2CPacket iMixinEntitySetHeadYawS2CPacket = (IMixinEntitySetHeadYawS2CPacket) entitySetHeadYawS2CPacket;
 
 		iMixinEntitySetHeadYawS2CPacket.setEntityId(id);
-		iMixinEntitySetHeadYawS2CPacket.setYaw(yaw);
 
 		Client.instance.javaConnection.processServerToClientPacket(entitySetHeadYawS2CPacket);
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<MovePlayerPacket> getPacketClass() {
 		return MovePlayerPacket.class;
 	}
 	
@@ -70,5 +69,4 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 	public boolean idleUntil() {
 		return TunnelMC.mc.player == null;
 	}
-
 }

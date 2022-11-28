@@ -17,7 +17,6 @@ public class ClientBatchHandler implements BatchHandler {
 	private Logger logger = LogManager.getLogger(ClientBatchHandler.class);
 
 	public void handle(BedrockSession session, ByteBuf compressed, Collection<BedrockPacket> packets) {
-
 		for (BedrockPacket packet : packets) {
 			if (session.isLogging()) {
 				//so yeah.... the default logger, in nukkitx is kind of lame, and in our case trace isn't enabled so we will just do this for now
@@ -28,7 +27,5 @@ public class ClientBatchHandler implements BatchHandler {
 			
 			//packet.handle(session.getPacketHandler());
 		}
-
 	}
-
 }

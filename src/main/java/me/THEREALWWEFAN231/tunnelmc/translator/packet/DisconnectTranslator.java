@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
 
 public class DisconnectTranslator extends PacketTranslator<DisconnectPacket> {
+
     @Override
     public void translate(DisconnectPacket packet) {
         if (MinecraftClient.getInstance().world != null) {
@@ -23,7 +24,7 @@ public class DisconnectTranslator extends PacketTranslator<DisconnectPacket> {
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<DisconnectPacket> getPacketClass() {
         return DisconnectPacket.class;
     }
 }

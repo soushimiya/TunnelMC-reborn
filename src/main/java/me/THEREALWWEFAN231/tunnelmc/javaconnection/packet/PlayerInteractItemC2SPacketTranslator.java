@@ -17,13 +17,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerInteractItemC2SPacketTranslator extends PacketTranslator<PlayerInteractItemC2SPacket> {
-
 	//TODO: im not even fully sure about this, i dont really have any means to test it currently
 	//actually i think i could test it on a chest, i should do that sometime
 
 	@Override
 	public void translate(PlayerInteractItemC2SPacket packet) {
-		
 		ItemData usingItem = Client.instance.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 
 		if (TunnelMC.mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
@@ -59,12 +57,10 @@ public class PlayerInteractItemC2SPacketTranslator extends PacketTranslator<Play
 
 			Client.instance.sendPacket(inventoryTransactionPacket);
 		}
-
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<PlayerInteractItemC2SPacket> getPacketClass() {
 		return PlayerInteractItemC2SPacket.class;
 	}
-
 }

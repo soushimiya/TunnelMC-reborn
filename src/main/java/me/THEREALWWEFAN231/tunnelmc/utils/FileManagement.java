@@ -1,17 +1,14 @@
 package me.THEREALWWEFAN231.tunnelmc.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class FileManagement {
 
 	public Gson gJson = new GsonBuilder().disableHtmlEscaping().create();
-	public JsonParser jsonParser = new JsonParser();
 
 	public String getTextFromInputStream(InputStream inputStream) throws Exception {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -24,10 +21,10 @@ public class FileManagement {
 		byteArrayOutputStream.close();
 		inputStream.close();
 
-		return byteArrayOutputStream.toString("UTF-8");
+		return byteArrayOutputStream.toString(StandardCharsets.UTF_8);
 	}
 
-	public JsonObject getJsonObjectFromResource(String resourceName) {
+	public JsonElement getJsonFromResource(String resourceName) {
 		InputStream inputStream = FileManagement.class.getClassLoader().getResourceAsStream(resourceName);
 		if (inputStream == null) {
 			System.out.println("Resource \"" + resourceName + "\" does not exist!");
@@ -35,7 +32,7 @@ public class FileManagement {
 		}
 
 		try {
-			return this.jsonParser.parse(this.getTextFromInputStream(inputStream)).getAsJsonObject();
+			return JsonParser.parseString(this.getTextFromInputStream(inputStream));
 		} catch (Exception e) {
 			System.out.println("Failed to read \"" + resourceName + "\": " + e.getMessage());
 			return null;

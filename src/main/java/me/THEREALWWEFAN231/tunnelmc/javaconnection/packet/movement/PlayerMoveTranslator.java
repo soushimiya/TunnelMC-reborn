@@ -10,7 +10,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> {
-
 	//so java edition sends movement packets every x(i forgot) ticks  even if we didn't move, bedrock doesn't do this, so we basically try to ignore these packets
 	public static double lastPosX;
 	public static double lastPosY = -Double.MAX_VALUE;//just incase we for some reason spawn at 0 0 0, with 0 ayw and 0 pitch :flushed: even though that shouldn't be a problem
@@ -26,7 +25,7 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<PlayerMoveC2SPacket> getPacketClass() {
 		return PlayerMoveC2SPacket.class;
 	}
 
@@ -59,5 +58,4 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 		PlayerMoveTranslator.lastPitch = currentPitch;
 		PlayerMoveTranslator.lastOnGround = currentlyOnGround;
 	}
-
 }

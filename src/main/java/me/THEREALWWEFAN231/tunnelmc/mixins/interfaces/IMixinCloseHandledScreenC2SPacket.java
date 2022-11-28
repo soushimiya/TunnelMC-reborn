@@ -7,8 +7,6 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 
 @Mixin(CloseHandledScreenC2SPacket.class)
 public interface IMixinCloseHandledScreenC2SPacket {
-	
 	@Accessor("syncId")
-	public int getSyncId();
-	
+	int getSyncId();
 }

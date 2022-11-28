@@ -12,7 +12,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateBlockTranslator extends PacketTranslator<UpdateBlockPacket> {
-
 	//TODO: Probably want to check out flags.
 	
 	@Override
@@ -48,8 +47,7 @@ public class UpdateBlockTranslator extends PacketTranslator<UpdateBlockPacket> {
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<UpdateBlockPacket> getPacketClass() {
 		return UpdateBlockPacket.class;
 	}
-
 }

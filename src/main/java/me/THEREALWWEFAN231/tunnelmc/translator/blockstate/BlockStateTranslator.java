@@ -33,8 +33,7 @@ public class BlockStateTranslator {
 	public static final HashMap<String, BlockState> BEDROCK_BLOCK_STATE_STRING_TO_JAVA_BLOCK_STATE = new HashMap<String, BlockState>();
 
 	public static void load() {
-
-		JsonObject jsonObject = TunnelMC.instance.fileManagement.getJsonObjectFromResource("geyser/blocks.json");
+		JsonObject jsonObject = TunnelMC.instance.fileManagement.getJsonFromResource("geyser/blocks.json").getAsJsonObject();
 		if(jsonObject == null) {
 			return;
 		}
@@ -130,6 +129,10 @@ public class BlockStateTranslator {
 				String value = keyAndValueArray[1];
 
 				Property<?> property = block.getStateManager().getProperty(key);
+				if (property == null) {
+					System.out.println("Could not find the property " + key);
+					return null;
+				}
 
 				theBlockState = parsePropertyValue(theBlockState, property, value);
 				if (theBlockState == null) {
@@ -144,12 +147,8 @@ public class BlockStateTranslator {
 
 	}
 
-	private static <T extends Comparable<T>> BlockState parsePropertyValue(BlockState before, Property<T> property, String value) {//from the value command, jesus christ, i could barely get this to work, all this generic stuff :flushed:
+	private static <T extends Comparable<T>> BlockState parsePropertyValue(BlockState before, Property<T> property, String value) {
 		Optional<T> optional = property.parse(value);
-		if (optional.isPresent()) {
-			return before.with(property, optional.get());
-		}
-		return null;
+		return optional.map(t -> before.with(property, t)).orElse(null);
 	}
-
 }

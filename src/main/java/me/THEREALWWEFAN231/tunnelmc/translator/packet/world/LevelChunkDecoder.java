@@ -25,7 +25,7 @@ public class LevelChunkDecoder {
      * Version eight is the newest chunk format introduced by Bedrock.
      * It allows up to 256 layers for one sub chunk.
      */
-    public static void networkDecodeVersionEight(ByteBuf byteBuf, ChunkSection[] chunkSections, int sectionIndex, byte storageSize) {
+    public static void networkDecodeVersionEight(ByteBuf byteBuf, ChunkSection chunkSection, byte storageSize) {
         for (int storageReadIndex = 0; storageReadIndex < storageSize; storageReadIndex++) {
             byte paletteHeader = byteBuf.readByte();
             boolean isRuntime = (paletteHeader & 1) == 1;
@@ -71,7 +71,7 @@ public class LevelChunkDecoder {
 
                                 BlockState blockState = BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(mcbeBlockId);
 
-                                chunkSections[sectionIndex].setBlockState(x, y, z, blockState);
+                                chunkSection.setBlockState(x, y, z, blockState);
                             }
                             index++;
                         }
@@ -82,11 +82,11 @@ public class LevelChunkDecoder {
     }
 
     /**
-     * Version one is the second newest chunk format by Bedrock.
+     * Version one is the second-newest chunk format by Bedrock.
      * It is essentially the same as version eight, however there is only 1 layer per subchunk.
      */
     public static void networkDecodeVersionOne(ByteBuf byteBuf, ChunkSection chunkSection) {
-        networkDecodeVersionEight(byteBuf, new ChunkSection[]{chunkSection}, 0, (byte) 1);
+        networkDecodeVersionEight(byteBuf, chunkSection, (byte) 1);
     }
 
     /**
@@ -117,5 +117,4 @@ public class LevelChunkDecoder {
             }
         }
     }
-
 }

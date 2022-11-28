@@ -1,10 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.blockstate;
 
-import com.nukkitx.nbt.NBTInputStream;
-import com.nukkitx.nbt.NbtList;
-import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtType;
-import com.nukkitx.nbt.util.stream.LittleEndianDataInputStream;
+import com.nukkitx.nbt.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileManagement;
@@ -15,7 +11,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Used for server softwares that use an older chunk encoding version that use a different block palette.
+ * Used for server implementations that use an older chunk encoding version that use a different block palette.
  */
 public final class LegacyBlockPaletteManager {
     public static final Int2ObjectMap<BlockState> LEGACY_BLOCK_TO_JAVA_ID = new Int2ObjectOpenHashMap<>();
@@ -26,7 +22,7 @@ public final class LegacyBlockPaletteManager {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state tag!");
             }
-            try (NBTInputStream nbtStream = new NBTInputStream(new LittleEndianDataInputStream(stream))) {
+            try (NBTInputStream nbtStream = NbtUtils.createGZIPReader(stream)) {
                 //noinspection unchecked
                 legacyBlockStates = (NbtList<NbtMap>) nbtStream.readTag();
             }
@@ -34,18 +30,15 @@ public final class LegacyBlockPaletteManager {
             throw new AssertionError("Unable to load block palette", e);
         }
 
-        int bedrockRuntimeId = -1;
+//        int bedrockRuntimeId = -1;
         for (NbtMap nbt : legacyBlockStates) {
-            bedrockRuntimeId++;
-            List<NbtMap> legacyStates = nbt.getList("LegacyStates", NbtType.COMPOUND);
-            if (legacyStates == null) {
-                continue;
+//            bedrockRuntimeId++;
+            if (nbt.get("id") == null || nbt.get("data") == null || nbt.get("runtimeId") == null) {
+                throw new AssertionError("Unable to map block palette");
             }
 
-            for (NbtMap legacyState : legacyStates) {
-                int legacyId = legacyState.getInt("id") << 6 | legacyState.getShort("val");
-                LEGACY_BLOCK_TO_JAVA_ID.put(legacyId, BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(bedrockRuntimeId));
-            }
+            int legacyId = nbt.getInt("id") << 6 | nbt.getShort("data");
+            LEGACY_BLOCK_TO_JAVA_ID.put(legacyId, BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(nbt.getInt("runtimeId")));
         }
     }
 }

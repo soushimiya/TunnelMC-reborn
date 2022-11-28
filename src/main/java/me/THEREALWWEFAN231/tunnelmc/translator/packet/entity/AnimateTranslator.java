@@ -27,8 +27,7 @@ public class AnimateTranslator extends PacketTranslator<AnimatePacket> {
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<AnimatePacket> getPacketClass() {
         return AnimatePacket.class;
     }
-
 }

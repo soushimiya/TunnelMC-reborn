@@ -44,8 +44,7 @@ public class AddItemEntityPacketTranslator extends PacketTranslator<AddItemEntit
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<AddItemEntityPacket> getPacketClass() {
 		return AddItemEntityPacket.class;
 	}
-
 }

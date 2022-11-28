@@ -24,8 +24,7 @@ public class CloseHandledScreenC2SPacketTranslator extends PacketTranslator<Clos
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<CloseHandledScreenC2SPacket> getPacketClass() {
 		return CloseHandledScreenC2SPacket.class;
 	}
-
 }

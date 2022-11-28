@@ -72,16 +72,14 @@ public class InventoryContentPacketTranslator extends PacketTranslator<Inventory
 				containerAffected.setItemBedrock(i, packet.getContents().get(i));
 			}
 
-			InventoryS2CPacket inventoryS2CPacket = new InventoryS2CPacket(syncId, javaContents);
+			InventoryS2CPacket inventoryS2CPacket = new InventoryS2CPacket(syncId, Client.instance.nextRevision(), javaContents, ItemStack.EMPTY);
 			Client.instance.javaConnection.processServerToClientPacket(inventoryS2CPacket);
 			break;
 		}
-
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<InventoryContentPacket> getPacketClass() {
 		return InventoryContentPacket.class;
 	}
-
 }

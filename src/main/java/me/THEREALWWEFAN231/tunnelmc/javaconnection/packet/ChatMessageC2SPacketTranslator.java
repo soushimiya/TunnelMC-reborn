@@ -1,10 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.javaconnection.packet;
 
-import com.nukkitx.protocol.bedrock.data.command.CommandOriginData;
-import com.nukkitx.protocol.bedrock.data.command.CommandOriginType;
-import com.nukkitx.protocol.bedrock.packet.CommandRequestPacket;
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
-
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -13,28 +9,17 @@ public class ChatMessageC2SPacketTranslator extends PacketTranslator<ChatMessage
 
 	@Override
 	public void translate(ChatMessageC2SPacket packet) {
-		if (packet.chatMessage().startsWith("/")) {
-			CommandRequestPacket commandPacket = new CommandRequestPacket();
-			commandPacket.setCommand(packet.chatMessage());
-			commandPacket.setInternal(false); // ???
-			commandPacket.setCommandOriginData(new CommandOriginData(CommandOriginType.PLAYER, Client.instance.authData.getIdentity(), "", 0));
+		TextPacket textPacket = new TextPacket();
+		textPacket.setType(TextPacket.Type.CHAT);
+		textPacket.setSourceName(Client.instance.authData.getDisplayName());
+		textPacket.setMessage(packet.chatMessage());
+		textPacket.setXuid(Client.instance.authData.getXuid());
 
-			Client.instance.sendPacket(commandPacket);
-		} else {
-			TextPacket textPacket = new TextPacket();
-			textPacket.setType(TextPacket.Type.CHAT);
-			textPacket.setNeedsTranslation(false);
-			textPacket.setSourceName(Client.instance.authData.getDisplayName());
-			textPacket.setMessage(packet.chatMessage());
-			textPacket.setXuid(Client.instance.authData.getXuid());
-
-			Client.instance.sendPacket(textPacket);
-		}
+		Client.instance.sendPacket(textPacket);
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<ChatMessageC2SPacket> getPacketClass() {
 		return ChatMessageC2SPacket.class;
 	}
-
 }

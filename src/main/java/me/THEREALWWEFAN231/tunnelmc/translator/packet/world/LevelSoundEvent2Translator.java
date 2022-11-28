@@ -12,8 +12,7 @@ public class LevelSoundEvent2Translator extends PacketTranslator<LevelSoundEvent
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<LevelSoundEvent2Packet> getPacketClass() {
         return LevelSoundEvent2Packet.class;
     }
-
 }

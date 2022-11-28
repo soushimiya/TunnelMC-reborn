@@ -15,7 +15,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 
 public class SetEntityDataPacketTranslator extends PacketTranslator<SetEntityDataPacket> {
-
 	// TODO: Set up an entity class system, like Geyser?
 
 	@Override
@@ -56,8 +55,7 @@ public class SetEntityDataPacketTranslator extends PacketTranslator<SetEntityDat
 	}
 
 	@Override
-	public Class<?> getPacketClass() {
+	public Class<SetEntityDataPacket> getPacketClass() {
 		return SetEntityDataPacket.class;
 	}
-
 }

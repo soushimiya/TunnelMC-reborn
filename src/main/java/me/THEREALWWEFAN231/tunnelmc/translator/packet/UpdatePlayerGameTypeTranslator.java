@@ -19,8 +19,7 @@ public class UpdatePlayerGameTypeTranslator extends PacketTranslator<UpdatePlaye
     }
 
     @Override
-    public Class<?> getPacketClass() {
+    public Class<UpdatePlayerGameTypePacket> getPacketClass() {
         return UpdatePlayerGameTypePacket.class;
     }
-
 }
