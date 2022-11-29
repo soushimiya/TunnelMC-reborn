@@ -12,7 +12,5 @@ public class GameModeTranslator {
 			case CREATIVE, CREATIVE_VIEWER, SPECTATOR -> GameMode.CREATIVE;
 			case ADVENTURE -> GameMode.ADVENTURE;
 		};
-
 	}
-
 }

@@ -60,7 +60,7 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
 		Set<RegistryKey<World>> dimensionIds = Stream.of(World.OVERWORLD, World.NETHER, World.END).collect(Collectors.toSet());
 
-		GameJoinS2CPacket gameJoinS2CPacket = new GameJoinS2CPacket(Client.instance.entityRuntimeId, false, GameMode.ADVENTURE, gameMode, dimensionIds, DynamicRegistryManager.BUILTIN.get(), dimensionRegistryKey, worldRegistryKey, seed, maxPlayers, chunkLoadDistance, chunkLoadDistance, false, showDeathScreen, false, false, Optional.empty());
+		GameJoinS2CPacket gameJoinS2CPacket = new GameJoinS2CPacket(Client.instance.entityRuntimeId, false, gameMode, gameMode, dimensionIds, DynamicRegistryManager.BUILTIN.get(), dimensionRegistryKey, worldRegistryKey, seed, maxPlayers, chunkLoadDistance, chunkLoadDistance, false, showDeathScreen, false, false, Optional.empty());
 		Client.instance.javaConnection.processServerToClientPacket(gameJoinS2CPacket);
 		
 		Client.instance.onPlayerInitialized();

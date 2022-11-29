@@ -12,18 +12,13 @@ public class SetPlayerGameTypeTranslator extends PacketTranslator<SetPlayerGameT
     public void translate(SetPlayerGameTypePacket packet) {
         GameMode javaGameMode;
         switch (packet.getGamemode()) {
-            case 0:
-                javaGameMode = GameMode.SURVIVAL;
-                break;
-            case 1:
-                javaGameMode = GameMode.CREATIVE;
-                break;
-            case 2:
-                javaGameMode = GameMode.ADVENTURE;
-                break;
-            default:
+            case 0 -> javaGameMode = GameMode.SURVIVAL;
+            case 1 -> javaGameMode = GameMode.CREATIVE;
+            case 2 -> javaGameMode = GameMode.ADVENTURE;
+            default -> {
                 System.out.println("Couldn't find the Java game mode for: " + packet.getGamemode());
                 return;
+            }
         }
 
         Client.instance.javaConnection.processServerToClientPacket(new GameStateChangeS2CPacket(
