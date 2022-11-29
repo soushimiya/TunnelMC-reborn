@@ -13,7 +13,7 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 	public void translate(TextPacket packet) {
 		switch (packet.getType()) {
 			default: {
-				System.out.println("Falling back to raw translation for " + packet.toString());
+				System.out.println("Falling back to raw translation for " + packet);
 			}
 			case RAW: {
 				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(Text.of(packet.getMessage()), false);
@@ -27,6 +27,11 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 				}
 
 				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(Text.of(formattedChatMessage), false);
+				Client.instance.javaConnection.processServerToClientPacket(gameMessageS2CPacket);
+				break;
+			}
+			case TRANSLATION: {
+				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(Text.translatable(packet.getMessage().replaceAll("%", ""), packet.getParameters()), false);
 				Client.instance.javaConnection.processServerToClientPacket(gameMessageS2CPacket);
 				break;
 			}

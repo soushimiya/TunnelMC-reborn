@@ -12,7 +12,7 @@ public class CommandExecutionC2SPacketTranslator extends PacketTranslator<Comman
 	@Override
 	public void translate(CommandExecutionC2SPacket packet) {
 		CommandRequestPacket commandPacket = new CommandRequestPacket();
-		commandPacket.setCommand(packet.command());
+		commandPacket.setCommand("/" + packet.command());
 		commandPacket.setCommandOriginData(new CommandOriginData(CommandOriginType.PLAYER, Client.instance.authData.getIdentity(), "", 0));
 
 		Client.instance.sendPacket(commandPacket);
