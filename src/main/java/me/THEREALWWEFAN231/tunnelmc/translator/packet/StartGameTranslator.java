@@ -89,6 +89,8 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		Client.instance.sendPacketImmediately(requestChunkRadiusPacket);
 
 		Client.instance.sendPacketImmediately(new TickSyncPacket());
+
+		Client.instance.movementMode = packet.getPlayerMovementSettings().getMovementMode();
 	}
 
 	@Override

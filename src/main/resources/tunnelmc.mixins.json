@@ -19,8 +19,6 @@
     "MixinWorldRenderer",
     "interfaces.IMixinCloseHandledScreenC2SPacket",
     "interfaces.IMixinClientPlayerInteractionManager",
-    "interfaces.IMixinEntityPositionS2CPacket",
-    "interfaces.IMixinEntitySetHeadYawS2CPacket",
     "interfaces.IMixinPlayerInteractEntityC2SPacket",
     "interfaces.IMixinPlayerListS2CPacket",
     "interfaces.IMixinWorldRenderer"

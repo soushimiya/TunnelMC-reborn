@@ -5,6 +5,7 @@ import com.nukkitx.protocol.bedrock.BedrockClient;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockSession;
+import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode;
 import com.nukkitx.protocol.bedrock.data.GameType;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
 import com.nukkitx.protocol.bedrock.v545.Bedrock_v545;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
 public class Client {
@@ -39,14 +41,10 @@ public class Client {
 	private String ip;
 	private int port;
 
-	public GameType defaultGameMode;
 	private boolean onlineMode;
-
 	public Auth authData;
-
 	public BedrockClient bedrockClient;
 	public BedrockConnectingScreen connectScreen;
-
 	public FakeJavaConnection javaConnection;
 	
 	public BedrockContainers containers;
@@ -55,6 +53,12 @@ public class Client {
 	public int entityRuntimeId;
 	public byte openContainerId = 0;
 	private int revision = 0;
+	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
+	public GameType defaultGameMode;
+	public AtomicBoolean startedSprinting = new AtomicBoolean();
+	public AtomicBoolean startedSneaking = new AtomicBoolean();
+	public AtomicBoolean stoppedSprinting = new AtomicBoolean();
+	public AtomicBoolean stoppedSneaking = new AtomicBoolean();
 
 	public void initialize(String ip, int port, boolean onlineMode) {
 		this.ip = ip;

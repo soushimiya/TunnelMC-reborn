@@ -1,22 +1,32 @@
 package me.THEREALWWEFAN231.tunnelmc.javaconnection.packet.movement;
 
+import com.darkmagician6.eventapi.EventTarget;
 import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.data.ClientPlayMode;
+import com.nukkitx.protocol.bedrock.data.InputInteractionModel;
+import com.nukkitx.protocol.bedrock.data.InputMode;
+import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
+import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 
+import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
+import java.util.Iterator;
+
 public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> {
-	//so java edition sends movement packets every x(i forgot) ticks  even if we didn't move, bedrock doesn't do this, so we basically try to ignore these packets
-	public static double lastPosX;
-	public static double lastPosY = -Double.MAX_VALUE;//just incase we for some reason spawn at 0 0 0, with 0 ayw and 0 pitch :flushed: even though that shouldn't be a problem
-	public static double lastPosZ;
-	public static float lastYaw;
-	public static float lastPitch;
-	public static boolean lastOnGround;
+	private static double lastPosX;
+	private static double lastPosY = -Double.MAX_VALUE;
+	private static double lastPosZ;
+	private static float lastYaw;
+	private static float lastPitch;
+	private static boolean lastOnGround;
+	private static long currentTick;
 
 	@Override
 	public void translate(PlayerMoveC2SPacket packet) {
@@ -37,19 +47,50 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 		float currentPitch = playerMoveC2SPacket.getPitch(TunnelMC.mc.player.getPitch());
 		boolean currentlyOnGround = playerMoveC2SPacket.isOnGround();
 
-		if (PlayerMoveTranslator.lastPosX == currentPosX && PlayerMoveTranslator.lastPosY == currentPosY && PlayerMoveTranslator.lastPosZ == currentPosZ && PlayerMoveTranslator.lastYaw == currentYaw && PlayerMoveTranslator.lastPitch == currentPitch && PlayerMoveTranslator.lastOnGround == currentlyOnGround) {
+		if (PlayerMoveTranslator.lastPosX == currentPosX && PlayerMoveTranslator.lastPosY == currentPosY
+				&& PlayerMoveTranslator.lastPosZ == currentPosZ && PlayerMoveTranslator.lastYaw == currentYaw
+				&& PlayerMoveTranslator.lastPitch == currentPitch && PlayerMoveTranslator.lastOnGround == currentlyOnGround) {
 			return;
 		}
 
 		int runtimeId = TunnelMC.mc.player.getId();
+		Vector3f currentPos = Vector3f.from(currentPosX, currentPosY, currentPosZ);
 
-		MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
-		movePlayerPacket.setRuntimeEntityId(runtimeId);
-		movePlayerPacket.setPosition(Vector3f.from(currentPosX, currentPosY, currentPosZ));
-		movePlayerPacket.setRotation(Vector3f.from(currentPitch, currentYaw, currentYaw)); // Set yaw twice so BDS cooperates with head movement better
-		movePlayerPacket.setMode(mode);
-		movePlayerPacket.setOnGround(currentlyOnGround);
-		Client.instance.sendPacket(movePlayerPacket);
+		switch (Client.instance.movementMode) {
+			case CLIENT -> {
+				MovePlayerPacket movePacket = new MovePlayerPacket();
+				movePacket.setRuntimeEntityId(runtimeId);
+				movePacket.setPosition(currentPos);
+				movePacket.setRotation(Vector3f.from(currentPitch, currentYaw, currentYaw)); // Set yaw twice so BDS cooperates with head movement better
+				movePacket.setMode(mode);
+				movePacket.setOnGround(currentlyOnGround);
+				Client.instance.sendPacket(movePacket);
+			}
+			case SERVER -> {
+				Vector3f previousPos = Vector3f.from(lastPosX, lastPosY, lastPosZ);
+
+				PlayerAuthInputPacket movePacket = new PlayerAuthInputPacket();
+				movePacket.setInputMode(InputMode.MOUSE);
+				movePacket.setInputInteractionModel(InputInteractionModel.CROSSHAIR);
+				movePacket.setDelta(currentPos.sub(previousPos));
+				movePacket.setPosition(currentPos);
+				movePacket.setRotation(Vector3f.from(currentPitch, currentYaw, currentYaw)); // Set yaw twice so BDS cooperates with head movement better
+				movePacket.setTick(currentTick);
+
+				if(Client.instance.startedSprinting.compareAndSet(true, false)) {
+					movePacket.getInputData().add(PlayerAuthInputData.START_SPRINTING);
+				}
+				if(Client.instance.stoppedSprinting.compareAndSet(true, false)) {
+					movePacket.getInputData().add(PlayerAuthInputData.STOP_SPRINTING);
+				}
+				if(Client.instance.startedSneaking.compareAndSet(true, false)) {
+					movePacket.getInputData().add(PlayerAuthInputData.START_SNEAKING);
+				}
+				if(Client.instance.stoppedSneaking.compareAndSet(true, false)) {
+					movePacket.getInputData().add(PlayerAuthInputData.STOP_SNEAKING);
+				}
+			}
+		}
 
 		PlayerMoveTranslator.lastPosX = currentPosX;
 		PlayerMoveTranslator.lastPosY = currentPosY;
@@ -57,5 +98,10 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 		PlayerMoveTranslator.lastYaw = currentYaw;
 		PlayerMoveTranslator.lastPitch = currentPitch;
 		PlayerMoveTranslator.lastOnGround = currentlyOnGround;
+	}
+
+	@EventTarget
+	public void onEvent(EventPlayerTick event) {
+		currentTick++;
 	}
 }

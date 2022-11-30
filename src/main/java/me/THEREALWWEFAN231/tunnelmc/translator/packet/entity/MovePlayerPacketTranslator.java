@@ -4,12 +4,12 @@ import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
-import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinEntityPositionS2CPacket;
-import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinEntitySetHeadYawS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 
@@ -23,9 +23,11 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 	public void translate(MovePlayerPacket packet) {
 		int id = (int) packet.getRuntimeEntityId();
 		double x = packet.getPosition().getX();
-		double y = packet.getPosition().getY() - TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING);
+		double y = packet.getPosition().getY() - 1.62;
 		double z = packet.getPosition().getZ();
 
+		float realHeadYaw = packet.getRotation().getZ();
+		byte headYaw = (byte) ((int) (realHeadYaw * 256.0F / 360.0F));
 		float realYaw = packet.getRotation().getY();
 		byte yaw = (byte) ((int) (realYaw * 256.0F / 360.0F));
 		float realPitch = packet.getRotation().getX();
@@ -38,26 +40,24 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 			Client.instance.javaConnection.processServerToClientPacket(positionPacket);
 			return;
 		}
+		if (TunnelMC.mc.world == null) {
+			return;
+		}
 
-		EntityPositionS2CPacket entityPositionS2CPacket = new EntityPositionS2CPacket((Entity) null);
-		IMixinEntityPositionS2CPacket iMixinEntityPositionS2CPacket = (IMixinEntityPositionS2CPacket) entityPositionS2CPacket;
+		Entity entity = TunnelMC.mc.world.getEntityById(id);
+		if (entity == null) {
+			return;
+		}
 
-		iMixinEntityPositionS2CPacket.setId(id);
-		iMixinEntityPositionS2CPacket.setX(x);
-		iMixinEntityPositionS2CPacket.setY(y);
-		iMixinEntityPositionS2CPacket.setZ(z);
-		iMixinEntityPositionS2CPacket.setYaw(yaw);
-		iMixinEntityPositionS2CPacket.setPitch(pitch);
-		iMixinEntityPositionS2CPacket.setOnGround(onGround);
+		short deltaX = (short) ((x * 32 - entity.prevX * 32) * 128);
+		short deltaY = (short) ((y * 32 - entity.prevY * 32) * 128);
+		short deltaZ = (short) ((z * 32 - entity.prevZ * 32) * 128);
+
+		EntityS2CPacket.RotateAndMoveRelative entityPositionS2CPacket =
+				new EntityS2CPacket.RotateAndMoveRelative(id, deltaX, deltaY, deltaZ, yaw, pitch, onGround);
 
 		Client.instance.javaConnection.processServerToClientPacket(entityPositionS2CPacket);
-
-		EntitySetHeadYawS2CPacket entitySetHeadYawS2CPacket = new EntitySetHeadYawS2CPacket(null, yaw);
-		IMixinEntitySetHeadYawS2CPacket iMixinEntitySetHeadYawS2CPacket = (IMixinEntitySetHeadYawS2CPacket) entitySetHeadYawS2CPacket;
-
-		iMixinEntitySetHeadYawS2CPacket.setEntityId(id);
-
-		Client.instance.javaConnection.processServerToClientPacket(entitySetHeadYawS2CPacket);
+		Client.instance.javaConnection.processServerToClientPacket(new EntitySetHeadYawS2CPacket(entity, headYaw));
 	}
 
 	@Override
