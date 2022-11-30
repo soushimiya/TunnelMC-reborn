@@ -17,7 +17,6 @@
     "MixinMultiplayerScreen",
     "MixinScreenHandler",
     "MixinWorldRenderer",
-    "interfaces.IMixinCloseHandledScreenC2SPacket",
     "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinPlayerInteractEntityC2SPacket",
     "interfaces.IMixinPlayerListS2CPacket",
