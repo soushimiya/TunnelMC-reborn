@@ -40,9 +40,9 @@ public class MoveEntityAbsolutePacketTranslator extends PacketTranslator<MoveEnt
 		byte pitch = (byte) ((int) (realPitch * 256.0F / 360.0F));
 		boolean onGround = packet.isOnGround();
 
-		short deltaX = (short) ((x * 32 - entity.getX() * 32) * 128);
-		short deltaY = (short) ((y * 32 - entity.getY() * 32) * 128);
-		short deltaZ = (short) ((z * 32 - entity.getZ() * 32) * 128);
+		short deltaX = (short) ((x * 32 - entity.prevX * 32) * 128);
+		short deltaY = (short) ((y * 32 - entity.prevY * 32) * 128);
+		short deltaZ = (short) ((z * 32 - entity.prevZ * 32) * 128);
 
 		EntityS2CPacket.RotateAndMoveRelative entityPositionS2CPacket =
 				new EntityS2CPacket.RotateAndMoveRelative(id, deltaX, deltaY, deltaZ, yaw, pitch, onGround);
