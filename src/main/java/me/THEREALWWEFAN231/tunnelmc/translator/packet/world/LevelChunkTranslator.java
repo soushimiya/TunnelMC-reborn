@@ -9,6 +9,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -93,20 +94,23 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 //			javaBiomes[javaBiomesCount++] = desiredBiome;
 //		}
 
-		WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, chunkSections, null, null);
+		Runnable runnable = () -> {
+			WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, chunkSections, null, null);
 
-		ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, TunnelMC.mc.world.getLightingProvider(), null, null, true);
-		Client.instance.javaConnection.processServerToClientPacket(chunkDeltaUpdateS2CPacket);
+			ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, TunnelMC.mc.world.getLightingProvider(), null, null, true);
+			Client.instance.javaConnection.processServerToClientPacket(chunkDeltaUpdateS2CPacket);
+		};
+
+		if (TunnelMC.mc.world != null) {
+			runnable.run();
+		} else {
+			MinecraftClient.getInstance().execute(runnable);
+		}
 	}
 
 	@Override
 	public Class<LevelChunkPacket> getPacketClass() {
 		return LevelChunkPacket.class;
-	}
-
-	@Override
-	public boolean idleUntil() {
-		return TunnelMC.mc.world == null;
 	}
 
 	public boolean isChunkInRenderDistance(int chunkX, int chunkZ) {
