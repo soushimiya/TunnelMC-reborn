@@ -35,6 +35,7 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 		double z = packet.getPosition().getZ();
 		float pitch = packet.getRotation().getX();
 		float yaw = packet.getRotation().getY();
+		float headYaw = packet.getRotation().getZ();
 		Vec3d velocity = new Vec3d(packet.getMotion().getX(), packet.getMotion().getY(), packet.getMotion().getZ());
 
 		Runnable runnable = () -> {
@@ -42,6 +43,7 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 			player.setId(id);
 			player.setPos(x, y, z);
 			player.setYaw(yaw);
+			player.setHeadYaw(headYaw);
 			player.setPitch(pitch);
 			player.setVelocity(velocity);
 

@@ -35,7 +35,8 @@ public class MoveEntityAbsolutePacketTranslator extends PacketTranslator<MoveEnt
 		byte pitch = (byte) ((int) (realPitch * 256.0F / 360.0F));
 		boolean onGround = packet.isOnGround();
 
-		entity.updateTrackedPositionAndAngles(x, y, z, headYaw, pitch, 3, true);
+		entity.updateTrackedPositionAndAngles(x, y, z, yaw, pitch, 3, true);
+		entity.setHeadYaw(headYaw);
 		entity.setOnGround(onGround);
 	}
 

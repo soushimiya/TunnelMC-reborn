@@ -30,8 +30,9 @@ public class AddEntityPacketTranslator extends PacketTranslator<AddEntityPacket>
 		double motionX = packet.getMotion().getX();
 		double motionY = packet.getMotion().getY();
 		double motionZ = packet.getMotion().getZ();
-		float yaw = packet.getRotation().getY();
 		float pitch = packet.getRotation().getX();
+		float yaw = packet.getRotation().getY();
+		float headYaw = packet.getRotation().getZ();
 
 		Entity entity = entityType.create(TunnelMC.mc.world);
 		if (entity == null) {
@@ -43,6 +44,7 @@ public class AddEntityPacketTranslator extends PacketTranslator<AddEntityPacket>
 		entity.setPos(x, y, z);
 		entity.setVelocity(motionX, motionY, motionZ);
 		entity.setYaw(yaw);
+		entity.setHeadYaw(headYaw);
 		entity.setPitch(pitch);
 
 		Client.instance.javaConnection.processServerToClientPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
