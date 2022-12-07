@@ -20,12 +20,10 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 		double y = packet.getPosition().getY() - 1.62;
 		double z = packet.getPosition().getZ();
 
-		float realHeadYaw = packet.getRotation().getZ();
-		byte headYaw = (byte) ((int) (realHeadYaw * 256.0F / 360.0F));
-		float realYaw = packet.getRotation().getY();
-		byte yaw = (byte) ((int) (realYaw * 256.0F / 360.0F));
-		float realPitch = packet.getRotation().getX();
-		byte pitch = (byte) ((int) (realPitch * 256.0F / 360.0F));
+		float pitch = packet.getRotation().getX();
+		float yaw = packet.getRotation().getY();
+		float headYaw = packet.getRotation().getZ();
+
 		boolean onGround = packet.isOnGround();
 
 		if (id == TunnelMC.mc.player.getId()) {
@@ -44,7 +42,7 @@ public class MovePlayerPacketTranslator extends PacketTranslator<MovePlayerPacke
 		}
 
 		entity.updateTrackedPositionAndAngles(x, y, z, yaw, pitch, 3, true);
-		entity.setHeadYaw(headYaw);
+		entity.updateTrackedHeadRotation(headYaw, 3);
 		entity.setOnGround(onGround);
 	}
 
