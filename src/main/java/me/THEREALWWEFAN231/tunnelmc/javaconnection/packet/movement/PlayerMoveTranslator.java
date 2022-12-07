@@ -2,13 +2,10 @@ package me.THEREALWWEFAN231.tunnelmc.javaconnection.packet.movement;
 
 import com.darkmagician6.eventapi.EventTarget;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.ClientPlayMode;
 import com.nukkitx.protocol.bedrock.data.InputInteractionModel;
 import com.nukkitx.protocol.bedrock.data.InputMode;
 import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
-import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
-
 import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
@@ -16,8 +13,6 @@ import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-
-import java.util.Iterator;
 
 public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> {
 	private static double lastPosX;
@@ -89,6 +84,7 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 				if(Client.instance.stoppedSneaking.compareAndSet(true, false)) {
 					movePacket.getInputData().add(PlayerAuthInputData.STOP_SNEAKING);
 				}
+				Client.instance.sendPacket(movePacket);
 			}
 		}
 
