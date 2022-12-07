@@ -61,6 +61,7 @@ public class PacketTranslatorManager {
 		this.addTranslator(new BlockEntityDataPacketTranslator());
 		this.addTranslator(new RespawnPacketTranslator());
 		this.addTranslator(new PlayStatusTranslator());
+		this.addTranslator(new EntityEventPacketTranslator());
 		
 		EventManager.register(this);
 	}

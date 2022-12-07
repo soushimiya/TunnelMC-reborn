@@ -14,6 +14,7 @@ public class HandSwingC2SPacketTranslator extends PacketTranslator<HandSwingC2SP
 		if (TunnelMC.mc.player == null) {
 			return;
 		}
+		// TODO: Find out if this is still the correct method
 		AnimatePacket animatePacket = new AnimatePacket();
 		animatePacket.setAction(AnimatePacket.Action.SWING_ARM);
 		animatePacket.setRuntimeEntityId(TunnelMC.mc.player.getId());

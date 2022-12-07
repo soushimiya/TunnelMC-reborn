@@ -1,16 +1,15 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.packet.entity;
 
-import com.nukkitx.protocol.bedrock.packet.AnimatePacket;
+import com.nukkitx.protocol.bedrock.packet.EntityEventPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 
-public class AnimateTranslator extends PacketTranslator<AnimatePacket> {
-
+public class EntityEventPacketTranslator extends PacketTranslator<EntityEventPacket> {
     @Override
-    public void translate(AnimatePacket packet) {
+    public void translate(EntityEventPacket packet) {
         if (TunnelMC.mc.world == null) {
             return;
         }
@@ -20,8 +19,8 @@ public class AnimateTranslator extends PacketTranslator<AnimatePacket> {
             return;
         }
 
-        switch (packet.getAction()) {
-            case SWING_ARM -> {
+        switch (packet.getType()) {
+            case ATTACK_START -> {
                 EntityAnimationS2CPacket swingArmPacket = new EntityAnimationS2CPacket(entity, EntityAnimationS2CPacket.SWING_MAIN_HAND);
                 Client.instance.javaConnection.processServerToClientPacket(swingArmPacket);
             }
@@ -29,7 +28,7 @@ public class AnimateTranslator extends PacketTranslator<AnimatePacket> {
     }
 
     @Override
-    public Class<AnimatePacket> getPacketClass() {
-        return AnimatePacket.class;
+    public Class<EntityEventPacket> getPacketClass() {
+        return EntityEventPacket.class;
     }
 }
