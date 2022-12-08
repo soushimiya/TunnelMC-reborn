@@ -31,50 +31,48 @@ public class InventoryContentPacketTranslator extends PacketTranslator<Inventory
 		}
 
 		switch (syncId) {
-		case BedrockContainers.PLAYER_INVENTORY_COTNAINER_ID:
-			for (int i = 0; i < javaContainerSize; i++) {
-				ItemData bedrockItemStack = packet.getContents().get(i);
+			case BedrockContainers.PLAYER_INVENTORY_COTNAINER_ID -> {
+				for (int i = 0; i < javaContainerSize; i++) {
+					ItemData bedrockItemStack = packet.getContents().get(i);
+					ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
+
+					Integer javaSlotId = ScreenHandlerTranslatorManager.getJavaSlotFromBedrockContainer(TunnelMC.mc.player.currentScreenHandler, containerAffected, i);
+					if (javaSlotId == null) {
+						break;
+					}
+
+					containerAffected.setItemBedrock(i, bedrockItemStack);
+					TunnelMC.mc.player.playerScreenHandler.getSlot(javaSlotId).setStack(translatedStack);
+				}
+			}
+			case BedrockContainers.PLAYER_ARMOR_COTNAINER_ID -> {
+				for (int i = 0; i < javaContainerSize; i++) {
+					ItemData bedrockItemStack = packet.getContents().get(i);
+					ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
+
+					containerAffected.setItemBedrock(i, bedrockItemStack);
+					TunnelMC.mc.player.playerScreenHandler.getSlot(5 + i).setStack(translatedStack);
+				}
+			}
+			case BedrockContainers.PLAYER_OFFHAND_COTNAINER_ID -> {
+				ItemData bedrockItemStack = packet.getContents().get(0);
 				ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
 
-				int javaSlotId = ScreenHandlerTranslatorManager.getJavaSlotFromBedrockContainer(TunnelMC.mc.player.currentScreenHandler, containerAffected, i);
-
-				containerAffected.setItemBedrock(i, bedrockItemStack);
-				TunnelMC.mc.player.playerScreenHandler.getSlot(javaSlotId).setStack(translatedStack);
+				containerAffected.setItemBedrock(0, bedrockItemStack);
+				TunnelMC.mc.player.playerScreenHandler.getSlot(45).setStack(translatedStack);
 			}
-			break;
+			default -> {
+				DefaultedList<ItemStack> javaContents = DefaultedList.ofSize(packet.getContents().size(), ItemStack.EMPTY);
+				for (int i = 0; i < javaContainerSize; i++) {
+					ItemData bedrockItemStack = packet.getContents().get(i);
+					ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
 
-		case BedrockContainers.PLAYER_ARMOR_COTNAINER_ID:
-			for (int i = 0; i < javaContainerSize; i++) {
-				ItemData bedrockItemStack = packet.getContents().get(i);
-				ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
-
-				containerAffected.setItemBedrock(i, bedrockItemStack);
-				TunnelMC.mc.player.playerScreenHandler.getSlot(5 + i).setStack(translatedStack);
+					javaContents.set(i, translatedStack);
+					containerAffected.setItemBedrock(i, packet.getContents().get(i));
+				}
+				InventoryS2CPacket inventoryS2CPacket = new InventoryS2CPacket(syncId, Client.instance.nextRevision(), javaContents, ItemStack.EMPTY);
+				Client.instance.javaConnection.processServerToClientPacket(inventoryS2CPacket);
 			}
-			break;
-
-		case BedrockContainers.PLAYER_OFFHAND_COTNAINER_ID: {
-			ItemData bedrockItemStack = packet.getContents().get(0);
-			ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
-
-			containerAffected.setItemBedrock(0, bedrockItemStack);
-			TunnelMC.mc.player.playerScreenHandler.getSlot(45).setStack(translatedStack);
-			break;
-		}
-		default:
-			DefaultedList<ItemStack> javaContents = DefaultedList.ofSize(packet.getContents().size(), ItemStack.EMPTY);
-
-			for (int i = 0; i < javaContainerSize; i++) {
-				ItemData bedrockItemStack = packet.getContents().get(i);
-				ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
-
-				javaContents.set(i, translatedStack);
-				containerAffected.setItemBedrock(i, packet.getContents().get(i));
-			}
-
-			InventoryS2CPacket inventoryS2CPacket = new InventoryS2CPacket(syncId, Client.instance.nextRevision(), javaContents, ItemStack.EMPTY);
-			Client.instance.javaConnection.processServerToClientPacket(inventoryS2CPacket);
-			break;
 		}
 	}
 

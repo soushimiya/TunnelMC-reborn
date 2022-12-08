@@ -40,13 +40,16 @@ public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SP
 
 		BedrockContainer cursorContainer = Client.instance.containers.getPlayerContainerCursorContainer();
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(screenHandler, clickedSlotId);
-
 		if (containerForClickedSlot == null) {
 			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
 			return;
 		}
 
-		int bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(screenHandler, clickedSlotId, containerForClickedSlot);
+		Integer bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(screenHandler, clickedSlotId, containerForClickedSlot);
+		if (bedrockSlotId == null) {
+			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
+			return;
+		}
 
 		ItemData cursorItemData = cursorContainer.getItemFromSlot(0);
 
@@ -87,7 +90,11 @@ public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SP
 				return;
 			}
 
-			int bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(screenHandler, clickedSlotId, containerForClickedSlot);
+			Integer bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(screenHandler, clickedSlotId, containerForClickedSlot);
+			if (bedrockSlotId == null) {
+				System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
+				return;
+			}
 
 			ItemData clickedSlotItemData = containerForClickedSlot.getItemFromSlot(bedrockSlotId);
 
@@ -122,7 +129,11 @@ public class ClickSlotC2SPacketTranslator extends PacketTranslator<ClickSlotC2SP
 			return;
 		}
 
-		int bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(screenHandler, clickedSlotId, containerForClickedSlot);
+		Integer bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(screenHandler, clickedSlotId, containerForClickedSlot);
+		if (bedrockSlotId == null) {
+			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
+			return;
+		}
 
 		ItemData droppedSlotItemData = containerForClickedSlot.getItemFromSlot(bedrockSlotId);
 		ItemData afterDropSlotItemData = null;
