@@ -34,7 +34,7 @@ public class PacketTranslatorManager {
 		this.addTranslator(new AddEntityPacketTranslator());
 		this.addTranslator(new SetTimePacketTranslator());
 		this.addTranslator(new RemoveEntityPacketTranslator());
-		this.addTranslator(new InventorySlotPacketTranslator());
+//		this.addTranslator(new InventorySlotPacketTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
 		this.addTranslator(new AddItemEntityPacketTranslator());
 		this.addTranslator(new MovePlayerPacketTranslator());
 		this.addTranslator(new MoveEntityAbsolutePacketTranslator());
@@ -44,8 +44,8 @@ public class PacketTranslatorManager {
 		this.addTranslator(new TakeItemEntityPacketTranslator());
 		this.addTranslator(new NetworkChunkPublisherUpdateTranslator());
 		this.addTranslator(new SetEntityDataPacketTranslator());
-		this.addTranslator(new ContainerOpenPacketTranslator());
-		this.addTranslator(new InventoryContentPacketTranslator());
+//		this.addTranslator(new ContainerOpenPacketTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+//		this.addTranslator(new InventoryContentPacketTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
 		this.addTranslator(new DisconnectTranslator());
 		this.addTranslator(new SetPlayerGameTypeTranslator());
 		this.addTranslator(new AdventureSettingsTranslator());
