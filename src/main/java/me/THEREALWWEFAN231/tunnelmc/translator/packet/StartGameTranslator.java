@@ -76,7 +76,7 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		float pitch = packet.getRotation().getY();
 
 		PlayerPositionLookS2CPacket playerPositionLookS2CPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), 0, false);
-		Client.instance.javaConnection.processServerToClientPacket(playerPositionLookS2CPacket);
+//		Client.instance.javaConnection.processServerToClientPacket(playerPositionLookS2CPacket);
 
 		int chunkX = MathHelper.floor(x) >> 4;
 		int chunkZ = MathHelper.floor(z) >> 4;
