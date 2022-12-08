@@ -1,7 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.events;
 
-import com.darkmagician6.eventapi.events.callables.EventCancellable;
+import com.nukkitx.api.event.Event;
 
-public class EventPlayerTick extends EventCancellable {
-
+public record EventPlayerTick(long tick) implements Event {
 }

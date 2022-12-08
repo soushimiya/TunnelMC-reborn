@@ -1,5 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc;
 
+import com.nukkitx.api.event.EventManager;
+import com.nukkitx.event.SimpleEventManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.EntityTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityRegistry;
@@ -17,11 +19,13 @@ public class TunnelMC implements ClientModInitializer {
 	public static TunnelMC instance;
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 
+	public EventManager eventManager;
 	public FileManagement fileManagement;
 	public PacketTranslatorManager packetTranslatorManager;
 
 	public void onInitializeClient() {
 		instance = this;
+		this.eventManager = new SimpleEventManager();
 		this.fileManagement = new FileManagement();
 		this.packetTranslatorManager = new PacketTranslatorManager();
 

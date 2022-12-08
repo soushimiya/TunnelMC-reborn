@@ -1,7 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.packet.world;
 
-import com.darkmagician6.eventapi.EventManager;
-import com.darkmagician6.eventapi.EventTarget;
+import com.nukkitx.api.event.Listener;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -33,7 +32,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 	private final List<LevelChunkPacket> chunksOutOfRenderDistance = new ArrayList<>();
 
 	public LevelChunkTranslator() {
-		EventManager.register(this);
+		TunnelMC.instance.eventManager.registerListeners(this, this);
 	}
 
 	@Override
@@ -122,7 +121,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		return Math.abs(chunkX - playerChunkX) > TunnelMC.mc.options.getViewDistance().getValue() || Math.abs(chunkZ - playerChunkZ) > TunnelMC.mc.options.getViewDistance().getValue();
 	}
 
-	@EventTarget
+	@Listener
 	public void onEvent(EventPlayerTick event) {
 		// This needs some work, general chunk loading needs some work as well.
 		Iterator<LevelChunkPacket> iterator = chunksOutOfRenderDistance.iterator();

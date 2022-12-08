@@ -1,7 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.javaconnection.packet;
 
-import com.darkmagician6.eventapi.EventManager;
-import com.darkmagician6.eventapi.EventTarget;
+import com.nukkitx.api.event.Listener;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.PlayerActionType;
@@ -42,7 +41,7 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 
 				Client.instance.sendPacket(playerActionPacket);
 
-				EventManager.register(this);
+				TunnelMC.instance.eventManager.registerListeners(this, this);
 
 				// For some reason, blocks with a hardness of 0 don't have the stop action sent.
 				// If you're in creative, the same issue occurs.
@@ -74,7 +73,7 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 
 				this.lastDirection = null;
 				this.lastBlockPosition = null;
-				EventManager.unregister(this);
+				TunnelMC.instance.eventManager.deregisterListener(this);
 
 				InventoryTransactionPacket inventoryTransactionPacket = new InventoryTransactionPacket();
 				inventoryTransactionPacket.setTransactionType(TransactionType.ITEM_USE);
@@ -99,7 +98,7 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 
 				this.lastDirection = null;
 				this.lastBlockPosition = null;
-				EventManager.unregister(this);
+				TunnelMC.instance.eventManager.deregisterListener(this);
 			}
 		}
 	}
@@ -109,7 +108,7 @@ public class PlayerActionTranslator extends PacketTranslator<PlayerActionC2SPack
 		return PlayerActionC2SPacket.class;
 	}
 
-	@EventTarget
+	@Listener
 	public void event(EventPlayerTick event) {
 		if (TunnelMC.mc.player == null) {
 			return;

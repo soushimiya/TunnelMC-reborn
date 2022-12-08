@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.darkmagician6.eventapi.EventManager;
-import com.darkmagician6.eventapi.EventTarget;
+import com.nukkitx.api.event.Listener;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 
+import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.*;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.entity.*;
@@ -62,8 +62,8 @@ public class PacketTranslatorManager {
 		this.addTranslator(new RespawnPacketTranslator());
 		this.addTranslator(new PlayStatusTranslator());
 		this.addTranslator(new EntityEventPacketTranslator());
-		
-		EventManager.register(this);
+
+		TunnelMC.instance.eventManager.registerListeners(this, this);
 	}
 
 	private void addTranslator(PacketTranslator<?> translator) {
@@ -85,7 +85,7 @@ public class PacketTranslatorManager {
 		}
 	}
 
-	@EventTarget
+	@Listener
 	public void onEvent(EventPlayerTick event) {
 		for (int i = 0; i < this.idlePackets.size(); i++) {
 			IdlePacket idlePacket = this.idlePackets.get(i);

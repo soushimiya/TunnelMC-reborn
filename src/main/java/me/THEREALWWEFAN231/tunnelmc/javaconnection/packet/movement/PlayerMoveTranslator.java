@@ -1,7 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.javaconnection.packet.movement;
 
-import com.darkmagician6.eventapi.EventManager;
-import com.darkmagician6.eventapi.EventTarget;
+import com.nukkitx.api.event.Listener;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.ClientPlayMode;
 import com.nukkitx.protocol.bedrock.data.InputInteractionModel;
@@ -20,10 +19,9 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 	private static Vector3f lastPosition = Vector3f.ZERO;
 	private static Vector3f lastRotation = Vector3f.ZERO; // x for pitch, y for yaw, z for head yaw
 	private static boolean lastOnGround;
-	private static long currentTick;
 
 	public PlayerMoveTranslator() {
-		EventManager.register(this);
+		TunnelMC.instance.eventManager.registerListeners(this, this);
 	}
 
 	@Override
@@ -87,15 +85,13 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 	// For server authoritative movement, a vanilla client sends this packet every tick
 	private static PlayerAuthInputPacket playerAuthInputPacket;
 
-	@EventTarget
+	@Listener
 	public void onEvent(EventPlayerTick event) {
-		currentTick++;
-
 		if(playerAuthInputPacket == null) {
 			return;
 		}
 
-		playerAuthInputPacket.setTick(currentTick);
+		playerAuthInputPacket.setTick(event.tick());
 		playerAuthInputPacket.getInputData().clear();
 		if(Client.instance.startedSprinting.compareAndSet(true, false)) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_SPRINTING);
