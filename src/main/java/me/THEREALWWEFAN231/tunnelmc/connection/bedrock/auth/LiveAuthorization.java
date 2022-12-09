@@ -12,11 +12,12 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 @UtilityClass
 public class LiveAuthorization {
 
-    public CompletableFuture<OAuth2AccessToken> getAccessToken(OutputStream outputStream) {
+    public CompletableFuture<OAuth2AccessToken> getAccessToken(Consumer<String> callback) {
         final OAuth20Service service = new ServiceBuilder("0000000048183522")
                 .responseType("device_code")
                 .defaultScope("service::user.auth.xboxlive.com::MBI_SSL")
@@ -25,7 +26,7 @@ public class LiveAuthorization {
         CompletableFuture<OAuth2AccessToken> future = new CompletableFuture<>();
         try {
             DeviceAuthorization authorization = service.getDeviceAuthorizationCodes();
-            outputStream.write(("Authenticate at " + authorization.getVerificationUri() + " with code " + authorization.getUserCode() + "\n").getBytes(StandardCharsets.UTF_8));
+            callback.accept("Authenticate at " + authorization.getVerificationUri() + " with code " + authorization.getUserCode());
 
             new Thread(() -> {
                 try {
