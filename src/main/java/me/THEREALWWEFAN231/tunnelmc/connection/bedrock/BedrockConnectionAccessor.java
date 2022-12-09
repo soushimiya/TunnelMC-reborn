@@ -35,7 +35,7 @@ public class BedrockConnectionAccessor {
             return;
         }
 
-        currentConnection.bedrockClient.close(true);
+        currentConnection.bedrockClient.close();
         currentConnection = null;
 
         if (TunnelMC.mc.world != null) {

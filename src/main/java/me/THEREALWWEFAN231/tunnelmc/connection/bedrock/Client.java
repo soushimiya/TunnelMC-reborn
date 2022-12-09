@@ -74,11 +74,7 @@ public class Client { // TODO: make a lot more fields private
 		this.ip = ip;
 		this.port = port;
 
-		this.connectScreen = new BedrockConnectingScreen(MinecraftClient.getInstance().currentScreen, MinecraftClient.getInstance(), () -> {
-			if (this.bedrockClient != null) {
-				this.bedrockClient.close(true);
-			}
-		});
+		this.connectScreen = new BedrockConnectingScreen(MinecraftClient.getInstance().currentScreen, MinecraftClient.getInstance(), BedrockConnectionAccessor::closeConnection);
 		TunnelMC.mc.setScreen(this.connectScreen);
 
 		LoginChainSupplier supplier;
