@@ -5,7 +5,7 @@ import com.nukkitx.protocol.bedrock.packet.RequestChunkRadiusPacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import com.nukkitx.protocol.bedrock.packet.TickSyncPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.dimension.Dimension;
 import me.THEREALWWEFAN231.tunnelmc.translator.gamemode.GameModeTranslator;

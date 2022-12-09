@@ -5,7 +5,7 @@ import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.client.MinecraftClient;

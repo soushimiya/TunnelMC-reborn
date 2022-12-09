@@ -10,7 +10,7 @@ import java.util.UUID;
 public class NOOPTelemetrySender extends TelemetrySender {
     public static final TelemetrySender INSTANCE = new NOOPTelemetrySender();
 
-    public NOOPTelemetrySender() {
+    private NOOPTelemetrySender() {
         super(MinecraftClient.getInstance(), UserApiService.OFFLINE, Optional.empty(), Optional.empty(), new UUID(0, 0));
     }
 }

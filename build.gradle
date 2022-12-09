@@ -32,10 +32,11 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	// Bedrock protocol
+	// Bedrock protocol & Xbox Authentication
 	library("com.nukkitx.protocol:bedrock-v557:2.9.13-SNAPSHOT") {
 		exclude group: 'com.nukkitx.fastutil'
 	}
+	library "com.github.scribejava:scribejava-apis:8.3.3"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
@@ -43,6 +44,12 @@ dependencies {
 	// Lombok
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+	// Jackson
+	library "com.fasterxml.jackson.core:jackson-databind:2.14.0"
+	library("com.nukkitx.jackson.dataformat:jackson-dataformat-nbt:2.10.3-SNAPSHOT") {
+		exclude group: 'com.nukkitx.nbt'
+	}
 
 	// Events
 	library "com.nukkitx:common:1.0.1-SNAPSHOT"

@@ -8,7 +8,7 @@ import com.mojang.datafixers.util.Pair;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.client.MinecraftClient;

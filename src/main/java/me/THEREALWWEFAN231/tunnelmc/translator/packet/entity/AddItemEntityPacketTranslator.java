@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.nukkitx.protocol.bedrock.packet.AddItemEntityPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.entity.EntityType;

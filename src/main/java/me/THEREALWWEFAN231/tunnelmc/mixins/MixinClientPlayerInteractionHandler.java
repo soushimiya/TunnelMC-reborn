@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtil;
 import net.minecraft.client.MinecraftClient;

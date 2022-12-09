@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 public class FileManagement {
-
 	public Gson gJson = new GsonBuilder().disableHtmlEscaping().create();
 
 	public String getTextFromInputStream(InputStream inputStream) throws Exception {

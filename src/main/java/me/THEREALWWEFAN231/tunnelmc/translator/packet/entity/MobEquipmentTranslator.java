@@ -3,7 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet.entity;
 import com.mojang.datafixers.util.Pair;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.entity.EquipmentSlot;

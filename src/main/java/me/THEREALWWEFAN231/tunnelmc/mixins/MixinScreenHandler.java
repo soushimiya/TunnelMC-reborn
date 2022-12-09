@@ -1,6 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.javaconnection.packet.ClickSlotC2SPacketTranslator;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

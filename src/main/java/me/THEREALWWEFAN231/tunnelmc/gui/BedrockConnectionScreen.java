@@ -5,7 +5,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

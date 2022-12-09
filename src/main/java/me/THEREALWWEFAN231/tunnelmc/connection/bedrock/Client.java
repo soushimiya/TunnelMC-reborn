@@ -1,4 +1,4 @@
-package me.THEREALWWEFAN231.tunnelmc.bedrockconnection;
+package me.THEREALWWEFAN231.tunnelmc.connection.bedrock;
 
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.BedrockClient;
@@ -10,20 +10,22 @@ import com.nukkitx.protocol.bedrock.data.GameType;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
 import com.nukkitx.protocol.bedrock.v545.Bedrock_v545;
 import io.netty.util.AsciiString;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.auth.Auth;
 import me.THEREALWWEFAN231.tunnelmc.auth.ClientData;
+import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.ClientBatchHandler;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.BlockEntityDataCache;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainers;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChainSupplier;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OnlineModeLoginChainSupplier;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.AuthData;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.javaconnection.FakeJavaConnection;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -31,18 +33,18 @@ import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
+@Log4j2
 public class Client {
+	public static final BedrockPacketCodec CODEC = Bedrock_v545.V545_CODEC;
 
-	public static Client instance = new Client();
-
-	public final BedrockPacketCodec bedrockPacketCodec = Bedrock_v545.V545_CODEC;
-	private final Logger logger = LogManager.getLogger(ClientBatchHandler.class);
+	public static Client instance = new Client(null); // TODO: make a client for every connection
 
 	private String ip;
 	private int port;
 
 	private boolean onlineMode;
-	public Auth authData;
+	public ChainData chainData;
+	public AuthData authData;
 	public BedrockClient bedrockClient;
 	public BedrockConnectingScreen connectScreen;
 	public FakeJavaConnection javaConnection;
@@ -60,13 +62,14 @@ public class Client {
 	public AtomicBoolean stoppedSprinting = new AtomicBoolean();
 	public AtomicBoolean stoppedSneaking = new AtomicBoolean();
 
+	Client(InetSocketAddress bindAddress) {
+
+	}
+
 	public void initialize(String ip, int port, boolean onlineMode) {
 		this.ip = ip;
 		this.port = port;
 		this.onlineMode = onlineMode;
-
-		org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-		logger.get().setLevel(Level.DEBUG);
 
 		InetSocketAddress bindAddress = new InetSocketAddress("0.0.0.0", getRandomPort());
 		this.bedrockClient = new BedrockClient(bindAddress);
@@ -102,7 +105,7 @@ public class Client {
 	}
 
 	public void onSessionInitialized(BedrockSession bedrockSession) {
-		bedrockSession.setPacketCodec(this.bedrockPacketCodec);
+		bedrockSession.setPacketCodec(CODEC);
 		bedrockSession.addDisconnectHandler(reason -> MinecraftClient.getInstance().execute(() -> {
 			// We disconnected ourselves.
 			if (reason == DisconnectReason.DISCONNECTED) {
@@ -124,12 +127,11 @@ public class Client {
 		try {
 			LoginPacket loginPacket = new LoginPacket();
 
-			this.authData = new Auth();
-			String chainData;
+			LoginChainSupplier supplier;
 			if (this.onlineMode) {
-				chainData = this.authData.getOnlineChainData();
+				supplier = new OnlineModeLoginChainSupplier(System.out);
 			} else {
-				chainData = this.authData.getOfflineChainData(TunnelMC.mc.getSession().getUsername());
+				supplier = new OfflineModeLoginChainSupplier(TunnelMC.mc.getSession().getUsername());
 			}
 
 			String clientData = ClientData.getClientData(this.ip + ":" + this.port);
@@ -144,14 +146,28 @@ public class Client {
 				return;
 			}
 
-			loginPacket.setProtocolVersion(bedrockSession.getPacketCodec().getProtocolVersion());
-			loginPacket.setChainData(new AsciiString(chainData.getBytes()));
-			loginPacket.setSkinData(new AsciiString(clientData));
-			this.sendPacketImmediately(loginPacket);
+			supplier.get().whenComplete((chainData, throwable) -> {
+				if(throwable != null) {
+					MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
+							new DisconnectedScreen(
+									new TitleScreen(false),
+									Text.of("TunnelMC"),
+									Text.of(throwable.getMessage())
+							)
+					));
+				}
+				this.chainData = chainData;
+				this.authData = chainData.decodeAuthData();
 
-			this.connectScreen.setStatus(Text.of("Loading resources..."));
+				loginPacket.setProtocolVersion(bedrockSession.getPacketCodec().getProtocolVersion());
+				loginPacket.setChainData(new AsciiString(chainData.rawData().getBytes()));
+				loginPacket.setSkinData(new AsciiString(clientData));
+				this.sendPacketImmediately(loginPacket);
 
-			this.javaConnection = new FakeJavaConnection();
+				this.connectScreen.setStatus(Text.of("Loading resources..."));
+
+				this.javaConnection = new FakeJavaConnection();
+			});
 		} catch (Exception e) {
 			MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
 					new DisconnectedScreen(
@@ -175,9 +191,11 @@ public class Client {
 	public void sendPacketImmediately(BedrockPacket packet) {
 		BedrockSession session = this.bedrockClient.getSession();
 
-		session.sendPacketImmediately(packet);
-		if (session.isLogging()) {
-			this.logger.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
+		if (session != null) {
+			session.sendPacketImmediately(packet);
+			if (session.isLogging()) {
+				log.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
+			}
 		}
 	}
 
@@ -187,7 +205,7 @@ public class Client {
 		if (session != null) {
 			session.sendPacket(packet);
 			if (session.isLogging()) {
-				this.logger.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
+				log.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
 			}
 		}
 	}

@@ -10,10 +10,9 @@ import com.nukkitx.protocol.bedrock.packet.InteractPacket;
 import com.nukkitx.protocol.bedrock.packet.InteractPacket.Action;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 

@@ -3,7 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet.inventory;
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.javaconnection.packet.UpdateSelectedSlotC2SPacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;

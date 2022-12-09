@@ -3,7 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet.world;
 import com.nukkitx.protocol.bedrock.packet.SetTimePacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 

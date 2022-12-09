@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.data.AdventureSetting;
 import com.nukkitx.protocol.bedrock.data.PlayerPermission;
 import com.nukkitx.protocol.bedrock.data.command.CommandPermission;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 

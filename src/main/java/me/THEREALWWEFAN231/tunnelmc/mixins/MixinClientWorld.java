@@ -1,6 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import net.minecraft.client.world.ClientWorld;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

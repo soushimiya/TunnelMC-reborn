@@ -1,6 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.ScreenHandlerTranslator;
 import net.minecraft.screen.GenericContainerScreenHandler;

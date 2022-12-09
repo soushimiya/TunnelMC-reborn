@@ -2,7 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet.world;
 
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
 import net.minecraft.block.BlockState;

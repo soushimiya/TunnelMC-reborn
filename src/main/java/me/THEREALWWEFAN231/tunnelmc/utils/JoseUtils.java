@@ -1,4 +1,6 @@
-package me.THEREALWWEFAN231.tunnelmc.auth;
+package me.THEREALWWEFAN231.tunnelmc.utils;
+
+import lombok.experimental.UtilityClass;
 
 import java.security.SignatureException;
 
@@ -7,9 +9,10 @@ import java.security.SignatureException;
  * this is probably similar to ECDSA.transcodeSignatureToConcat, but I found this before I found that, and I don't care
  * to check if the ECDSA one works, this works and that's fine. But for an example ECDSASigner.sign
  */
-public class JoseStuff {
+@UtilityClass
+public class JoseUtils {
 
-	public static byte[] DERToJOSE(byte[] derSignature, AlgorithmType algorithmType) throws SignatureException {
+	public byte[] convertDERToJOSE(byte[] derSignature, AlgorithmType algorithmType) throws SignatureException {
 		// DER Structure: http://crypto.stackexchange.com/a/1797
 		boolean derEncoded = derSignature[0] == 0x30 && derSignature.length != algorithmType.ecNumberSize * 2;
 		if (!derEncoded) {
@@ -68,5 +71,4 @@ public class JoseStuff {
 		}
 
 	}
-
 }

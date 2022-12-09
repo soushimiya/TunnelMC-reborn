@@ -3,7 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet.entity;
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.EntityTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.entity.Entity;

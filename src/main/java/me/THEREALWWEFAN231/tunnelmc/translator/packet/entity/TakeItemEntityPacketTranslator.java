@@ -2,7 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet.entity;
 
 import com.nukkitx.protocol.bedrock.packet.TakeItemEntityPacket;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 

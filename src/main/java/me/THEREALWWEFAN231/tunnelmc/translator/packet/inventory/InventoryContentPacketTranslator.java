@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainers;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;

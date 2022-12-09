@@ -1,4 +1,4 @@
-package me.THEREALWWEFAN231.tunnelmc.nukkit;
+package me.THEREALWWEFAN231.tunnelmc.utils.bitarray;
 
 import java.util.Arrays;
 

@@ -1,7 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.packet;
 
 import com.nukkitx.protocol.bedrock.packet.NetworkStackLatencyPacket;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 
 public class NetworkStackLatencyPacketTranslator extends PacketTranslator<NetworkStackLatencyPacket> {

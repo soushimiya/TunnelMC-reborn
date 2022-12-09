@@ -5,7 +5,7 @@ import com.google.gson.JsonParser;
 import com.nukkitx.protocol.bedrock.packet.ClientToServerHandshakePacket;
 import com.nukkitx.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 
 import javax.crypto.SecretKey;

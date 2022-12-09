@@ -6,7 +6,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.TransactionType;
 import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerInteractEntityC2SPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.entity.EntityPose;

@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.entity.EquipmentSlot;

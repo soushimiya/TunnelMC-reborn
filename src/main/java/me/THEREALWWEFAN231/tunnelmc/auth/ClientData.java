@@ -10,12 +10,8 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 
 public class ClientData {
 
@@ -28,7 +24,7 @@ public class ClientData {
 		try {
 			Gson gson = TunnelMC.instance.fileManagement.gJson;
 
-			String publicKeyBase64 = Base64.getEncoder().encodeToString(Client.instance.authData.getPublicKey().getEncoded());
+			String publicKeyBase64 = Base64.getEncoder().encodeToString(Client.instance.chainData.publicKey().getEncoded());
 
 			JsonObject jwtHeader = new JsonObject();
 			jwtHeader.addProperty("alg", "ES384");
@@ -49,7 +45,7 @@ public class ClientData {
 			skinData.addProperty("DeviceId", UUID.randomUUID().toString());
 			skinData.addProperty("DeviceModel", "");
 			skinData.addProperty("DeviceOS", 7);//windows 10?
-			skinData.addProperty("GameVersion", Client.instance.bedrockPacketCodec.getMinecraftVersion());
+			skinData.addProperty("GameVersion", Client.CODEC.getMinecraftVersion());
 			skinData.addProperty("GuiScale", 0);
 			skinData.addProperty("LanguageCode", "en_US");
 			skinData.add("PersonaPieces", new JsonArray());
@@ -69,17 +65,17 @@ public class ClientData {
 			skinData.addProperty("SkinImageHeight", 64);
 			skinData.addProperty("SkinImageWidth", 64);
 			skinData.addProperty("SkinResourcePatch", "ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiZGVmYXVsdCIgOiAiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIgogICB9Cn0K");//base 64 of course
-			skinData.addProperty("ThirdPartyName", Client.instance.authData.getDisplayName());
+			skinData.addProperty("ThirdPartyName", Client.instance.authData.displayName());
 			skinData.addProperty("ThirdPartyNameOnly", false);
 			skinData.addProperty("UIProfile", 0);
 
 			String header = Base64.getUrlEncoder().withoutPadding().encodeToString(gson.toJson(jwtHeader).getBytes());
 			String payload = Base64.getUrlEncoder().withoutPadding().encodeToString(gson.toJson(skinData).getBytes());
+			String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(
+					Client.instance.chainData.signBytes(
+							(header + "." + payload).getBytes()));
 
-			byte[] dataToSign = (header + "." + payload).getBytes();
-			String signatureString = Client.instance.authData.signBytes(dataToSign);
-
-			return header + "." + payload + "." + signatureString;
+			return header + "." + payload + "." + signature;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -102,5 +98,4 @@ public class ClientData {
 		byteArrayOutputStream.close();
 		return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
 	}
-
 }

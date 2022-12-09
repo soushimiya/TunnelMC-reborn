@@ -3,7 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.mixins;
 import com.nukkitx.math.vector.Vector3i;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.world.LevelEventTranslator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;

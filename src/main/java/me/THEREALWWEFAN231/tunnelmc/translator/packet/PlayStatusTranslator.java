@@ -2,7 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet;
 
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 
 public class PlayStatusTranslator extends PacketTranslator<PlayStatusPacket> {

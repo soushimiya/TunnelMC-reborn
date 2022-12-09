@@ -5,7 +5,7 @@ import com.nukkitx.protocol.bedrock.packet.RespawnPacket;
 import com.nukkitx.protocol.bedrock.packet.RespawnPacket.State;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 

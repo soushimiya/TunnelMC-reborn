@@ -6,7 +6,7 @@ import java.util.List;
 import com.mojang.authlib.GameProfile;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerListS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;

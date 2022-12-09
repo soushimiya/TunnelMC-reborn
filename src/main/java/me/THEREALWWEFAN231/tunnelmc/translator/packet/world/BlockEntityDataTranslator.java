@@ -1,7 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.packet.world;
 
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
 import me.THEREALWWEFAN231.tunnelmc.translator.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityRegistry;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityTranslator;
