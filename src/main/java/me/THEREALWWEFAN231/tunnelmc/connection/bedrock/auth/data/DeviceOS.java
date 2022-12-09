@@ -1,5 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum DeviceOS {
     UNKNOWN,
     ANDROID,
@@ -15,5 +17,10 @@ public enum DeviceOS {
     PLAYSTATION,
     NINTENDO_SWITCH,
     MICROSOFT_XBOX,
-    MICROSOFT_WINDOWS_PHONE,
+    MICROSOFT_WINDOWS_PHONE;
+
+    @JsonValue
+    public int toValue() {
+        return ordinal();
+    }
 }
