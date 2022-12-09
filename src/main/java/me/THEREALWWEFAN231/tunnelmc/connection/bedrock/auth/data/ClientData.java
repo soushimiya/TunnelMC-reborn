@@ -7,11 +7,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.nukkitx.protocol.bedrock.data.skin.AnimatedTextureType;
 import com.nukkitx.protocol.bedrock.data.skin.AnimationExpressionType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -32,9 +35,9 @@ public class ClientData {
     @JsonProperty("AnimatedImageData")
     private List<SkinAnimation> animatedImageData = new ArrayList<>();
     @JsonProperty("CapeData")
-    private String capeData;
+    private String capeData = "";
     @JsonProperty("CapeId")
-    private String capeId;
+    private String capeId = "";
     @JsonProperty("CapeImageHeight")
     private int capeImageHeight;
     @JsonProperty("CapeImageWidth")
@@ -48,11 +51,11 @@ public class ClientData {
     @JsonProperty("DefaultInputMode")
     private int defaultInputMode; // Enum?
     @JsonProperty("DeviceModel")
-    private String deviceModel;
+    private String deviceModel = "";
     @JsonProperty("DeviceOS")
     private DeviceOS deviceOS;
     @JsonProperty("DeviceId")
-    private String deviceId;
+    private String deviceId = "";
     @JsonProperty("GameVersion")
     private String gameVersion;
     @JsonProperty("GuiScale")
@@ -64,9 +67,9 @@ public class ClientData {
     @JsonProperty("PersonaSkin")
     private boolean personaSkin;
     @JsonProperty("PlatformOfflineId")
-    private String platformOfflineId;
+    private String platformOfflineId = "";
     @JsonProperty("PlatformOnlineId")
-    private String platformOnlineId;
+    private String platformOnlineId = "";
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
     @JsonProperty("PlatformUserId")
     private UUID platformUserId;
@@ -77,13 +80,13 @@ public class ClientData {
     @JsonProperty("ServerAddress")
     private String serverAddress;
     @JsonProperty("SkinAnimationData")
-    private String skinAnimationData;
+    private String skinAnimationData = "";
     @JsonProperty("SkinData")
     private String skinData;
     @JsonProperty("SkinGeometryData")
     private String skinGeometryData;
     @JsonProperty("SkinGeometryDataEngineVersion")
-    private int skinGeometryVersion;
+    private String skinGeometryVersion;
     @JsonProperty("SkinId")
     private String skinId;
     @JsonProperty("SkinImageHeight")
@@ -93,7 +96,7 @@ public class ClientData {
     @JsonProperty("SkinResourcePatch")
     private String skinResourcePatch;
     @JsonProperty("SkinColor")
-    private String skinColor;
+    private String skinColor = "#0";
     @JsonProperty("ArmSize")
     private ArmSizeType armSize;
     @JsonProperty("PersonaPieces")
@@ -113,7 +116,7 @@ public class ClientData {
         try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
-                    Color color = new Color(image.getRGB(x, y));
+                    Color color = new Color(image.getRGB(x, y), true);
                     byteArrayOutputStream.write(color.getRed());
                     byteArrayOutputStream.write(color.getGreen());
                     byteArrayOutputStream.write(color.getBlue());
@@ -126,7 +129,7 @@ public class ClientData {
         }
         this.setSkinImageHeight(image.getHeight());
         this.setSkinImageWidth(image.getWidth());
-        this.setCapeId(UUID.randomUUID() + "_Custom");
+        this.setSkinId(UUID.randomUUID() + "_Custom");
     }
 
     public void setCape(BufferedImage image) {
@@ -189,9 +192,18 @@ public class ClientData {
                                          @JsonProperty("Colors") List<String> colors) {
     }
 
+    @Getter
+    @RequiredArgsConstructor
     public enum ArmSizeType {
-        @JsonProperty("wide") WIDE,
-        @JsonProperty("slim") SLIM;
+        @JsonProperty("wide") WIDE("geometry.humanoid.custom", "https://raw.githubusercontent.com/Flonja/TunnelMC/big-refactor/resources/steve.png"),
+        @JsonProperty("slim") SLIM("geometry.humanoid.customSlim", "https://raw.githubusercontent.com/Flonja/TunnelMC/big-refactor/resources/alex.png");
+
+        private final String geometryName;
+        private final String defaultSkinUrl;
+
+        public String getEncodedGeometryData() {
+            return Base64.getEncoder().withoutPadding().encodeToString(("{\"geometry\":{\"default\":\"" + geometryName + "\"}}").getBytes(StandardCharsets.UTF_8));
+        }
 
         public static ArmSizeType fromUUID(UUID uuid) {
             return (uuid.hashCode() & 1) == 1 ? SLIM : WIDE;

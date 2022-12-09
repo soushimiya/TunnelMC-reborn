@@ -24,6 +24,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ClientData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.DeviceOS;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.javaconnection.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -35,11 +36,11 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.URL;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
 @Log4j2
 public class Client {
@@ -150,32 +151,32 @@ public class Client {
 			clientData.setDefaultInputMode(1);
 			clientData.setDeviceOS(DeviceOS.MICROSOFT_WINDOWS_10);
 			clientData.setGameVersion(Client.CODEC.getMinecraftVersion());
+			clientData.setSkinGeometryVersion(Base64.getEncoder().withoutPadding().encodeToString(Client.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
 			clientData.setLanguageCode(TunnelMC.mc.getLanguageManager().getLanguage().getCode());
 			clientData.setSelfSignedId(uuid);
 			clientData.setServerAddress(ip + ":" + port);
 			clientData.setThirdPartyName(authData.displayName());
-			clientData.setSkinColor("#0");
-			clientData.setSkinGeometryData(""); // TODO: make this a resource
-			clientData.setSkinResourcePatch("eyJnZW9tZXRyeSI6eyJkZWZhdWx0IjoiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIn19");
+			clientData.setSkinGeometryData(Base64.getEncoder().withoutPadding().encodeToString(
+					JSON_MAPPER.writeValueAsBytes(FileUtils.getJsonFromResource("tunnel/geometry_data.json"))));
+			clientData.setSkinResourcePatch(clientData.getArmSize().getEncodedGeometryData());
+			clientData.setTrustedSkin(true);
 
 			Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = TunnelMC.mc.getSessionService().getTextures(TunnelMC.mc.getSession().getProfile(), false);
-			Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.SKIN))
-					.ifPresent(minecraftProfileTexture -> {
-						try {
-							clientData.setSkin(ImageIO.read(new URL(minecraftProfileTexture.getUrl())));
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
-					});
+			try {
+				MinecraftProfileTexture skinTexture = Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.SKIN))
+						.orElse(new MinecraftProfileTexture(clientData.getArmSize().getDefaultSkinUrl(), Collections.emptyMap()));
+				clientData.setSkin(ImageIO.read(new URL(skinTexture.getUrl())));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.CAPE))
-					.ifPresent(minecraftProfileTexture -> {
+					.ifPresent(capeTexture -> {
 						try {
-							clientData.setCape(ImageIO.read(new URL(minecraftProfileTexture.getUrl())));
+							clientData.setCape(ImageIO.read(new URL(capeTexture.getUrl())));
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}
 					});
-			clientData.setTrustedSkin(true);
 
 			loginPacket.setProtocolVersion(bedrockSession.getPacketCodec().getProtocolVersion());
 			loginPacket.setChainData(new AsciiString(chainData.rawData().getBytes()));
