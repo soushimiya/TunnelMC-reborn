@@ -11,6 +11,7 @@ import net.minecraft.network.Packet;
 public class JavaPacketTranslatorManager extends PacketTranslatorManager<Packet<?>> {
 
 	public JavaPacketTranslatorManager() {
+		super();
 		this.addTranslator(new HandSwingC2SPacketTranslator());
 		this.addTranslator(new PlayerMoveTranslator());
 		this.addTranslator(new LookOnlyTranslator());

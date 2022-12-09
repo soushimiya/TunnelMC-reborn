@@ -9,6 +9,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world
 public class BedrockPacketTranslatorManager extends PacketTranslatorManager<BedrockPacket> {
 
 	public BedrockPacketTranslatorManager() {
+		super();
 		this.addTranslator(new StartGameTranslator());
 		this.addTranslator(new ChunkRadiusUpdatedTranslator());
 		this.addTranslator(new LevelChunkTranslator());

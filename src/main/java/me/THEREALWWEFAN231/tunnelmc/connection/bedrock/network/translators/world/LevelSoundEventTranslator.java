@@ -15,7 +15,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 
-@PacketIdentifier(LevelSoundEventTranslator.class)
+@PacketIdentifier(LevelSoundEventPacket.class)
 public class LevelSoundEventTranslator extends PacketTranslator<LevelSoundEventPacket> {
 
     @Override

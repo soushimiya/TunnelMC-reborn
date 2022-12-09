@@ -25,7 +25,7 @@ import java.util.Objects;
  * For more information, check out the following gist:
  * <a href="https://gist.github.com/dktapps/8a4f23d2bf32ea7091ef14e4aac46170">Block Changes in Beta 1.2.13</a>
  */
-@PacketIdentifier(LevelChunkTranslator.class)
+@PacketIdentifier(LevelChunkPacket.class)
 public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 	private static final Registry<Biome> BIOMES_REGISTRY = BuiltinRegistries.BIOME;
 
@@ -85,6 +85,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 
 			ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, TunnelMC.mc.world.getLightingProvider(), null, null, true);
 			client.javaConnection.processServerToClientPacket(chunkDeltaUpdateS2CPacket);
+			System.out.println("chunk");
 		};
 
 		if (TunnelMC.mc.world != null) {
