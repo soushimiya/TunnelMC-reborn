@@ -1,13 +1,12 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.util.Identifier;
 
 @Mixin(AbstractClientPlayerEntity.class)
 public class MixinAbstractClientPlayerEntity {
@@ -16,17 +15,18 @@ public class MixinAbstractClientPlayerEntity {
 	//disabled these because they crash often, kind of
 	@Inject(method = "getSkinTexture", at = @At("HEAD"), cancellable = true)
 	public void getSkinTexture(CallbackInfoReturnable<Identifier> callbackInfoReturnable) {
-		if (Client.instance.isConnectionOpen()) {
-			//callbackInfoReturnable.setReturnValue(PlayerListPacketTranslator.skins.get(AbstractClientPlayerEntity.class.cast(this).getGameProfile().getName()).texture);
+		if (!BedrockConnectionAccessor.isConnectionOpen()) {
+			return;
 		}
+		//callbackInfoReturnable.setReturnValue(PlayerListPacketTranslator.skins.get(AbstractClientPlayerEntity.class.cast(this).getGameProfile().getName()).texture);
 	}
 
 	@Inject(method = "getModel", at = @At("HEAD"), cancellable = true)
 	public void getModel(CallbackInfoReturnable<String> callbackInfoReturnable) {
-		if (Client.instance.isConnectionOpen()) {
-			//boolean isSlim = PlayerListPacketTranslator.skins.get(AbstractClientPlayerEntity.class.cast(this).getGameProfile().getName()).slim;
-			//callbackInfoReturnable.setReturnValue(isSlim ? "slim" : "default");
+		if (!BedrockConnectionAccessor.isConnectionOpen()) {
+			return;
 		}
+		//boolean isSlim = PlayerListPacketTranslator.skins.get(AbstractClientPlayerEntity.class.cast(this).getGameProfile().getName()).slim;
+		//callbackInfoReturnable.setReturnValue(isSlim ? "slim" : "default");
 	}
-
 }

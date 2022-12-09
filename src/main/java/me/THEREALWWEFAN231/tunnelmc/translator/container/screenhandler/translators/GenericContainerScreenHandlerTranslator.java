@@ -1,7 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.ScreenHandlerTranslator;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -13,10 +13,10 @@ public class GenericContainerScreenHandlerTranslator extends ScreenHandlerTransl
 		int slotsInContainer = javaContainer.getRows() * 9;
 
 		if (javaSlotId < slotsInContainer) {
-			return Client.instance.containers.getCurrentlyOpenContainer();
+			return BedrockConnectionAccessor.getCurrentConnection().containers.getCurrentlyOpenContainer();
 		}
 
-		return Client.instance.containers.getPlayerInventory();
+		return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerInventory();
 	}
 
 	@Override

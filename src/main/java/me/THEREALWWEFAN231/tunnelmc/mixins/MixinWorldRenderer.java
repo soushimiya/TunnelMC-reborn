@@ -3,8 +3,8 @@ package me.THEREALWWEFAN231.tunnelmc.mixins;
 import com.nukkitx.math.vector.Vector3i;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
-import me.THEREALWWEFAN231.tunnelmc.translator.packet.world.LevelEventTranslator;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.LevelEventTranslator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -28,14 +28,23 @@ public class MixinWorldRenderer {
 
     @Inject(method = "setBlockBreakingInfo", at = @At("HEAD"), cancellable = true)
     public void cancelBlockBreakingInfo(int entityId, BlockPos pos, int stage, CallbackInfo ci) {
-        if (Client.instance.isConnectionOpen() && entityId == this.client.player.getId()) {
-            // Don't let the client set this - let the server
-            ci.cancel();
+        if(!BedrockConnectionAccessor.isConnectionOpen()) {
+            return;
         }
+        if (entityId != this.client.player.getId()) {
+            // Don't let the client set this - let the server
+            return;
+        }
+
+        ci.cancel();
     }
 
     @Inject(method = "render", at = @At("HEAD"))
     public void render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+        if(!BedrockConnectionAccessor.isConnectionOpen()) {
+            return;
+        }
+
         // Manually set the block breaking progressions based on the server
         ObjectIterator<Map.Entry<Vector3i, LevelEventTranslator.BlockBreakingWrapper>> iterator = LevelEventTranslator.BLOCK_BREAKING_INFOS.entrySet().iterator();
         while (iterator.hasNext()) {

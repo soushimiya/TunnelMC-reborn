@@ -1,6 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,8 +16,9 @@ public class MixinBlock {
     @Inject(method = "onBreak", at = @At("HEAD"), cancellable = true)
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo ci) {
         // Let the server send this instead of the client inferring it
-        if (Client.instance.isConnectionOpen()) {
-            ci.cancel();
+        if (!BedrockConnectionAccessor.isConnectionOpen()) {
+            return;
         }
+        ci.cancel();
     }
 }

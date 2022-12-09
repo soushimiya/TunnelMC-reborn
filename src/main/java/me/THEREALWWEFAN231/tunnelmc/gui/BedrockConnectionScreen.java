@@ -1,18 +1,21 @@
 package me.THEREALWWEFAN231.tunnelmc.gui;
 
-import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
+
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 @Environment(EnvType.CLIENT)
 public class BedrockConnectionScreen extends Screen {
@@ -36,18 +39,19 @@ public class BedrockConnectionScreen extends Screen {
 		}
 		this.client.keyboard.setRepeatEvents(true);
 		this.joinServerButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 100 + 12, 204, 20, Text.translatable("selectServer.select"), button -> {
-			if (BedrockConnectionScreen.this.addressField.getText().isEmpty()) {
+			if (this.addressField.getText().isEmpty()) {
 				return;
 			}
 
 			int port;
 			try {
-				port = Integer.parseInt(BedrockConnectionScreen.this.portField.getText());
+				port = Integer.parseInt(this.portField.getText());
 			} catch (NumberFormatException e) {
 				port = 19132;
 			}
 
-			Client.instance.initialize(BedrockConnectionScreen.this.addressField.getText(), port, BedrockConnectionScreen.this.onlineModeWidget.isChecked());
+			BedrockConnectionAccessor.createNewConnection(new InetSocketAddress("0.0.0.0", getRandomPort()))
+					.initialize(this.addressField.getText(), port, this.onlineModeWidget.isChecked());
 		}));
 
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));
@@ -83,7 +87,6 @@ public class BedrockConnectionScreen extends Screen {
 	}
 
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-
 		this.addressField.mouseClicked(mouseX, mouseY, button);
 		this.portField.mouseClicked(mouseX, mouseY, button);
 		this.onlineModeWidget.mouseClicked(mouseX, mouseY, button);
@@ -123,4 +126,11 @@ public class BedrockConnectionScreen extends Screen {
 		this.joinServerButton.active = !addressText.isEmpty() && addressText.split(":").length > 0 && addressText.indexOf(32) == -1;
 	}
 
+	private static int getRandomPort() {
+		try (DatagramSocket datagramSocket = new DatagramSocket(0)) {
+			return datagramSocket.getLocalPort();
+		} catch(SocketException e) {
+			throw new RuntimeException("Could not open socket to find next free port", e);
+		}
+	}
 }

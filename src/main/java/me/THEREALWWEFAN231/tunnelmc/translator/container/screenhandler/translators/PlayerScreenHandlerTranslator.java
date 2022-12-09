@@ -1,8 +1,8 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainer;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.containers.PlayerInventoryContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers.PlayerInventoryContainer;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.ScreenHandlerTranslator;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -12,11 +12,11 @@ public class PlayerScreenHandlerTranslator extends ScreenHandlerTranslator<Playe
 	@Override
 	public BedrockContainer getBedrockContainerFromJava(PlayerScreenHandler javaContainer, int javaSlotId) {
 		if (javaSlotId >= 9 && javaSlotId <= 44) {//java main inventory slot ids
-			return Client.instance.containers.getPlayerInventory();
+			return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerInventory();
 		} else if (javaSlotId >= 5 && javaSlotId <= 8) {//java armor slot ids
-			return Client.instance.containers.getPlayerArmorContainer();
+			return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerArmorContainer();
 		} else if (javaSlotId == 45) {//java offhand slot id
-			return Client.instance.containers.getPlayerOffhandContainer();
+			return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerOffhandContainer();
 		}
 
 		return null;

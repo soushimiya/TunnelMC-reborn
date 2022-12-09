@@ -13,28 +13,24 @@ import com.nukkitx.protocol.bedrock.v545.Bedrock_v545;
 import io.netty.util.AsciiString;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.ClientBatchHandler;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.BlockEntityDataCache;
-import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainers;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OnlineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.AuthData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ClientData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.DeviceOS;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.ClientBatchHandler;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.BlockEntityDataCache;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
-import me.THEREALWWEFAN231.tunnelmc.javaconnection.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.DisconnectedScreen;
-import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -43,10 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
 @Log4j2
-public class Client {
+public class Client { // TODO: make a lot more fields private
 	public static final BedrockPacketCodec CODEC = Bedrock_v545.V545_CODEC;
-
-	public static Client instance = new Client(new InetSocketAddress("0.0.0.0", getRandomPort())); // TODO: make a client for every connection
 
 	private String ip;
 	private int port;
@@ -69,6 +63,7 @@ public class Client {
 	public AtomicBoolean startedSneaking = new AtomicBoolean();
 	public AtomicBoolean stoppedSprinting = new AtomicBoolean();
 	public AtomicBoolean stoppedSneaking = new AtomicBoolean();
+	public AtomicBoolean jumping = new AtomicBoolean();
 
 	Client(InetSocketAddress bindAddress) {
 		this.bedrockClient = new BedrockClient(bindAddress);
@@ -97,13 +92,7 @@ public class Client {
 
 		supplier.get().whenComplete((chainData, throwable) -> {
 			if(throwable != null) {
-				MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
-						new DisconnectedScreen(
-								new TitleScreen(false),
-								Text.of("TunnelMC"),
-								Text.of(throwable.getMessage())
-						)
-				));
+				BedrockConnectionAccessor.closeConnection(throwable);
 				return;
 			}
 
@@ -113,13 +102,7 @@ public class Client {
 
 			this.bedrockClient.connect(new InetSocketAddress(ip, port)).whenComplete((session, throwable1) -> {
 				if (throwable1 != null) {
-					MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
-							new DisconnectedScreen(
-									new TitleScreen(false),
-									Text.of("TunnelMC"),
-									Text.of(throwable1.getMessage())
-							)
-					));
+					BedrockConnectionAccessor.closeConnection(throwable1);
 					return;
 				}
 
@@ -127,14 +110,6 @@ public class Client {
 				Client.this.onSessionInitialized(session);
 			});
 		});
-	}
-
-	private static int getRandomPort() {
-		try (DatagramSocket datagramSocket = new DatagramSocket(0)) {
-			return datagramSocket.getLocalPort();
-		} catch(SocketException e) {
-			throw new RuntimeException("Could not open socket to find next free port", e);
-		}
 	}
 
 	public void onSessionInitialized(BedrockSession bedrockSession) {
@@ -145,13 +120,7 @@ public class Client {
 				return;
 			}
 
-			MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
-					new DisconnectedScreen(
-							new TitleScreen(false),
-							Text.of("TunnelMC"),
-							Text.of("You were disconnected from the target server because: " + reason.toString())
-					)
-			));
+			BedrockConnectionAccessor.closeConnection("You were disconnected from the target server because: " + reason.toString());
 		}));
 
 		bedrockSession.setBatchHandler(new ClientBatchHandler());
@@ -202,25 +171,15 @@ public class Client {
 
 			this.connectScreen.setStatus(Text.of("Loading resources..."));
 
-			this.javaConnection = new FakeJavaConnection();
+			this.javaConnection = new FakeJavaConnection(this);
 		} catch (Exception e) {
-			MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
-					new DisconnectedScreen(
-							new TitleScreen(false),
-							Text.of("TunnelMC"),
-							Text.of(e.getMessage())
-					)
-			));
+			BedrockConnectionAccessor.closeConnection(e);
 		}
 	}
 
 	public void onPlayerInitialized() {
 		this.containers = new BedrockContainers();
 		this.blockEntityDataCache = new BlockEntityDataCache();
-	}
-
-	public boolean isConnectionOpen() {
-		return this.bedrockClient != null && this.bedrockClient.getRakNet() != null && this.bedrockClient.getRakNet().isRunning();
 	}
 
 	public void sendPacketImmediately(BedrockPacket packet) {

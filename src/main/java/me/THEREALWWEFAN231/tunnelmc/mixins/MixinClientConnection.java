@@ -1,6 +1,14 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketCallbacks;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
+import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -9,15 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
-import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
-
 @Mixin(ClientConnection.class)
 public class MixinClientConnection {
 	@Shadow private Channel channel;
@@ -25,24 +24,27 @@ public class MixinClientConnection {
 
 	@Inject(method = "isOpen", at = @At("HEAD"), cancellable = true)
 	public void isOpen(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-		if (Client.instance.isConnectionOpen()) {
-			callbackInfoReturnable.setReturnValue(true);
+		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+			return;
 		}
+		callbackInfoReturnable.setReturnValue(true);
 	}
 
 	@Inject(method = "isEncrypted", at = @At("HEAD"), cancellable = true)
 	public void isEncrypted(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {//this allows player skins to be seen in the PlayerListHud
-		if (Client.instance.isConnectionOpen()) {
-			callbackInfoReturnable.setReturnValue(true);
+		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+			return;
 		}
+		callbackInfoReturnable.setReturnValue(true);
 	}
 
 	@Inject(method = "sendImmediately", at = @At("HEAD"), cancellable = true)
 	private void sendImmediately(Packet<?> packet, PacketCallbacks callbacks, CallbackInfo ci) {
-		if (Client.instance.isConnectionOpen()) {
-			Client.instance.javaConnection.packetTranslatorManager.translatePacket(packet);
-			ci.cancel();
+		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+			return;
 		}
+		BedrockConnectionAccessor.getCurrentConnection().javaConnection.packetTranslatorManager.translatePacket(packet);
+		ci.cancel();
 	}
 
 	@Inject(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;)V", at = @At("HEAD"))
@@ -58,12 +60,13 @@ public class MixinClientConnection {
 
 	@Inject(method = "disconnect", at = @At("HEAD"), cancellable = true)
 	public void disconnect(Text disconnectReason, CallbackInfo ci) {
-		if (Client.instance.isConnectionOpen()) {
-			// this.channel is null here
-			Client.instance.bedrockClient.close(true);
-			this.disconnectReason = disconnectReason;
-			ci.cancel();
+		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+			return;
 		}
-	}
 
+		// this.channel is null here
+		BedrockConnectionAccessor.closeConnection();
+		this.disconnectReason = disconnectReason;
+		ci.cancel();
+	}
 }
