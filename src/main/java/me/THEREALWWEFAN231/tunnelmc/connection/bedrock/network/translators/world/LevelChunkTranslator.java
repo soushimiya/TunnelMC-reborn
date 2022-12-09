@@ -85,7 +85,6 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 
 			ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, TunnelMC.mc.world.getLightingProvider(), null, null, true);
 			client.javaConnection.processServerToClientPacket(chunkDeltaUpdateS2CPacket);
-			System.out.println("chunk");
 		};
 
 		if (TunnelMC.mc.world != null) {
