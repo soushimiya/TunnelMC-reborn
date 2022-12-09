@@ -14,8 +14,6 @@ import net.minecraft.network.Packet;
 public class JavaPacketTranslatorManager {
 
 	private final Map<Class<?>, PacketTranslator<?>> packetTranslatorsByPacketClass = new HashMap<>();
-	
-	public ClickSlotC2SPacketTranslator clickSlotTranslator;
 
 	public JavaPacketTranslatorManager() {
 		this.addTranslator(new HandSwingC2SPacketTranslator());
@@ -31,7 +29,7 @@ public class JavaPacketTranslatorManager {
 		this.addTranslator(new PlayerInteractEntityC2SPacketTranslator());
 		this.addTranslator(new ClientCommandC2SPacketTranslator());
 		this.addTranslator(new CloseHandledScreenC2SPacketTranslator());
-		this.addTranslator(this.clickSlotTranslator = new ClickSlotC2SPacketTranslator());
+		this.addTranslator(new ClickSlotC2SPacketTranslator());
 		this.addTranslator(new UpdatePlayerAbilitiesTranslator());
 		this.addTranslator(new ClientStatusC2SPacketTranslator());
 		this.addTranslator(new CommandExecutionC2SPacketTranslator());

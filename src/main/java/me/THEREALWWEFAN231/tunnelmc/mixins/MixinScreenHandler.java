@@ -1,6 +1,8 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
+import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.events.slot.*;
 import me.THEREALWWEFAN231.tunnelmc.javaconnection.packet.ClickSlotC2SPacketTranslator;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -23,8 +25,7 @@ public abstract class MixinScreenHandler {
 			return;
 		}
 
-		ClickSlotC2SPacketTranslator translator = Client.instance.javaConnection.packetTranslatorManager.clickSlotTranslator;
-		translator.onStackShiftClicked((ScreenHandler) (Object) this, slotIndex);
+		TunnelMC.instance.eventManager.fire(new QuickMoveSlotEvent((ScreenHandler) (Object) this, slotIndex));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 2, target = "Lnet/minecraft/screen/ScreenHandler;setCursorStack(Lnet/minecraft/item/ItemStack;)V"))
@@ -34,9 +35,7 @@ public abstract class MixinScreenHandler {
 		}
 
 		int count = button == ClickType.LEFT.ordinal() ? this.cursorStack.getCount() : 1;
-
-		ClickSlotC2SPacketTranslator translator = Client.instance.javaConnection.packetTranslatorManager.clickSlotTranslator;
-		translator.onCursorStackClickEmptySlot((ScreenHandler) (Object) this, slotIndex, count);
+		TunnelMC.instance.eventManager.fire(new PlaceStackOnEmptySlotEvent((ScreenHandler) (Object) this, slotIndex, count));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 0, target = "Ljava/util/Optional;ifPresent(Ljava/util/function/Consumer;)V"))
@@ -45,8 +44,7 @@ public abstract class MixinScreenHandler {
 			return;
 		}
 
-		ClickSlotC2SPacketTranslator translator = Client.instance.javaConnection.packetTranslatorManager.clickSlotTranslator;
-		translator.onEmptyCursorClickStack((ScreenHandler) (Object) this, slotIndex);
+		TunnelMC.instance.eventManager.fire(new TakeSlotEvent((ScreenHandler) (Object) this, slotIndex));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 3, target = "Lnet/minecraft/screen/ScreenHandler;setCursorStack(Lnet/minecraft/item/ItemStack;)V"))
@@ -55,8 +53,8 @@ public abstract class MixinScreenHandler {
 			return;
 		}
 
-		ClickSlotC2SPacketTranslator translator = Client.instance.javaConnection.packetTranslatorManager.clickSlotTranslator;
-		translator.onCursorStackAddToStack((ScreenHandler) (Object) this, slotIndex);
+		int count = button == ClickType.LEFT.ordinal() ? this.cursorStack.getCount() : 1;
+		TunnelMC.instance.eventManager.fire(new PlaceStackSlotEvent((ScreenHandler) (Object) this, slotIndex, count));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 3, target = "Lnet/minecraft/entity/player/PlayerEntity;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;"))
@@ -65,7 +63,6 @@ public abstract class MixinScreenHandler {
 			return;
 		}
 
-		ClickSlotC2SPacketTranslator translator = Client.instance.javaConnection.packetTranslatorManager.clickSlotTranslator;
-		translator.onHoverOverStackDropItem((ScreenHandler) (Object) this, slotIndex, button);
+		TunnelMC.instance.eventManager.fire(new DropSlotEvent((ScreenHandler) (Object) this, slotIndex, button));
 	}
 }
