@@ -1,5 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock;
 
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.BedrockClient;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -12,7 +13,6 @@ import com.nukkitx.protocol.bedrock.v545.Bedrock_v545;
 import io.netty.util.AsciiString;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.auth.ClientData;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.ClientBatchHandler;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.BlockEntityDataCache;
 import me.THEREALWWEFAN231.tunnelmc.bedrockconnection.caches.container.BedrockContainers;
@@ -20,6 +20,8 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChai
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OnlineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.AuthData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ClientData;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.DeviceOS;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.javaconnection.FakeJavaConnection;
 import net.minecraft.client.MinecraftClient;
@@ -27,9 +29,16 @@ import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
 
+import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.net.URL;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
@@ -133,21 +142,44 @@ public class Client {
 		try {
 			LoginPacket loginPacket = new LoginPacket();
 
-			String clientData = ClientData.getClientData(this.ip + ":" + this.port);
-			if (clientData == null) {
-				MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
-						new DisconnectedScreen(
-								new TitleScreen(false),
-								Text.of("TunnelMC"),
-								Text.of("There was an error when generating client data. Please try again later.")
-						)
-				));
-				return;
-			}
+			UUID uuid = Objects.requireNonNull(TunnelMC.mc.getSession().getUuidOrNull());
+			ClientData clientData = new ClientData();
+			clientData.setArmSize(ClientData.ArmSizeType.fromUUID(uuid));
+			clientData.setClientRandomId(uuid.getLeastSignificantBits());
+			clientData.setCurrentInputMode(1);
+			clientData.setDefaultInputMode(1);
+			clientData.setDeviceOS(DeviceOS.MICROSOFT_WINDOWS_10);
+			clientData.setGameVersion(Client.CODEC.getMinecraftVersion());
+			clientData.setLanguageCode(TunnelMC.mc.getLanguageManager().getLanguage().getCode());
+			clientData.setSelfSignedId(uuid);
+			clientData.setServerAddress(ip + ":" + port);
+			clientData.setThirdPartyName(authData.displayName());
+			clientData.setSkinColor("#0");
+			clientData.setSkinGeometryData(""); // TODO: make this a resource
+			clientData.setSkinResourcePatch("eyJnZW9tZXRyeSI6eyJkZWZhdWx0IjoiZ2VvbWV0cnkuaHVtYW5vaWQuY3VzdG9tIn19");
+
+			Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = TunnelMC.mc.getSessionService().getTextures(TunnelMC.mc.getSession().getProfile(), false);
+			Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.SKIN))
+					.ifPresent(minecraftProfileTexture -> {
+						try {
+							clientData.setSkin(ImageIO.read(new URL(minecraftProfileTexture.getUrl())));
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					});
+			Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.CAPE))
+					.ifPresent(minecraftProfileTexture -> {
+						try {
+							clientData.setCape(ImageIO.read(new URL(minecraftProfileTexture.getUrl())));
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					});
+			clientData.setTrustedSkin(true);
 
 			loginPacket.setProtocolVersion(bedrockSession.getPacketCodec().getProtocolVersion());
 			loginPacket.setChainData(new AsciiString(chainData.rawData().getBytes()));
-			loginPacket.setSkinData(new AsciiString(clientData));
+			loginPacket.setSkinData(new AsciiString(clientData.getAsJWT(chainData)));
 			this.sendPacketImmediately(loginPacket);
 
 			this.connectScreen.setStatus(Text.of("Loading resources..."));
