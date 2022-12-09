@@ -1,19 +1,14 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.item;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
-
-import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.enchantment.EnchantmentTranslator;
+import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -22,32 +17,37 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class ItemTranslator {
 
 	//key, is the item id:damage, so for example could be 218:13
 	public static final HashMap<String, Item> BEDROCK_ITEM_INFO_TO_JAVA_ITEM = new HashMap<>();
 
 	public static void load() {
-		JsonObject itemsObject = TunnelMC.instance.fileManagement.getJsonFromResource("geyser/items.json").getAsJsonObject();
-		JsonArray statesArray = TunnelMC.instance.fileManagement.getJsonFromResource("geyser/runtime_item_states.json").getAsJsonArray();
+		ObjectNode itemsObject = (ObjectNode) FileUtils.getJsonFromResource("geyser/items.json");
+		ArrayNode statesArray = (ArrayNode) FileUtils.getJsonFromResource("geyser/runtime_item_states.json");
 		if (itemsObject == null || statesArray == null) {
 			throw new RuntimeException("Items list not found!");
 		}
 
 		HashMap<String, Integer> identifierToIntId = new HashMap<>();
-		for(JsonElement jsonElement : statesArray) {
-			JsonObject entry = jsonElement.getAsJsonObject();
-			identifierToIntId.put(entry.get("name").getAsString(), entry.get("id").getAsInt());
+		for(JsonNode jsonElement : statesArray) {
+			identifierToIntId.put(jsonElement.get("name").asText(), jsonElement.get("id").asInt());
 		}
 
-		for (Map.Entry<String, JsonElement> entry : itemsObject.entrySet()) {
+		for (Iterator<Map.Entry<String, JsonNode>> it = itemsObject.fields(); it.hasNext(); ) {
+			Map.Entry<String, JsonNode> entry = it.next();
 			String javaStringIdentifier = entry.getKey();
 			Identifier javaIdentifier = new Identifier(javaStringIdentifier);
 
-			JsonObject bedrockItemData = entry.getValue().getAsJsonObject();
-			String bedrockIdentifier = bedrockItemData.get("bedrock_identifier").getAsString();
+			JsonNode bedrockItemData = entry.getValue();
+			String bedrockIdentifier = bedrockItemData.get("bedrock_identifier").asText();
 			int bedrockId = identifierToIntId.get(bedrockIdentifier);
-			int bedrockData = bedrockItemData.get("bedrock_data").getAsInt();
+			int bedrockData = bedrockItemData.get("bedrock_data").asInt();
 
 			Item item = Registry.ITEM.get(javaIdentifier);
 

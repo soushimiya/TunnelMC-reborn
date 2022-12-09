@@ -3,12 +3,11 @@ package me.THEREALWWEFAN231.tunnelmc.translator.blockstate;
 import com.nukkitx.nbt.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import me.THEREALWWEFAN231.tunnelmc.utils.FileManagement;
+import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.block.BlockState;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * Used for server implementations that use an older chunk encoding version that use a different block palette.
@@ -18,7 +17,7 @@ public final class LegacyBlockPaletteManager {
 
     static {
         NbtList<NbtMap> legacyBlockStates;
-        try (InputStream stream = FileManagement.class.getClassLoader().getResourceAsStream("tunnel/runtime_block_states.dat")) {
+        try (InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream("tunnel/runtime_block_states.dat")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state tag!");
             }

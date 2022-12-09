@@ -1,14 +1,11 @@
 package me.THEREALWWEFAN231.tunnelmc.translator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
+import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
 
@@ -23,15 +20,16 @@ public class EntityTranslator {
 			BEDROCK_IDENTIFIER_TO_ENTITY_TYPE.put(EntityType.getId(e).toString(), e);
 		}
 
-		JsonObject jsonObject = TunnelMC.instance.fileManagement.getJsonFromResource("tunnel/entity_override_translations.json").getAsJsonObject();
+		ObjectNode jsonObject = (ObjectNode) FileUtils.getJsonFromResource("tunnel/entity_override_translations.json");
 		if (jsonObject == null) {
 			return;
 		}
 
-		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-			Optional<EntityType<?>> optional = EntityType.get(entry.getValue().getAsString());
+		for (Iterator<Map.Entry<String, JsonNode>> it = jsonObject.fields(); it.hasNext(); ) {
+			Map.Entry<String, JsonNode> entry = it.next();
+			Optional<EntityType<?>> optional = EntityType.get(entry.getValue().asText());
 			if (optional.isEmpty()) {
-				System.out.println("Could not find entity type " + entry.getValue().getAsString() + " when reading entity_override_translations.json");
+				System.out.println("Could not find entity type " + entry.getValue().asText() + " when reading entity_override_translations.json");
 				continue;
 			}
 
