@@ -33,7 +33,6 @@ public record ChainData(String rawData, KeyPair keyPair) {
         try {
             ArrayNode node = (ArrayNode) JSON_MAPPER.readTree(rawData).get("chain");
 
-            System.out.println(rawData);
             switch (node.size()) {
                 case 1 -> {
                     // Self-signed
