@@ -1,10 +1,12 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import me.THEREALWWEFAN231.tunnelmc.utils.JoseUtils;
 
+import java.io.IOException;
 import java.security.*;
+import java.util.Base64;
 
 import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
@@ -28,23 +30,33 @@ public record ChainData(String rawData, KeyPair keyPair) {
 
     // This is meant to be stored afterwards
     public AuthData decodeAuthData() {
-        ArrayNode node;
         try {
-            node = (ArrayNode) JSON_MAPPER.readTree(rawData).get("chain");
-        } catch (JsonProcessingException e) {
+            ArrayNode node = (ArrayNode) JSON_MAPPER.readTree(rawData).get("chain");
+
+            System.out.println(rawData);
+            switch (node.size()) {
+                case 1 -> {
+                    // Self-signed
+                    JsonNode chainPart = decodeChainPart(node.get(0).asText().split("\\."));
+                    return JSON_MAPPER.convertValue(chainPart.get("extraData"), AuthData.class);
+                }
+                case 3 -> {
+                    // Assuming Mojang signed chain
+                    JsonNode chainPart = decodeChainPart(node.get(2).asText().split("\\."));
+                    return JSON_MAPPER.convertValue(chainPart.get("extraData"), AuthData.class);
+                }
+                default -> throw new IndexOutOfBoundsException("Invalid chain size");
+            }
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
-        System.out.println(rawData);
-        switch (node.size()) {
-            case 1 -> {
-                // first node
-            }
-            case 3 -> {
-                // last node
-            }
-            default -> throw new IndexOutOfBoundsException("Invalid chain size");
+    private JsonNode decodeChainPart(String[] parts) throws IOException {
+        if(parts.length != 3) {
+            throw new RuntimeException("Invalid chain");
         }
-        return null;
+
+        return JSON_MAPPER.readTree(Base64.getUrlDecoder().decode(parts[1]));
     }
 }

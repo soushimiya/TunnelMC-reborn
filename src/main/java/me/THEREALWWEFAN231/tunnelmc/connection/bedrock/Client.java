@@ -31,7 +31,6 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
 
 @Log4j2
 public class Client {
@@ -42,7 +41,6 @@ public class Client {
 	private String ip;
 	private int port;
 
-	private boolean onlineMode;
 	public ChainData chainData;
 	public AuthData authData;
 	public BedrockClient bedrockClient;
@@ -69,7 +67,15 @@ public class Client {
 	public void initialize(String ip, int port, boolean onlineMode) {
 		this.ip = ip;
 		this.port = port;
-		this.onlineMode = onlineMode;
+
+		LoginChainSupplier supplier;
+		if (onlineMode) {
+			supplier = new OnlineModeLoginChainSupplier(System.out);
+		} else {
+			supplier = new OfflineModeLoginChainSupplier(TunnelMC.mc.getSession().getUsername());
+		}
+		this.chainData = supplier.get().join(); // TODO: make async
+		this.authData = this.chainData.decodeAuthData();
 
 		InetSocketAddress bindAddress = new InetSocketAddress("0.0.0.0", getRandomPort());
 		this.bedrockClient = new BedrockClient(bindAddress);
@@ -78,7 +84,7 @@ public class Client {
 		TunnelMC.mc.setScreen(this.connectScreen);
 
 		InetSocketAddress addressToConnect = new InetSocketAddress(ip, port);
-		this.bedrockClient.connect(addressToConnect).whenComplete((BiConsumer<BedrockSession, Throwable>) (session, throwable) -> {
+		this.bedrockClient.connect(addressToConnect).whenComplete((session, throwable) -> {
 			if (throwable != null) {
 				MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
 						new DisconnectedScreen(
@@ -127,13 +133,6 @@ public class Client {
 		try {
 			LoginPacket loginPacket = new LoginPacket();
 
-			LoginChainSupplier supplier;
-			if (this.onlineMode) {
-				supplier = new OnlineModeLoginChainSupplier(System.out);
-			} else {
-				supplier = new OfflineModeLoginChainSupplier(TunnelMC.mc.getSession().getUsername());
-			}
-
 			String clientData = ClientData.getClientData(this.ip + ":" + this.port);
 			if (clientData == null) {
 				MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
@@ -146,28 +145,14 @@ public class Client {
 				return;
 			}
 
-			supplier.get().whenComplete((chainData, throwable) -> {
-				if(throwable != null) {
-					MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
-							new DisconnectedScreen(
-									new TitleScreen(false),
-									Text.of("TunnelMC"),
-									Text.of(throwable.getMessage())
-							)
-					));
-				}
-				this.chainData = chainData;
-				this.authData = chainData.decodeAuthData();
+			loginPacket.setProtocolVersion(bedrockSession.getPacketCodec().getProtocolVersion());
+			loginPacket.setChainData(new AsciiString(chainData.rawData().getBytes()));
+			loginPacket.setSkinData(new AsciiString(clientData));
+			this.sendPacketImmediately(loginPacket);
 
-				loginPacket.setProtocolVersion(bedrockSession.getPacketCodec().getProtocolVersion());
-				loginPacket.setChainData(new AsciiString(chainData.rawData().getBytes()));
-				loginPacket.setSkinData(new AsciiString(clientData));
-				this.sendPacketImmediately(loginPacket);
+			this.connectScreen.setStatus(Text.of("Loading resources..."));
 
-				this.connectScreen.setStatus(Text.of("Loading resources..."));
-
-				this.javaConnection = new FakeJavaConnection();
-			});
+			this.javaConnection = new FakeJavaConnection();
 		} catch (Exception e) {
 			MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().disconnect(
 					new DisconnectedScreen(
