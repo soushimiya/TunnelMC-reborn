@@ -29,23 +29,11 @@ import java.util.Objects;
  */
 public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 	private static final Registry<Biome> BIOMES_REGISTRY = BuiltinRegistries.BIOME;
-	private final List<LevelChunkPacket> chunksOutOfRenderDistance = new ArrayList<>();
-
-	public LevelChunkTranslator() {
-		TunnelMC.instance.eventManager.registerListeners(this, this);
-	}
 
 	@Override
 	public void translate(LevelChunkPacket packet) {
 		int chunkX = packet.getChunkX();
 		int chunkZ = packet.getChunkZ();
-
-		if (TunnelMC.mc.player != null) {
-			if (this.isChunkInRenderDistance(chunkX, chunkZ)) {
-				this.chunksOutOfRenderDistance.add(packet);
-				return;
-			}
-		}
 
 		ChunkSection[] chunkSections = new ChunkSection[24];
 
@@ -110,29 +98,5 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 	@Override
 	public Class<LevelChunkPacket> getPacketClass() {
 		return LevelChunkPacket.class;
-	}
-
-	public boolean isChunkInRenderDistance(int chunkX, int chunkZ) {
-		if (TunnelMC.mc.player == null) {
-			return false;
-		}
-		int playerChunkX = MathHelper.floor(TunnelMC.mc.player.getX()) >> 4;
-		int playerChunkZ = MathHelper.floor(TunnelMC.mc.player.getZ()) >> 4;
-		return Math.abs(chunkX - playerChunkX) > TunnelMC.mc.options.getViewDistance().getValue() || Math.abs(chunkZ - playerChunkZ) > TunnelMC.mc.options.getViewDistance().getValue();
-	}
-
-	@Listener
-	public void onEvent(EventPlayerTick event) {
-		// This needs some work, general chunk loading needs some work as well.
-		Iterator<LevelChunkPacket> iterator = chunksOutOfRenderDistance.iterator();
-		while (iterator.hasNext()) {
-			LevelChunkPacket chunk = iterator.next();
-			if (this.isChunkInRenderDistance(chunk.getChunkX(), chunk.getChunkZ())) {
-				continue;
-			}
-
-			translate(chunk);
-			iterator.remove();
-		}
 	}
 }

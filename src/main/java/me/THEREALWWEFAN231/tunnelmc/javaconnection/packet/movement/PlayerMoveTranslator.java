@@ -36,6 +36,10 @@ public class PlayerMoveTranslator extends PacketTranslator<PlayerMoveC2SPacket> 
 	}
 
 	public static void translateMovementPacket(PlayerMoveC2SPacket playerMoveC2SPacket, MovePlayerPacket.Mode mode) {
+		if(TunnelMC.mc.player == null) {
+			return;
+		}
+
 		double currentPosX = playerMoveC2SPacket.getX(TunnelMC.mc.player.getPos().x);
 		double currentPosY = playerMoveC2SPacket.getY(TunnelMC.mc.player.getPos().y) + TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING);
 		double currentPosZ = playerMoveC2SPacket.getZ(TunnelMC.mc.player.getPos().z);
