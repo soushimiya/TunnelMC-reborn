@@ -35,6 +35,7 @@ public record ChainData(String rawData, KeyPair keyPair) {
             throw new RuntimeException(e);
         }
 
+        System.out.println(rawData);
         switch (node.size()) {
             case 1 -> {
                 // first node

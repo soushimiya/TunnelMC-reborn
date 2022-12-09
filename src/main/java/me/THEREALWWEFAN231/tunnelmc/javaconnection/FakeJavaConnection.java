@@ -16,7 +16,7 @@ public class FakeJavaConnection {
 
 	public FakeJavaConnection() {
 		ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
-		this.clientPlayNetworkHandler = new ClientPlayNetworkHandler(TunnelMC.mc, null, clientConnection, new GameProfile(Client.instance.authData.getIdentity(), Client.instance.authData.getDisplayName()), NOOPTelemetrySender.INSTANCE);
+		this.clientPlayNetworkHandler = new ClientPlayNetworkHandler(TunnelMC.mc, null, clientConnection, new GameProfile(Client.instance.authData.identity(), Client.instance.authData.displayName()), NOOPTelemetrySender.INSTANCE);
 		this.packetTranslatorManager = new JavaPacketTranslatorManager();
 	}
 

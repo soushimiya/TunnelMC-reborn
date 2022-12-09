@@ -26,7 +26,7 @@ public class ServerToClientHandshakePacketTranslator extends PacketTranslator<Se
 			JsonObject payloadObject = JsonParser.parseString(payload).getAsJsonObject();
 			
 			ECPublicKey serverKey = EncryptionUtils.generateKey(headerObject.get("x5u").getAsString());
-			SecretKey key = EncryptionUtils.getSecretKey(Client.instance.authData.getPrivateKey(), serverKey, Base64.getDecoder().decode(payloadObject.get("salt").getAsString()));
+			SecretKey key = EncryptionUtils.getSecretKey(Client.instance.chainData.privateKey(), serverKey, Base64.getDecoder().decode(payloadObject.get("salt").getAsString()));
 
 			Client.instance.bedrockClient.getSession().enableEncryption(key);
 		} catch (Exception e) {

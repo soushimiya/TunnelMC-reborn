@@ -11,9 +11,9 @@ public class ChatMessageC2SPacketTranslator extends PacketTranslator<ChatMessage
 	public void translate(ChatMessageC2SPacket packet) {
 		TextPacket textPacket = new TextPacket();
 		textPacket.setType(TextPacket.Type.CHAT);
-		textPacket.setSourceName(Client.instance.authData.getDisplayName());
+		textPacket.setSourceName(Client.instance.authData.displayName());
 		textPacket.setMessage(packet.chatMessage());
-		textPacket.setXuid(Client.instance.authData.getXuid());
+		textPacket.setXuid(Client.instance.authData.xuid());
 
 		Client.instance.sendPacket(textPacket);
 	}
