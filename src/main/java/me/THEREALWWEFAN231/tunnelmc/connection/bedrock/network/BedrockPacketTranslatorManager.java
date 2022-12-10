@@ -13,27 +13,27 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new StartGameTranslator());
 		this.addTranslator(new ChunkRadiusUpdatedTranslator());
 		this.addTranslator(new LevelChunkTranslator());
-		this.addTranslator(new NetworkStackLatencyPacketTranslator());
-		this.addTranslator(new ResourcePacksInfoPacketTranslator());
-		this.addTranslator(new ResourcePackStackPacketTranslator());
+		this.addTranslator(new NetworkStackLatencyTranslator());
+		this.addTranslator(new ResourcePacksInfoTranslator());
+		this.addTranslator(new ResourcePackStackTranslator());
 		this.addTranslator(new AddPlayerTranslator());
 		this.addTranslator(new PlayerListPacketTranslator());
 		this.addTranslator(new TextTranslator());
-		this.addTranslator(new AddEntityPacketTranslator());
-		this.addTranslator(new SetTimePacketTranslator());
-		this.addTranslator(new RemoveEntityPacketTranslator());
-//		this.addTranslator(new InventorySlotPacketTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
-		this.addTranslator(new AddItemEntityPacketTranslator());
-		this.addTranslator(new MovePlayerPacketTranslator());
-		this.addTranslator(new MoveEntityAbsolutePacketTranslator());
-		this.addTranslator(new ServerToClientHandshakePacketTranslator());
+		this.addTranslator(new AddEntityTranslator());
+		this.addTranslator(new SetTimeTranslator());
+		this.addTranslator(new RemoveEntityTranslator());
+//		this.addTranslator(new InventorySlotTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+		this.addTranslator(new AddItemEntityTranslator());
+		this.addTranslator(new MovePlayerTranslator());
+		this.addTranslator(new MoveEntityAbsoluteTranslator());
+		this.addTranslator(new ServerToClientHandshakeTranslator());
 		this.addTranslator(new UpdateBlockTranslator());
 		this.addTranslator(new SetEntityMotionTranslator());
-		this.addTranslator(new TakeItemEntityPacketTranslator());
+		this.addTranslator(new TakeItemEntityTranslator());
 		this.addTranslator(new NetworkChunkPublisherUpdateTranslator());
-		this.addTranslator(new SetEntityDataPacketTranslator());
-//		this.addTranslator(new ContainerOpenPacketTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
-//		this.addTranslator(new InventoryContentPacketTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+		this.addTranslator(new SetEntityDataTranslator());
+//		this.addTranslator(new ContainerOpenTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+//		this.addTranslator(new InventoryContentTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
 		this.addTranslator(new DisconnectTranslator());
 		this.addTranslator(new SetPlayerGameTypeTranslator());
 		this.addTranslator(new AdventureSettingsTranslator());
@@ -46,9 +46,8 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new LevelEventTranslator());
 		this.addTranslator(new LevelSoundEvent2Translator());
 		this.addTranslator(new LevelSoundEventTranslator());
-		this.addTranslator(new BlockEntityDataPacketTranslator());
-		this.addTranslator(new RespawnPacketTranslator());
+		this.addTranslator(new RespawnTranslator());
 		this.addTranslator(new PlayStatusTranslator());
-		this.addTranslator(new EntityEventPacketTranslator());
+		this.addTranslator(new EntityEventTranslator());
 	}
 }
