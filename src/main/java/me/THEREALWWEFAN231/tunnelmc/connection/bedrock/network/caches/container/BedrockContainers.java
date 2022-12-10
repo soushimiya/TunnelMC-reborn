@@ -6,6 +6,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers.PlayerOffhandContainer;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class BedrockContainers {
 	
@@ -13,18 +14,20 @@ public class BedrockContainers {
 	public static final int PLAYER_OFFHAND_COTNAINER_ID = 119;
 	public static final int PLAYER_ARMOR_COTNAINER_ID = 120;
 	public static final int PLAYER_CONTAINER_CURSOR_COTNAINER_ID = 124;
-	
+
+	private int revision = 0;
+	public byte openContainerId = 0;
 	private BedrockContainer currentlyOpenContainer;
 	
-	private HashMap<Integer, BedrockContainer> containers;
+	private final Map<Integer, BedrockContainer> containers;
 	
-	private PlayerInventoryContainer playerInventory;
-	private PlayerOffhandContainer playerOffhandContainer;
-	private PlayerArmorContainer playerArmorContainer;
-	private PlayerContainerCursorContainer playerContainerCursorContainer;
+	private final PlayerInventoryContainer playerInventory;
+	private final PlayerOffhandContainer playerOffhandContainer;
+	private final PlayerArmorContainer playerArmorContainer;
+	private final PlayerContainerCursorContainer playerContainerCursorContainer;
 	
 	public BedrockContainers() {
-		this.containers = new HashMap<Integer, BedrockContainer>();
+		this.containers = new HashMap<>();
 		
 		this.containers.put(BedrockContainers.PLAYER_INVENTORY_COTNAINER_ID, this.playerInventory = new PlayerInventoryContainer());
 		this.containers.put(BedrockContainers.PLAYER_OFFHAND_COTNAINER_ID, this.playerOffhandContainer = new PlayerOffhandContainer());
@@ -32,7 +35,7 @@ public class BedrockContainers {
 		this.containers.put(BedrockContainers.PLAYER_CONTAINER_CURSOR_COTNAINER_ID, this.playerContainerCursorContainer = new PlayerContainerCursorContainer());
 	}
 	
-	public HashMap<Integer, BedrockContainer> getContainers() {
+	public Map<Integer, BedrockContainer> getContainers() {
 		return this.containers;
 	}
 	
@@ -60,4 +63,8 @@ public class BedrockContainers {
 		this.currentlyOpenContainer = currentlyOpenContainer;
 	}
 
+	public int nextRevision() {
+		this.revision = this.revision + 1 & Short.MAX_VALUE;
+		return this.revision;
+	}
 }

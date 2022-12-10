@@ -13,10 +13,10 @@ public class GenericContainerScreenHandlerTranslator extends ScreenHandlerTransl
 		int slotsInContainer = javaContainer.getRows() * 9;
 
 		if (javaSlotId < slotsInContainer) {
-			return BedrockConnectionAccessor.getCurrentConnection().containers.getCurrentlyOpenContainer();
+			return BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getCurrentlyOpenContainer();
 		}
 
-		return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerInventory();
+		return BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerInventory();
 	}
 
 	@Override

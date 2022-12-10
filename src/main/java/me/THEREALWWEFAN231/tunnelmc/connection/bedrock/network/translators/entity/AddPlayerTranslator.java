@@ -7,6 +7,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.OtherClientPlayerEntity;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 
 	@Override
-	public void translate(AddPlayerPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(AddPlayerPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		if (TunnelMC.mc.world == null) {
 			return;
 		}
@@ -49,12 +50,12 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 			player.setVelocity(velocity);
 
 			PlayerSpawnS2CPacket playerSpawnS2CPacket = new PlayerSpawnS2CPacket(player);
-			bedrockConnection.javaConnection.processServerToClientPacket(playerSpawnS2CPacket);
+			javaConnection.processJavaPacket(playerSpawnS2CPacket);
 
 			Pair<EquipmentSlot, ItemStack> itemStackPair = new Pair<>(EquipmentSlot.MAINHAND, ItemTranslator.itemDataToItemStack(packet.getHand()));
 			EntityEquipmentUpdateS2CPacket equipmentUpdatePacket = new EntityEquipmentUpdateS2CPacket((int) packet.getRuntimeEntityId(),
 					Collections.singletonList(itemStackPair));
-			bedrockConnection.javaConnection.processServerToClientPacket(equipmentUpdatePacket);
+			javaConnection.processJavaPacket(equipmentUpdatePacket);
 		};
 
 		if (TunnelMC.mc.world != null) {

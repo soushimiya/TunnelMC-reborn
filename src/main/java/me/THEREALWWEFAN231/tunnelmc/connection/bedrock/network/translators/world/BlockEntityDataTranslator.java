@@ -6,6 +6,7 @@ import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityRegistry;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtils;
@@ -31,10 +32,10 @@ public class BlockEntityDataTranslator extends PacketTranslator<BlockEntityDataP
     }
 
     @Override
-    public void translate(BlockEntityDataPacket packet, BedrockConnection bedrockConnection) {
+    public void translate(BlockEntityDataPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
         Vector3i blockPosition = packet.getBlockPosition();
         NbtMap blockEntityData = packet.getData();
-        bedrockConnection.blockEntityDataCache.getCachedBlockPositionsData().put(blockPosition, blockEntityData);
+        bedrockConnection.getBlockEntityDataCache().getCachedBlockPositionsData().put(blockPosition, blockEntityData);
 
         BlockEntityTranslator translator = BlockEntityRegistry.getBlockEntityTranslator(packet.getData());
         if (translator != null) {
@@ -42,7 +43,7 @@ public class BlockEntityDataTranslator extends PacketTranslator<BlockEntityDataP
             try {
                 BlockEntityUpdateS2CPacket updatePacket = constructor.newInstance(
                         PositionUtils.toBlockPos(packet.getBlockPosition()), translator.getJavaId(), tag);
-                bedrockConnection.javaConnection.processServerToClientPacket(updatePacket);
+                javaConnection.processJavaPacket(updatePacket);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }

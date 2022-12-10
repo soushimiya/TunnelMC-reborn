@@ -24,7 +24,7 @@ public abstract class MixinScreenHandler {
 			return;
 		}
 
-		TunnelMC.instance.eventManager.fire(new QuickMoveSlotEvent((ScreenHandler) (Object) this, slotIndex));
+		TunnelMC.getInstance().getEventManager().fire(new QuickMoveSlotEvent((ScreenHandler) (Object) this, slotIndex));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 2, target = "Lnet/minecraft/screen/ScreenHandler;setCursorStack(Lnet/minecraft/item/ItemStack;)V"))
@@ -34,7 +34,7 @@ public abstract class MixinScreenHandler {
 		}
 
 		int count = button == ClickType.LEFT.ordinal() ? this.cursorStack.getCount() : 1;
-		TunnelMC.instance.eventManager.fire(new PlaceStackOnEmptySlotEvent((ScreenHandler) (Object) this, slotIndex, count));
+		TunnelMC.getInstance().getEventManager().fire(new PlaceStackOnEmptySlotEvent((ScreenHandler) (Object) this, slotIndex, count));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 0, target = "Ljava/util/Optional;ifPresent(Ljava/util/function/Consumer;)V"))
@@ -43,7 +43,7 @@ public abstract class MixinScreenHandler {
 			return;
 		}
 
-		TunnelMC.instance.eventManager.fire(new TakeSlotEvent((ScreenHandler) (Object) this, slotIndex));
+		TunnelMC.getInstance().getEventManager().fire(new TakeSlotEvent((ScreenHandler) (Object) this, slotIndex));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 3, target = "Lnet/minecraft/screen/ScreenHandler;setCursorStack(Lnet/minecraft/item/ItemStack;)V"))
@@ -53,7 +53,7 @@ public abstract class MixinScreenHandler {
 		}
 
 		int count = button == ClickType.LEFT.ordinal() ? this.cursorStack.getCount() : 1;
-		TunnelMC.instance.eventManager.fire(new PlaceStackSlotEvent((ScreenHandler) (Object) this, slotIndex, count));
+		TunnelMC.getInstance().getEventManager().fire(new PlaceStackSlotEvent((ScreenHandler) (Object) this, slotIndex, count));
 	}
 
 	@Inject(method = "internalOnSlotClick", at = @At(value = "INVOKE", shift = At.Shift.AFTER, ordinal = 3, target = "Lnet/minecraft/entity/player/PlayerEntity;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;"))
@@ -62,6 +62,6 @@ public abstract class MixinScreenHandler {
 			return;
 		}
 
-		TunnelMC.instance.eventManager.fire(new DropSlotEvent((ScreenHandler) (Object) this, slotIndex, button));
+		TunnelMC.getInstance().getEventManager().fire(new DropSlotEvent((ScreenHandler) (Object) this, slotIndex, button));
 	}
 }

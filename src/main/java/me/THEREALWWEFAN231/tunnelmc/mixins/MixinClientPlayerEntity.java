@@ -21,7 +21,7 @@ public class MixinClientPlayerEntity {
 		if(!BedrockConnectionAccessor.isConnectionOpen()) {
 			return;
 		}
-		TunnelMC.instance.eventManager.fire(new PlayerTickEvent(ticks++));
+		TunnelMC.getInstance().getEventManager().fire(new PlayerTickEvent(ticks++));
 	}
 
 	@Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/input/Input;tick(ZF)V"))

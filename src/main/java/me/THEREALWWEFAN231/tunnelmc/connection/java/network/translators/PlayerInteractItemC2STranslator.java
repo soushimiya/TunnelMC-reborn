@@ -9,6 +9,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.util.hit.BlockHitResult;
@@ -22,8 +23,8 @@ public class PlayerInteractItemC2STranslator extends PacketTranslator<PlayerInte
 	//actually i think i could test it on a chest, i should do that sometime
 
 	@Override
-	public void translate(PlayerInteractItemC2SPacket packet, BedrockConnection bedrockConnection) {
-		ItemData usingItem = bedrockConnection.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
+	public void translate(PlayerInteractItemC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+		ItemData usingItem = bedrockConnection.getWrappedContainers().getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 
 		if (TunnelMC.mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult) TunnelMC.mc.crosshairTarget).getBlockPos();

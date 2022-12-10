@@ -8,6 +8,7 @@ import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 
 import javax.crypto.SecretKey;
 import java.security.interfaces.ECPublicKey;
@@ -17,7 +18,7 @@ import java.util.Base64;
 public class ServerToClientHandshakeTranslator extends PacketTranslator<ServerToClientHandshakePacket> {
 
 	@Override
-	public void translate(ServerToClientHandshakePacket packet, BedrockConnection bedrockConnection) {
+	public void translate(ServerToClientHandshakePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		// Thanks to ProxyPass for this portion of the code.
 		try {
 			String[] jwtSplit = packet.getJwt().split("\\.");
@@ -28,9 +29,9 @@ public class ServerToClientHandshakeTranslator extends PacketTranslator<ServerTo
 			JsonObject payloadObject = JsonParser.parseString(payload).getAsJsonObject();
 			
 			ECPublicKey serverKey = EncryptionUtils.generateKey(headerObject.get("x5u").getAsString());
-			SecretKey key = EncryptionUtils.getSecretKey(bedrockConnection.chainData.privateKey(), serverKey, Base64.getDecoder().decode(payloadObject.get("salt").getAsString()));
+			SecretKey key = EncryptionUtils.getSecretKey(bedrockConnection.getChainData().privateKey(), serverKey, Base64.getDecoder().decode(payloadObject.get("salt").getAsString()));
 
-			bedrockConnection.bedrockClient.getSession().enableEncryption(key);
+			bedrockConnection.enableEncryption(key);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -5,6 +5,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -12,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 public class MoveEntityAbsoluteTranslator extends PacketTranslator<MoveEntityAbsolutePacket> {
 
 	@Override
-	public void translate(MoveEntityAbsolutePacket packet, BedrockConnection bedrockConnection) {
+	public void translate(MoveEntityAbsolutePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		if (TunnelMC.mc.world == null) {
 			return;
 		}

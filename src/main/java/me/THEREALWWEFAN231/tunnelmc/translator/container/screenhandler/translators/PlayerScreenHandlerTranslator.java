@@ -12,11 +12,11 @@ public class PlayerScreenHandlerTranslator extends ScreenHandlerTranslator<Playe
 	@Override
 	public BedrockContainer getBedrockContainerFromJava(PlayerScreenHandler javaContainer, int javaSlotId) {
 		if (javaSlotId >= 9 && javaSlotId <= 44) {//java main inventory slot ids
-			return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerInventory();
+			return BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerInventory();
 		} else if (javaSlotId >= 5 && javaSlotId <= 8) {//java armor slot ids
-			return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerArmorContainer();
+			return BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerArmorContainer();
 		} else if (javaSlotId == 45) {//java offhand slot id
-			return BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerOffhandContainer();
+			return BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerOffhandContainer();
 		}
 
 		return null;

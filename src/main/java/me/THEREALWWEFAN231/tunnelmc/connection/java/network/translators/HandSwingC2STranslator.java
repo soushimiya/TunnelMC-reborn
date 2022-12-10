@@ -5,13 +5,14 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 
 @PacketIdentifier(HandSwingC2SPacket.class)
 public class HandSwingC2STranslator extends PacketTranslator<HandSwingC2SPacket> {
 
 	@Override
-	public void translate(HandSwingC2SPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(HandSwingC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}

@@ -7,13 +7,14 @@ import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
 @PacketIdentifier(UpdateSelectedSlotC2SPacket.class)
 public class UpdateSelectedSlotC2STranslator extends PacketTranslator<UpdateSelectedSlotC2SPacket> {
 
 	@Override
-	public void translate(UpdateSelectedSlotC2SPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(UpdateSelectedSlotC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		UpdateSelectedSlotC2STranslator.updateHotbarItem(packet.getSelectedSlot(), bedrockConnection);
 	}
 	
@@ -24,7 +25,7 @@ public class UpdateSelectedSlotC2STranslator extends PacketTranslator<UpdateSele
 		}
 		
 		long runtimeEntityId = TunnelMC.mc.player.getId();
-		BedrockContainer container = bedrockConnection.containers.getPlayerInventory();
+		BedrockContainer container = bedrockConnection.getWrappedContainers().getPlayerInventory();
 		
 		ItemData item = container.getItemFromSlot(hotbarSlot);
 		

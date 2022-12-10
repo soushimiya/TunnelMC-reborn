@@ -5,6 +5,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -19,7 +20,7 @@ import java.util.UUID;
 public class AddItemEntityTranslator extends PacketTranslator<AddItemEntityPacket> {
 
 	@Override
-	public void translate(AddItemEntityPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(AddItemEntityPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		int id = (int) packet.getUniqueEntityId();
 		double x = packet.getPosition().getX();
 		double y = packet.getPosition().getY();
@@ -36,10 +37,10 @@ public class AddItemEntityTranslator extends PacketTranslator<AddItemEntityPacke
 		itemEntity.setStack(ItemTranslator.itemDataToItemStack(packet.getItemInHand()));
 		itemEntity.setUuid(UUID.randomUUID());
 		
-		bedrockConnection.javaConnection.processServerToClientPacket((Packet<ClientPlayPacketListener>) itemEntity.createSpawnPacket());
+		javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) itemEntity.createSpawnPacket());
 		
 		DataTracker dataTracker = itemEntity.getDataTracker();
 		EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, dataTracker, false);
-		bedrockConnection.javaConnection.processServerToClientPacket(entityTrackerUpdateS2CPacket);
+		javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
 	}
 }

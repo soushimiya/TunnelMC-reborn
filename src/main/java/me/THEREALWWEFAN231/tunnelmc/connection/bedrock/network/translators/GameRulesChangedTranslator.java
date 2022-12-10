@@ -6,6 +6,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.world.GameRules;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class GameRulesChangedTranslator extends PacketTranslator<GameRulesChangedPacket> {
 
     @Override
-    public void translate(GameRulesChangedPacket packet, BedrockConnection bedrockConnection) {
+    public void translate(GameRulesChangedPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
         if (TunnelMC.mc.world == null) {
             TunnelMC.mc.execute(() -> onGameRulesChanged(packet.getGameRules()));
         } else {

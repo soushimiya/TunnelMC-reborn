@@ -12,14 +12,17 @@ import com.nukkitx.protocol.bedrock.data.GameType;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
 import com.nukkitx.protocol.bedrock.v545.Bedrock_v545;
 import io.netty.util.AsciiString;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
+import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OnlineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.AuthData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ClientData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.DeviceOS;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.BedrockPacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.ClientBatchHandler;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.BlockEntityDataCache;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
@@ -29,8 +32,10 @@ import me.THEREALWWEFAN231.tunnelmc.events.SessionInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.Packet;
 import net.minecraft.text.Text;
 
+import javax.crypto.SecretKey;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -42,23 +47,26 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
 @Log4j2
-public class BedrockConnection { // TODO: make a lot more fields private
+public class BedrockConnection {
 	public static final BedrockPacketCodec CODEC = Bedrock_v545.V545_CODEC;
 
 	private final InetSocketAddress targetAddress;
+	private final PacketTranslatorManager<BedrockPacket> packetTranslatorManager;
+	final BedrockClient bedrockClient;
+	private FakeJavaConnection javaConnection;
 
-	public ChainData chainData;
-	public AuthData authData;
-	public BedrockClient bedrockClient;
-	public BedrockConnectingScreen connectScreen;
-	public FakeJavaConnection javaConnection;
-	
-	public BedrockContainers containers;
-	public BlockEntityDataCache blockEntityDataCache;
+	@Getter
+	private ChainData chainData;
+	@Getter
+	private AuthData authData;
+	private BedrockConnectingScreen connectScreen;
+
+	@Getter
+	private BedrockContainers wrappedContainers;
+	@Getter
+	private BlockEntityDataCache blockEntityDataCache;
 
 	public int entityRuntimeId;
-	public byte openContainerId = 0;
-	private int revision = 0;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
 	public GameType defaultGameMode;
 	public AtomicBoolean startedSprinting = new AtomicBoolean();
@@ -70,9 +78,10 @@ public class BedrockConnection { // TODO: make a lot more fields private
 	BedrockConnection(InetSocketAddress bindAddress, InetSocketAddress targetAddress) {
 		this.bedrockClient = new BedrockClient(bindAddress);
 		this.bedrockClient.bind().join();
+		this.packetTranslatorManager = new BedrockPacketTranslatorManager();
 		this.targetAddress = targetAddress;
 
-		TunnelMC.instance.eventManager.registerListeners(this, this);
+		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 	}
 
 	public void connect(boolean onlineMode) {
@@ -81,9 +90,7 @@ public class BedrockConnection { // TODO: make a lot more fields private
 
 		LoginChainSupplier supplier;
 		if (onlineMode) {
-			supplier = new OnlineModeLoginChainSupplier(s -> {
-				this.connectScreen.setStatus(Text.of(s));
-			});
+			supplier = new OnlineModeLoginChainSupplier(s -> this.connectScreen.setStatus(Text.of(s)));
 		} else {
 			supplier = new OfflineModeLoginChainSupplier(TunnelMC.mc.getSession().getUsername());
 		}
@@ -105,14 +112,55 @@ public class BedrockConnection { // TODO: make a lot more fields private
 				}
 
 				this.connectScreen.setStatus(Text.of("Logging in..."));
-				TunnelMC.instance.eventManager.fire(new SessionInitializedEvent(session));
+				TunnelMC.getInstance().getEventManager().fire(new SessionInitializedEvent(session));
 			});
 		});
 	}
 
+	public void sendPacketImmediately(BedrockPacket packet) {
+		BedrockSession session = this.bedrockClient.getSession();
+
+		if (session != null) {
+			session.sendPacketImmediately(packet);
+			if (session.isLogging()) {
+				log.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
+			}
+		}
+	}
+
+	public void handleJavaPacket(Packet<?> packet) {
+		this.javaConnection.translatePacket(packet);
+	}
+
+	public void sendPacket(BedrockPacket packet) {
+		BedrockSession session = this.bedrockClient.getSession();
+
+		if (session != null) {
+			session.sendPacket(packet);
+			if (session.isLogging()) {
+				log.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
+			}
+		}
+	}
+
+	public void setHardcodedBlockingId(int id) {
+		System.out.println(this.bedrockClient.getSession().getHardcodedBlockingId().get());
+		if(!this.bedrockClient.getSession().getHardcodedBlockingId().compareAndSet(-1, id)) {
+			throw new IllegalStateException("Blocking id is already set");
+		}
+	}
+
+	public void enableEncryption(SecretKey key) {
+		if(this.bedrockClient.getSession().isEncrypted()) {
+			throw new IllegalStateException("Connection is already encrypted");
+		}
+		this.bedrockClient.getSession().enableEncryption(key);
+	}
+
 	@Listener
-	private void onEvent(SessionInitializedEvent event) {
-		BedrockSession bedrockSession = event.session();
+	public void onEvent(SessionInitializedEvent event) {
+		BedrockSession bedrockSession = event.getSession();
+		FakeJavaConnection javaConnection = new FakeJavaConnection(this);
 
 		bedrockSession.setPacketCodec(CODEC);
 		bedrockSession.addDisconnectHandler(reason -> MinecraftClient.getInstance().execute(() -> {
@@ -124,7 +172,7 @@ public class BedrockConnection { // TODO: make a lot more fields private
 			BedrockConnectionAccessor.closeConnection("You were disconnected from the target server because: " + reason.toString());
 		}));
 
-		bedrockSession.setBatchHandler(new ClientBatchHandler());
+		bedrockSession.setBatchHandler(new ClientBatchHandler(this, javaConnection, this.packetTranslatorManager));
 		bedrockSession.setLogging(false);
 
 		try {
@@ -141,7 +189,7 @@ public class BedrockConnection { // TODO: make a lot more fields private
 			clientData.setSkinGeometryVersion(Base64.getEncoder().withoutPadding().encodeToString(BedrockConnection.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
 			clientData.setLanguageCode(TunnelMC.mc.getLanguageManager().getLanguage().getCode());
 			clientData.setSelfSignedId(uuid);
-			clientData.setServerAddress(targetAddress.getHostName() + ":" + targetAddress.getPort());
+			clientData.setServerAddress(this.targetAddress.getHostName() + ":" + this.targetAddress.getPort());
 			clientData.setThirdPartyName(authData.displayName());
 			clientData.setSkinGeometryData(Base64.getEncoder().withoutPadding().encodeToString(
 					JSON_MAPPER.writeValueAsBytes(FileUtils.getJsonFromResource("tunnel/geometry_data.json"))));
@@ -171,43 +219,15 @@ public class BedrockConnection { // TODO: make a lot more fields private
 			this.sendPacketImmediately(loginPacket);
 
 			this.connectScreen.setStatus(Text.of("Loading resources..."));
-
-			this.javaConnection = new FakeJavaConnection(this);
+			this.javaConnection = javaConnection;
 		} catch (Exception e) {
 			BedrockConnectionAccessor.closeConnection(e);
 		}
 	}
 
 	@Listener
-	private void onEvent(PlayerInitializedEvent event) {
-		this.containers = new BedrockContainers();
+	public void onEvent(PlayerInitializedEvent event) {
+		this.wrappedContainers = new BedrockContainers();
 		this.blockEntityDataCache = new BlockEntityDataCache();
-	}
-
-	public void sendPacketImmediately(BedrockPacket packet) {
-		BedrockSession session = this.bedrockClient.getSession();
-
-		if (session != null) {
-			session.sendPacketImmediately(packet);
-			if (session.isLogging()) {
-				log.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
-			}
-		}
-	}
-
-	public void sendPacket(BedrockPacket packet) {
-		BedrockSession session = this.bedrockClient.getSession();
-
-		if (session != null) {
-			session.sendPacket(packet);
-			if (session.isLogging()) {
-				log.info("Outbound {}: {}", session.getAddress().toString(), packet.getClass().getCanonicalName());
-			}
-		}
-	}
-
-	public int nextRevision() {
-		this.revision = this.revision + 1 & Short.MAX_VALUE;
-		return this.revision;
 	}
 }

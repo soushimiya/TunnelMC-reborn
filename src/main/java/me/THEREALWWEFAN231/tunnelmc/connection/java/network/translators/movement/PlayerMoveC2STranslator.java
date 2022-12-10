@@ -13,6 +13,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerTickEvent;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -24,11 +25,11 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 	private static boolean lastOnGround;
 
 	public PlayerMoveC2STranslator() {
-		TunnelMC.instance.eventManager.registerListeners(this, this);
+		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 	}
 
 	@Override
-	public void translate(PlayerMoveC2SPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(PlayerMoveC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		//this shouldn't even be called? I don't know, doesn't matter
 		PlayerMoveC2STranslator.translateMovementPacket(packet, MovePlayerPacket.Mode.NORMAL, bedrockConnection);
 	}
@@ -88,13 +89,13 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 	private static PlayerAuthInputPacket playerAuthInputPacket;
 
 	@Listener
-	private void onEvent(PlayerTickEvent event) {
+	public void onEvent(PlayerTickEvent event) {
 		if(playerAuthInputPacket == null) {
 			return;
 		}
 		BedrockConnection bedrockConnection = BedrockConnectionAccessor.getCurrentConnection();
 
-		playerAuthInputPacket.setTick(event.tick());
+		playerAuthInputPacket.setTick(event.getTick());
 		playerAuthInputPacket.getInputData().clear();
 		if(bedrockConnection.startedSprinting.compareAndSet(true, false)) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_SPRINTING);

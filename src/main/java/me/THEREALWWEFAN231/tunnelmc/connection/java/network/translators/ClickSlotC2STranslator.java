@@ -12,6 +12,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.slot.DropSlotEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.slot.PlaceStackOnEmptySlotEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.slot.TakeSlotEvent;
@@ -25,11 +26,11 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 	// TODO: should this still be a packet translator?
 
 	public ClickSlotC2STranslator() {
-		TunnelMC.instance.eventManager.registerListeners(this, this);
+		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 	}
 
 	@Override
-	public void translate(ClickSlotC2SPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(ClickSlotC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 	}
 
 	public void onCursorStackAddToStack(ScreenHandler screenHandler, int clickedSlotId) {//for example the user has 64 oak planks in the cursor, and they right-click a slot with oak planks(not an empty slot)
@@ -76,7 +77,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 	}
 
 	@Listener
-	private void onEvent(PlaceStackOnEmptySlotEvent event) {
+	public void onEvent(PlaceStackOnEmptySlotEvent event) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}
@@ -87,7 +88,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		inventoryTransactionPacket.setActionType(0);
 		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 
-		BedrockContainer cursorContainer = BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerContainerCursorContainer();
+		BedrockContainer cursorContainer = BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerContainerCursorContainer();
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(event.getScreenHandler(), clickedSlotId);
 		if (containerForClickedSlot == null) {
 			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
@@ -121,7 +122,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 	}
 
 	@Listener
-	private void onEvent(TakeSlotEvent event) {
+	public void onEvent(TakeSlotEvent event) {
 		int clickedSlotId = event.getSlotIndex();
 
 		InventoryTransactionPacket inventoryTransactionPacket = new InventoryTransactionPacket();
@@ -129,7 +130,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		inventoryTransactionPacket.setActionType(0);//I have no idea
 		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 
-		BedrockContainer cursorContainer = BedrockConnectionAccessor.getCurrentConnection().containers.getPlayerContainerCursorContainer();
+		BedrockContainer cursorContainer = BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerContainerCursorContainer();
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(event.getScreenHandler(), clickedSlotId);
 		if (containerForClickedSlot == null) {
 			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
@@ -154,7 +155,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 	}
 
 	@Listener
-	private void onEvent(DropSlotEvent event) {
+	public void onEvent(DropSlotEvent event) {
 		int clickedSlotId = event.getSlotIndex();
 
 		InventoryTransactionPacket inventoryTransactionPacket = new InventoryTransactionPacket();

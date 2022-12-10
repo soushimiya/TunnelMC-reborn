@@ -8,6 +8,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.ScreenHandlerTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.item.ItemStack;
@@ -18,7 +19,7 @@ import net.minecraft.util.collection.DefaultedList;
 public class InventoryContentTranslator extends PacketTranslator<InventoryContentPacket> {
 
 	@Override
-	public void translate(InventoryContentPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(InventoryContentPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}
@@ -26,9 +27,9 @@ public class InventoryContentTranslator extends PacketTranslator<InventoryConten
 		int syncId = packet.getContainerId();
 		int javaContainerSize = packet.getContents().size();
 
-		BedrockContainer containerAffected = bedrockConnection.containers.getContainers().get(syncId);
+		BedrockContainer containerAffected = bedrockConnection.getWrappedContainers().getContainers().get(syncId);
 		if (containerAffected == null) {
-			containerAffected = bedrockConnection.containers.getCurrentlyOpenContainer();
+			containerAffected = bedrockConnection.getWrappedContainers().getCurrentlyOpenContainer();
 		}
 
 		switch (syncId) {
@@ -71,8 +72,8 @@ public class InventoryContentTranslator extends PacketTranslator<InventoryConten
 					javaContents.set(i, translatedStack);
 					containerAffected.setItemBedrock(i, packet.getContents().get(i));
 				}
-				InventoryS2CPacket inventoryS2CPacket = new InventoryS2CPacket(syncId, bedrockConnection.nextRevision(), javaContents, ItemStack.EMPTY);
-				bedrockConnection.javaConnection.processServerToClientPacket(inventoryS2CPacket);
+				InventoryS2CPacket inventoryS2CPacket = new InventoryS2CPacket(syncId, bedrockConnection.getWrappedContainers().nextRevision(), javaContents, ItemStack.EMPTY);
+				javaConnection.processJavaPacket(inventoryS2CPacket);
 			}
 		}
 	}

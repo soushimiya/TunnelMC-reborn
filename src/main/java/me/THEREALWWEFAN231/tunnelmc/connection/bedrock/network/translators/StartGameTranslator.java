@@ -8,13 +8,13 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.translator.dimension.Dimension;
 import me.THEREALWWEFAN231.tunnelmc.translator.gamemode.GameModeTranslator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
@@ -22,7 +22,6 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,13 +31,13 @@ import java.util.stream.Stream;
 public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
 	@Override
-	public void translate(StartGamePacket packet, BedrockConnection bedrockConnection) {
-		for (StartGamePacket.ItemEntry itemEntry : packet.getItemEntries()) {
-			if (itemEntry.getIdentifier().equals("minecraft:shield")) {
-				bedrockConnection.bedrockClient.getSession().getHardcodedBlockingId().set(itemEntry.getId());
-				break;
-			}
-		}
+	public void translate(StartGamePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+//		for (StartGamePacket.ItemEntry itemEntry : packet.getItemEntries()) {
+//			if (itemEntry.getIdentifier().equals("minecraft:shield")) {
+//				bedrockConnection.setHardcodedBlockingId(itemEntry.getId());
+//				break;
+//			}
+//		}
 
 		bedrockConnection.entityRuntimeId = (int) packet.getRuntimeEntityId();
 		bedrockConnection.defaultGameMode = packet.getLevelGameType();
@@ -64,28 +63,19 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		Set<RegistryKey<World>> dimensionIds = Stream.of(World.OVERWORLD, World.NETHER, World.END).collect(Collectors.toSet());
 
 		GameJoinS2CPacket gameJoinS2CPacket = new GameJoinS2CPacket(bedrockConnection.entityRuntimeId, false, gameMode, gameMode, dimensionIds, DynamicRegistryManager.BUILTIN.get(), dimensionRegistryKey, worldRegistryKey, seed, maxPlayers, chunkLoadDistance, chunkLoadDistance, false, showDeathScreen, false, false, Optional.empty());
-		bedrockConnection.javaConnection.processServerToClientPacket(gameJoinS2CPacket);
+		javaConnection.processJavaPacket(gameJoinS2CPacket);
 
-		TunnelMC.instance.eventManager.fire(new PlayerInitializedEvent());
+		TunnelMC.getInstance().getEventManager().fire(new PlayerInitializedEvent());
 
 		// TODO: Send a complete SynchronizeTagsS2CPacket so that water can work.
 
 		MinecraftClient.getInstance().execute(() -> GameRulesChangedTranslator.onGameRulesChanged(packet.getGamerules()));
 
-		float x = packet.getPlayerPosition().getX();
-		float y = packet.getPlayerPosition().getY();
-		float z = packet.getPlayerPosition().getZ();
-		float yaw = packet.getRotation().getX();
-		float pitch = packet.getRotation().getY();
-
-		PlayerPositionLookS2CPacket playerPositionLookS2CPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), 0, false);
-//		client.javaConnection.processServerToClientPacket(playerPositionLookS2CPacket);
-
-		int chunkX = MathHelper.floor(x) >> 4;
-		int chunkZ = MathHelper.floor(z) >> 4;
+		int chunkX = MathHelper.floor(packet.getPlayerPosition().getX()) >> 4;
+		int chunkZ = MathHelper.floor(packet.getPlayerPosition().getZ()) >> 4;
 
 		ChunkRenderDistanceCenterS2CPacket chunkRenderDistanceCenterS2CPacket = new ChunkRenderDistanceCenterS2CPacket(chunkX, chunkZ);
-		bedrockConnection.javaConnection.processServerToClientPacket(chunkRenderDistanceCenterS2CPacket);
+		javaConnection.processJavaPacket(chunkRenderDistanceCenterS2CPacket);
 
 		RequestChunkRadiusPacket requestChunkRadiusPacket = new RequestChunkRadiusPacket();
 		requestChunkRadiusPacket.setRadius(TunnelMC.mc.options.getViewDistance().getValue());

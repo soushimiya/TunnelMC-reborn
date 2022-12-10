@@ -8,6 +8,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerInteractEntityC2SPacket;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
@@ -16,8 +17,9 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 public class PlayerInteractEntityC2STranslator extends PacketTranslator<PlayerInteractEntityC2SPacket>{
 
 	@Override
-	public void translate(PlayerInteractEntityC2SPacket packet, BedrockConnection bedrockConnection) {
-		ItemData holdingItem = bedrockConnection.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
+	public void translate(PlayerInteractEntityC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+		ItemData holdingItem = bedrockConnection.getWrappedContainers().getPlayerInventory()
+				.getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 		
 		InventoryTransactionPacket inventoryTransactionPacket = new InventoryTransactionPacket();
 		inventoryTransactionPacket.setTransactionType(TransactionType.ITEM_USE_ON_ENTITY);

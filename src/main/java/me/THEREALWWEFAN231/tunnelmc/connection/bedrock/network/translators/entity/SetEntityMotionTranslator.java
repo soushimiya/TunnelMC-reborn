@@ -5,6 +5,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.util.math.Vec3d;
 
@@ -12,7 +13,7 @@ import net.minecraft.util.math.Vec3d;
 public class SetEntityMotionTranslator extends PacketTranslator<SetEntityMotionPacket>{
 
 	@Override
-	public void translate(SetEntityMotionPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(SetEntityMotionPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		if (TunnelMC.mc.world == null) {
 			return;
 		}
@@ -20,6 +21,6 @@ public class SetEntityMotionTranslator extends PacketTranslator<SetEntityMotionP
 		Vec3d velocity = new Vec3d(packet.getMotion().getX(), packet.getMotion().getY(), packet.getMotion().getZ());
 		
 		EntityVelocityUpdateS2CPacket entityVelocityUpdateS2CPacket = new EntityVelocityUpdateS2CPacket(id, velocity);
-		bedrockConnection.javaConnection.processServerToClientPacket(entityVelocityUpdateS2CPacket);
+		javaConnection.processJavaPacket(entityVelocityUpdateS2CPacket);
 	}
 }

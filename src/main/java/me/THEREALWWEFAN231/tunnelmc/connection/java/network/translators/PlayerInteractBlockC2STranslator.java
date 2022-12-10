@@ -9,6 +9,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.math.BlockPos;
@@ -19,13 +20,14 @@ public class PlayerInteractBlockC2STranslator extends PacketTranslator<PlayerInt
 	//TODO: so when ever we jump then place a block under us, our head freaks out(to other players), on nukkit servers(probably all), not fully sure why, maybe because we aren't sending PlayerActionPacket.JUMP
 
 	@Override
-	public void translate(PlayerInteractBlockC2SPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(PlayerInteractBlockC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 
 		BlockPos blockPos = packet.getBlockHitResult().getBlockPos();
 		Vector3i blockPosition = Vector3i.from(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		Vec3d sideHitOffset = packet.getBlockHitResult().getPos().subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-		ItemData placingItem = bedrockConnection.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
+		ItemData placingItem = bedrockConnection.getWrappedContainers().getPlayerInventory()
+				.getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 
 		InventoryTransactionPacket placeInventoryTransactionPacket = new InventoryTransactionPacket();
 		placeInventoryTransactionPacket.setTransactionType(TransactionType.ITEM_USE);

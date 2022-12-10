@@ -43,7 +43,7 @@ public class MixinClientConnection {
 		if(!BedrockConnectionAccessor.isConnectionOpen()) {
 			return;
 		}
-		BedrockConnectionAccessor.getCurrentConnection().javaConnection.packetTranslatorManager.translatePacket(packet);
+		BedrockConnectionAccessor.getCurrentConnection().handleJavaPacket(packet);
 		ci.cancel();
 	}
 

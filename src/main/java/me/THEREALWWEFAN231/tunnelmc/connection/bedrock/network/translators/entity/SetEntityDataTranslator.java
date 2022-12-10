@@ -9,6 +9,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -19,7 +20,7 @@ public class SetEntityDataTranslator extends PacketTranslator<SetEntityDataPacke
 	// TODO: Set up an entity class system, like Geyser?
 
 	@Override
-	public void translate(SetEntityDataPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(SetEntityDataPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		int id = (int) packet.getRuntimeEntityId();
 
 		if (TunnelMC.mc.world != null) {
@@ -51,7 +52,7 @@ public class SetEntityDataTranslator extends PacketTranslator<SetEntityDataPacke
 			}
 
 			EntityTrackerUpdateS2CPacket trackerUpdatePacket = new EntityTrackerUpdateS2CPacket(id, entity.getDataTracker(), true);
-			bedrockConnection.javaConnection.processServerToClientPacket(trackerUpdatePacket);
+			javaConnection.processJavaPacket(trackerUpdatePacket);
 		}
 	}
 }

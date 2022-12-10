@@ -6,6 +6,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.UpdateSelectedSlotC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.item.ItemStack;
@@ -15,9 +16,9 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacket> {
 
 	@Override
-	public void translate(InventorySlotPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(InventorySlotPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		int syncId = packet.getContainerId();
-		BedrockContainer containerToChange = bedrockConnection.containers.getContainers().get(syncId);
+		BedrockContainer containerToChange = bedrockConnection.getWrappedContainers().getContainers().get(syncId);
 		if(containerToChange == null) {//TODO: create some sort of "temp" container, we use to do this, but for testing purposes this does for now
 			System.out.println("Couldn't find container with id " + syncId);
 			return;
@@ -33,8 +34,8 @@ public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacke
 			}
 		}
 
-		ScreenHandlerSlotUpdateS2CPacket handlerSlotUpdateS2CPacket = new ScreenHandlerSlotUpdateS2CPacket(syncId, bedrockConnection.nextRevision(), javaInventorySlot, stack);
-		bedrockConnection.javaConnection.processServerToClientPacket(handlerSlotUpdateS2CPacket);
+		ScreenHandlerSlotUpdateS2CPacket handlerSlotUpdateS2CPacket = new ScreenHandlerSlotUpdateS2CPacket(syncId, bedrockConnection.getWrappedContainers().nextRevision(), javaInventorySlot, stack);
+		javaConnection.processJavaPacket(handlerSlotUpdateS2CPacket);
 
 		containerToChange.setItemBedrock(packet.getSlot(), packet.getItem());
 

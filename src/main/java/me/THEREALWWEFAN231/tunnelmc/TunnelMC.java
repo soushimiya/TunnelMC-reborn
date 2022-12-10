@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nukkitx.api.event.EventManager;
 import com.nukkitx.event.SimpleEventManager;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.BedrockPacketTranslatorManager;
+import lombok.Getter;
 import me.THEREALWWEFAN231.tunnelmc.translator.EntityTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityRegistry;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
@@ -16,17 +16,17 @@ import net.minecraft.client.MinecraftClient;
 
 public class TunnelMC implements ClientModInitializer {
 	public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+	public final static MinecraftClient mc = MinecraftClient.getInstance();
 
-	public static TunnelMC instance;
-	public static MinecraftClient mc = MinecraftClient.getInstance();
+	@Getter
+	private static TunnelMC instance;
 
-	public EventManager eventManager;
-	public BedrockPacketTranslatorManager packetTranslatorManager;
+	@Getter
+	private EventManager eventManager;
 
 	public void onInitializeClient() {
 		instance = this;
 		this.eventManager = new SimpleEventManager();
-		this.packetTranslatorManager = new BedrockPacketTranslatorManager();
 
 		BlockEntityRegistry.load();
 		BlockStateTranslator.load();

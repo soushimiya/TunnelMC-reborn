@@ -12,6 +12,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerTickEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -24,7 +25,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 	private Vector3i lastBlockPosition;
 
 	@Override
-	public void translate(PlayerActionC2SPacket packet, BedrockConnection bedrockConnection) {
+	public void translate(PlayerActionC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		if (TunnelMC.mc.world == null || TunnelMC.mc.player == null || MinecraftClient.getInstance().interactionManager == null) {
 			return;
 		}
@@ -44,7 +45,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 
 				bedrockConnection.sendPacket(playerActionPacket);
 
-				TunnelMC.instance.eventManager.registerListeners(this, this);
+				TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 
 				// For some reason, blocks with a hardness of 0 don't have the stop action sent.
 				// If you're in creative, the same issue occurs.
@@ -76,7 +77,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 
 				this.lastDirection = null;
 				this.lastBlockPosition = null;
-				TunnelMC.instance.eventManager.deregisterListener(this);
+				TunnelMC.getInstance().getEventManager().deregisterListener(this);
 
 				InventoryTransactionPacket inventoryTransactionPacket = new InventoryTransactionPacket();
 				inventoryTransactionPacket.setTransactionType(TransactionType.ITEM_USE);
@@ -84,7 +85,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				inventoryTransactionPacket.setBlockPosition(blockPosition);
 				inventoryTransactionPacket.setBlockFace(packet.getDirection().ordinal());
 				inventoryTransactionPacket.setHotbarSlot(TunnelMC.mc.player.getInventory().selectedSlot);
-				inventoryTransactionPacket.setItemInHand(bedrockConnection.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot));
+				inventoryTransactionPacket.setItemInHand(bedrockConnection.getWrappedContainers().getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot));
 				inventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y, TunnelMC.mc.player.getPos().z));
 				inventoryTransactionPacket.setClickPosition(Vector3f.ZERO);
 
@@ -101,13 +102,13 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 
 				this.lastDirection = null;
 				this.lastBlockPosition = null;
-				TunnelMC.instance.eventManager.deregisterListener(this);
+				TunnelMC.getInstance().getEventManager().deregisterListener(this);
 			}
 		}
 	}
 
 	@Listener
-	private void onEvent(PlayerTickEvent event) {
+	public void onEvent(PlayerTickEvent event) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}

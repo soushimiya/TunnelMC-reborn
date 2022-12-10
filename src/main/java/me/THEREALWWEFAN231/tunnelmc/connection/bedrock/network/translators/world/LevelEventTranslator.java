@@ -12,6 +12,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinClientPlayerInteractionManager;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinWorldRenderer;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
@@ -31,7 +32,7 @@ public class LevelEventTranslator extends PacketTranslator<LevelEventPacket> {
     public static final LongSet TO_REMOVE = new LongOpenHashSet();
 
     @Override
-    public void translate(LevelEventPacket packet, BedrockConnection bedrockConnection) {
+    public void translate(LevelEventPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
         if (MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().interactionManager == null) {
             return;
         }
