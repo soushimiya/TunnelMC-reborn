@@ -1,6 +1,11 @@
 package me.THEREALWWEFAN231.tunnelmc.events;
 
 import com.nukkitx.api.event.Event;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public record PlayerTickEvent(long tick) implements Event {
+@Getter
+@RequiredArgsConstructor
+public final class PlayerTickEvent implements Event {
+    private final long tick;
 }
