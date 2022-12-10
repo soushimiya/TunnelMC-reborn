@@ -10,9 +10,9 @@ import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
-import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
+import me.THEREALWWEFAN231.tunnelmc.events.PlayerTickEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.math.Direction;
@@ -24,7 +24,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 	private Vector3i lastBlockPosition;
 
 	@Override
-	public void translate(PlayerActionC2SPacket packet, Client client) {
+	public void translate(PlayerActionC2SPacket packet, BedrockConnection bedrockConnection) {
 		if (TunnelMC.mc.world == null || TunnelMC.mc.player == null || MinecraftClient.getInstance().interactionManager == null) {
 			return;
 		}
@@ -42,7 +42,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				playerActionPacket.setBlockPosition(blockPosition);
 				playerActionPacket.setFace(packet.getDirection().ordinal());
 
-				client.sendPacket(playerActionPacket);
+				bedrockConnection.sendPacket(playerActionPacket);
 
 				TunnelMC.instance.eventManager.registerListeners(this, this);
 
@@ -62,7 +62,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				playerActionPacket.setBlockPosition(blockPosition);
 				playerActionPacket.setFace(packet.getDirection().ordinal());
 
-				client.sendPacket(playerActionPacket);
+				bedrockConnection.sendPacket(playerActionPacket);
 
 				if (MinecraftClient.getInstance().interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
 					PlayerActionPacket creativePacket = new PlayerActionPacket();
@@ -71,7 +71,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 					creativePacket.setBlockPosition(blockPosition);
 					playerActionPacket.setFace(packet.getDirection().ordinal());
 
-					client.sendPacket(playerActionPacket);
+					bedrockConnection.sendPacket(playerActionPacket);
 				}
 
 				this.lastDirection = null;
@@ -84,11 +84,11 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				inventoryTransactionPacket.setBlockPosition(blockPosition);
 				inventoryTransactionPacket.setBlockFace(packet.getDirection().ordinal());
 				inventoryTransactionPacket.setHotbarSlot(TunnelMC.mc.player.getInventory().selectedSlot);
-				inventoryTransactionPacket.setItemInHand(client.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot));
+				inventoryTransactionPacket.setItemInHand(bedrockConnection.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot));
 				inventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y, TunnelMC.mc.player.getPos().z));
 				inventoryTransactionPacket.setClickPosition(Vector3f.ZERO);
 
-				client.sendPacket(inventoryTransactionPacket);
+				bedrockConnection.sendPacket(inventoryTransactionPacket);
 			}
 			case ABORT_DESTROY_BLOCK: {
 				PlayerActionPacket playerActionPacket = new PlayerActionPacket();
@@ -97,7 +97,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				playerActionPacket.setBlockPosition(blockPosition);
 				playerActionPacket.setFace(packet.getDirection().ordinal());
 
-				client.sendPacket(playerActionPacket);
+				bedrockConnection.sendPacket(playerActionPacket);
 
 				this.lastDirection = null;
 				this.lastBlockPosition = null;
@@ -107,7 +107,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 	}
 
 	@Listener
-	public void onEvent(EventPlayerTick event) {
+	private void onEvent(PlayerTickEvent event) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}

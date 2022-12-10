@@ -8,7 +8,7 @@ import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.util.hit.BlockHitResult;
@@ -22,8 +22,8 @@ public class PlayerInteractItemC2STranslator extends PacketTranslator<PlayerInte
 	//actually i think i could test it on a chest, i should do that sometime
 
 	@Override
-	public void translate(PlayerInteractItemC2SPacket packet, Client client) {
-		ItemData usingItem = client.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
+	public void translate(PlayerInteractItemC2SPacket packet, BedrockConnection bedrockConnection) {
+		ItemData usingItem = bedrockConnection.containers.getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 
 		if (TunnelMC.mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult) TunnelMC.mc.crosshairTarget).getBlockPos();
@@ -41,7 +41,7 @@ public class PlayerInteractItemC2STranslator extends PacketTranslator<PlayerInte
 			useInventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y + TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING), TunnelMC.mc.player.getPos().z));
 			useInventoryTransactionPacket.setClickPosition(Vector3f.from(sideHitOffset.x, sideHitOffset.y, sideHitOffset.z));
 			useInventoryTransactionPacket.setBlockRuntimeId(0);//TODO: get the runtime id of the block we are holding(i actually think its the block we are right clicking not holding, in that case its easier), currently works(on nukkit) with it being zero, but we *should* do it correctly
-			client.sendPacket(useInventoryTransactionPacket);
+			bedrockConnection.sendPacket(useInventoryTransactionPacket);
 
 		} else {
 			//they used the item in air
@@ -56,7 +56,7 @@ public class PlayerInteractItemC2STranslator extends PacketTranslator<PlayerInte
 			inventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y + TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING), TunnelMC.mc.player.getPos().z));
 			inventoryTransactionPacket.setClickPosition(Vector3f.ZERO);
 
-			client.sendPacket(inventoryTransactionPacket);
+			bedrockConnection.sendPacket(inventoryTransactionPacket);
 		}
 	}
 }

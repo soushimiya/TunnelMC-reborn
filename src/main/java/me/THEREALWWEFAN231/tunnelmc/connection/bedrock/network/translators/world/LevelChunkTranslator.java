@@ -6,7 +6,7 @@ import io.netty.buffer.Unpooled;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.LevelChunkDecoder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
@@ -30,7 +30,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 	private static final Registry<Biome> BIOMES_REGISTRY = BuiltinRegistries.BIOME;
 
 	@Override
-	public void translate(LevelChunkPacket packet, Client client) {
+	public void translate(LevelChunkPacket packet, BedrockConnection bedrockConnection) {
 		int chunkX = packet.getChunkX();
 		int chunkZ = packet.getChunkZ();
 
@@ -84,7 +84,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 			WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, chunkSections, null, null);
 
 			ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, TunnelMC.mc.world.getLightingProvider(), null, null, true);
-			client.javaConnection.processServerToClientPacket(chunkDeltaUpdateS2CPacket);
+			bedrockConnection.javaConnection.processServerToClientPacket(chunkDeltaUpdateS2CPacket);
 		};
 
 		if (TunnelMC.mc.world != null) {

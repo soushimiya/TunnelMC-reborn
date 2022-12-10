@@ -3,7 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 import com.nukkitx.protocol.bedrock.packet.SetPlayerGameTypePacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.world.GameMode;
 
@@ -11,7 +11,7 @@ import net.minecraft.world.GameMode;
 public class SetPlayerGameTypeTranslator extends PacketTranslator<SetPlayerGameTypePacket> {
 
     @Override
-    public void translate(SetPlayerGameTypePacket packet, Client client) {
+    public void translate(SetPlayerGameTypePacket packet, BedrockConnection bedrockConnection) {
         GameMode javaGameMode;
         switch (packet.getGamemode()) {
             case 0 -> javaGameMode = GameMode.SURVIVAL;
@@ -23,7 +23,7 @@ public class SetPlayerGameTypeTranslator extends PacketTranslator<SetPlayerGameT
             }
         }
 
-        client.javaConnection.processServerToClientPacket(new GameStateChangeS2CPacket(
+        bedrockConnection.javaConnection.processServerToClientPacket(new GameStateChangeS2CPacket(
                 GameStateChangeS2CPacket.GAME_MODE_CHANGED,
                 (float) javaGameMode.getId()));
     }

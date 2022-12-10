@@ -32,8 +32,8 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	// Bedrock protocol & Xbox Authentication
-	library("com.nukkitx.protocol:bedrock-v557:2.9.13-SNAPSHOT") {
+	// Bedrock protocol & Live Authentication
+	library("com.nukkitx.protocol:bedrock-v560:2.9.15-SNAPSHOT") {
 		exclude group: 'com.nukkitx.fastutil'
 	}
 	library "com.github.scribejava:scribejava-apis:8.3.3"

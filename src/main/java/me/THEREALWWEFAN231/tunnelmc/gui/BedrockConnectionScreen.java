@@ -50,8 +50,10 @@ public class BedrockConnectionScreen extends Screen {
 				port = 19132;
 			}
 
-			BedrockConnectionAccessor.createNewConnection(new InetSocketAddress("0.0.0.0", getRandomPort()))
-					.initialize(this.addressField.getText(), port, this.onlineModeWidget.isChecked());
+			BedrockConnectionAccessor.createNewConnection(
+					new InetSocketAddress("0.0.0.0", getRandomPort()),
+					new InetSocketAddress(this.addressField.getText(), port))
+						.connect(this.onlineModeWidget.isChecked());
 		}));
 
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));

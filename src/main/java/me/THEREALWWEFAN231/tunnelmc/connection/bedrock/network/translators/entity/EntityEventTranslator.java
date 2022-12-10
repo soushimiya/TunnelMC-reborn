@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.packet.EntityEventPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 
@@ -12,7 +12,7 @@ import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 public class EntityEventTranslator extends PacketTranslator<EntityEventPacket> {
 
     @Override
-    public void translate(EntityEventPacket packet, Client client) {
+    public void translate(EntityEventPacket packet, BedrockConnection bedrockConnection) {
         if (TunnelMC.mc.world == null) {
             return;
         }
@@ -25,7 +25,7 @@ public class EntityEventTranslator extends PacketTranslator<EntityEventPacket> {
         switch (packet.getType()) {
             case ATTACK_START -> {
                 EntityAnimationS2CPacket swingArmPacket = new EntityAnimationS2CPacket(entity, EntityAnimationS2CPacket.SWING_MAIN_HAND);
-                client.javaConnection.processServerToClientPacket(swingArmPacket);
+                bedrockConnection.javaConnection.processServerToClientPacket(swingArmPacket);
             }
         }
     }

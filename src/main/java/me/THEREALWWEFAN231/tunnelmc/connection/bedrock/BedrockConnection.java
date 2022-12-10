@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock;
 
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.nukkitx.api.event.Listener;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.BedrockClient;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -23,6 +24,8 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.ClientBatchHandle
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.BlockEntityDataCache;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.events.PlayerInitializedEvent;
+import me.THEREALWWEFAN231.tunnelmc.events.SessionInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.client.MinecraftClient;
@@ -39,11 +42,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
 @Log4j2
-public class Client { // TODO: make a lot more fields private
+public class BedrockConnection { // TODO: make a lot more fields private
 	public static final BedrockPacketCodec CODEC = Bedrock_v545.V545_CODEC;
 
-	private String ip;
-	private int port;
+	private final InetSocketAddress targetAddress;
 
 	public ChainData chainData;
 	public AuthData authData;
@@ -65,15 +67,15 @@ public class Client { // TODO: make a lot more fields private
 	public AtomicBoolean stoppedSneaking = new AtomicBoolean();
 	public AtomicBoolean jumping = new AtomicBoolean();
 
-	Client(InetSocketAddress bindAddress) {
+	BedrockConnection(InetSocketAddress bindAddress, InetSocketAddress targetAddress) {
 		this.bedrockClient = new BedrockClient(bindAddress);
 		this.bedrockClient.bind().join();
+		this.targetAddress = targetAddress;
+
+		TunnelMC.instance.eventManager.registerListeners(this, this);
 	}
 
-	public void initialize(String ip, int port, boolean onlineMode) {
-		this.ip = ip;
-		this.port = port;
-
+	public void connect(boolean onlineMode) {
 		this.connectScreen = new BedrockConnectingScreen(MinecraftClient.getInstance().currentScreen, MinecraftClient.getInstance(), BedrockConnectionAccessor::closeConnection);
 		TunnelMC.mc.setScreen(this.connectScreen);
 
@@ -96,19 +98,22 @@ public class Client { // TODO: make a lot more fields private
 			this.authData = this.chainData.decodeAuthData();
 			this.connectScreen.setStatus(Text.translatable("connect.connecting"));
 
-			this.bedrockClient.connect(new InetSocketAddress(ip, port)).whenComplete((session, throwable1) -> {
+			this.bedrockClient.connect(this.targetAddress).whenComplete((session, throwable1) -> {
 				if (throwable1 != null) {
 					BedrockConnectionAccessor.closeConnection(throwable1);
 					return;
 				}
 
 				this.connectScreen.setStatus(Text.of("Logging in..."));
-				Client.this.onSessionInitialized(session);
+				TunnelMC.instance.eventManager.fire(new SessionInitializedEvent(session));
 			});
 		});
 	}
 
-	public void onSessionInitialized(BedrockSession bedrockSession) {
+	@Listener
+	private void onEvent(SessionInitializedEvent event) {
+		BedrockSession bedrockSession = event.session();
+
 		bedrockSession.setPacketCodec(CODEC);
 		bedrockSession.addDisconnectHandler(reason -> MinecraftClient.getInstance().execute(() -> {
 			// We disconnected ourselves.
@@ -132,11 +137,11 @@ public class Client { // TODO: make a lot more fields private
 			clientData.setCurrentInputMode(1);
 			clientData.setDefaultInputMode(1);
 			clientData.setDeviceOS(DeviceOS.MICROSOFT_WINDOWS_10);
-			clientData.setGameVersion(Client.CODEC.getMinecraftVersion());
-			clientData.setSkinGeometryVersion(Base64.getEncoder().withoutPadding().encodeToString(Client.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
+			clientData.setGameVersion(BedrockConnection.CODEC.getMinecraftVersion());
+			clientData.setSkinGeometryVersion(Base64.getEncoder().withoutPadding().encodeToString(BedrockConnection.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
 			clientData.setLanguageCode(TunnelMC.mc.getLanguageManager().getLanguage().getCode());
 			clientData.setSelfSignedId(uuid);
-			clientData.setServerAddress(ip + ":" + port);
+			clientData.setServerAddress(targetAddress.getHostName() + ":" + targetAddress.getPort());
 			clientData.setThirdPartyName(authData.displayName());
 			clientData.setSkinGeometryData(Base64.getEncoder().withoutPadding().encodeToString(
 					JSON_MAPPER.writeValueAsBytes(FileUtils.getJsonFromResource("tunnel/geometry_data.json"))));
@@ -173,7 +178,8 @@ public class Client { // TODO: make a lot more fields private
 		}
 	}
 
-	public void onPlayerInitialized() {
+	@Listener
+	private void onEvent(PlayerInitializedEvent event) {
 		this.containers = new BedrockContainers();
 		this.blockEntityDataCache = new BlockEntityDataCache();
 	}

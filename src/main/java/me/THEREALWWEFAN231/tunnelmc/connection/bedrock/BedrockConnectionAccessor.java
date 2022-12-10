@@ -11,14 +11,14 @@ import java.net.InetSocketAddress;
 
 @UtilityClass
 public class BedrockConnectionAccessor {
-    private Client currentConnection;
+    private BedrockConnection currentConnection;
 
-    public Client createNewConnection(InetSocketAddress bindAddress) {
-        currentConnection = new Client(bindAddress);
+    public BedrockConnection createNewConnection(InetSocketAddress bindAddress, InetSocketAddress targetAddress) {
+        currentConnection = new BedrockConnection(bindAddress, targetAddress);
         return getCurrentConnection();
     }
 
-    public Client getCurrentConnection() {
+    public BedrockConnection getCurrentConnection() {
         return currentConnection;
     }
 

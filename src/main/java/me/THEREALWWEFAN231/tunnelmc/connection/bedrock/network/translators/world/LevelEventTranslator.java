@@ -11,11 +11,11 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinClientPlayerInteractionManager;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinWorldRenderer;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
-import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtil;
+import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -31,7 +31,7 @@ public class LevelEventTranslator extends PacketTranslator<LevelEventPacket> {
     public static final LongSet TO_REMOVE = new LongOpenHashSet();
 
     @Override
-    public void translate(LevelEventPacket packet, Client client) {
+    public void translate(LevelEventPacket packet, BedrockConnection bedrockConnection) {
         if (MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().interactionManager == null) {
             return;
         }
@@ -39,7 +39,7 @@ public class LevelEventTranslator extends PacketTranslator<LevelEventPacket> {
         switch (packet.getType()) {
             case BLOCK_START_BREAK -> {
                 Vector3i position = packet.getPosition().toInt();
-                BlockBreakingInfo blockBreakingInfo = new BlockBreakingInfo(0, PositionUtil.toBlockPos(position));
+                BlockBreakingInfo blockBreakingInfo = new BlockBreakingInfo(0, PositionUtils.toBlockPos(position));
                 BlockBreakingWrapper blockBreakingWrapper = new BlockBreakingWrapper(packet.getData(), blockBreakingInfo);
                 BLOCK_BREAKING_INFOS.put(position, blockBreakingWrapper);
                 SortedSet<BlockBreakingInfo> sortedSet = Sets.newTreeSet();
@@ -73,14 +73,14 @@ public class LevelEventTranslator extends PacketTranslator<LevelEventPacket> {
                 int bedrockRuntimeId = packet.getData() & 0xffffff; // Strip out the above encoding
                 BlockState blockState = BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(bedrockRuntimeId);
                 Vector3i vector = packet.getPosition().toInt();
-                BlockPos pos = PositionUtil.toBlockPos(vector);
+                BlockPos pos = PositionUtils.toBlockPos(vector);
                 TunnelMC.mc.world.setBlockState(pos, blockState);
 //                TunnelMC.mc.particleManager.addBlockBreakParticles(pos, blockState); TODO
                 TunnelMC.mc.particleManager.addBlockBreakingParticles(pos, direction);
             }
             case PARTICLE_DESTROY_BLOCK -> {
                 MinecraftClient.getInstance().world.syncWorldEvent(MinecraftClient.getInstance().player, 2001,
-                        PositionUtil.toBlockPos(packet.getPosition().toInt()),
+                        PositionUtils.toBlockPos(packet.getPosition().toInt()),
                         Block.getRawIdFromState(BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(packet.getData())));
             }
         }

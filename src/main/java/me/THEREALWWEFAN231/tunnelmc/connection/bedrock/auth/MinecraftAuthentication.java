@@ -2,7 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.experimental.UtilityClass;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.XboxToken;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -29,7 +29,7 @@ public class MinecraftAuthentication {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", xboxToken.header());
             connection.setRequestProperty("User-Agent", "MCPE/Android");
-            connection.setRequestProperty("Client-Version", Client.CODEC.getMinecraftVersion());
+            connection.setRequestProperty("Client-Version", BedrockConnection.CODEC.getMinecraftVersion());
 
             connection.setDoOutput(true);
             JSON_MAPPER.writeValue(connection.getOutputStream(), data);

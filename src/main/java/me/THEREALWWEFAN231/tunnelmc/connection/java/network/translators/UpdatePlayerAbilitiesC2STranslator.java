@@ -6,14 +6,14 @@ import com.nukkitx.protocol.bedrock.data.command.CommandPermission;
 import com.nukkitx.protocol.bedrock.packet.AdventureSettingsPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 
 @PacketIdentifier(UpdatePlayerAbilitiesC2SPacket.class)
 public class UpdatePlayerAbilitiesC2STranslator extends PacketTranslator<UpdatePlayerAbilitiesC2SPacket> {
 
     @Override
-    public void translate(UpdatePlayerAbilitiesC2SPacket packet, Client client) { // TODO: update this
+    public void translate(UpdatePlayerAbilitiesC2SPacket packet, BedrockConnection bedrockConnection) { // TODO: update this
         AdventureSettingsPacket settingsPacket = new AdventureSettingsPacket();
         if (packet.isFlying()) {
             // Otherwise certain updates can stop the player from flying
@@ -22,6 +22,6 @@ public class UpdatePlayerAbilitiesC2STranslator extends PacketTranslator<UpdateP
         settingsPacket.setPlayerPermission(PlayerPermission.MEMBER); // needed?
         settingsPacket.setCommandPermission(CommandPermission.NORMAL); // needed?
 
-        client.sendPacket(settingsPacket);
+        bedrockConnection.sendPacket(settingsPacket);
     }
 }

@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.EntityTranslator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,7 +16,7 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 	// TODO: Handle non living entities differently, with the EntitySpawnS2CPacket.
 
 	@Override
-	public void translate(AddEntityPacket packet, Client client) {
+	public void translate(AddEntityPacket packet, BedrockConnection bedrockConnection) {
 		EntityType<?> entityType = EntityTranslator.BEDROCK_IDENTIFIER_TO_ENTITY_TYPE.get(packet.getIdentifier());
 		if (entityType == null) {
 			System.out.println("Could not find entity type: " + packet.getIdentifier());
@@ -47,6 +47,6 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 		entity.setHeadYaw(headYaw);
 		entity.setPitch(pitch);
 
-		client.javaConnection.processServerToClientPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
+		bedrockConnection.javaConnection.processServerToClientPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
 	}
 }

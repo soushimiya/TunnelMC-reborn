@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.data.SoundEvent;
 import com.nukkitx.protocol.bedrock.packet.LevelSoundEventPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
-import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtil;
+import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.sound.SoundInstance;
@@ -31,7 +31,7 @@ public class MixinClientPlayerInteractionHandler {
 
 		LevelSoundEventPacket packet = new LevelSoundEventPacket();
 		packet.setSound(SoundEvent.HIT);
-		packet.setPosition(PositionUtil.toBedrockVector3f(this.currentBreakingPos));
+		packet.setPosition(PositionUtils.toBedrockVector3f(this.currentBreakingPos));
 		packet.setExtraData(BlockPaletteTranslator.BLOCK_STATE_TO_RUNTIME_ID.getInt(this.client.world.getBlockState(this.currentBreakingPos)));
 		packet.setIdentifier("");
 		BedrockConnectionAccessor.getCurrentConnection().sendPacket(packet);

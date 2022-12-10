@@ -2,7 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.mixins;
 
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
-import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
+import me.THEREALWWEFAN231.tunnelmc.events.PlayerTickEvent;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +21,7 @@ public class MixinClientPlayerEntity {
 		if(!BedrockConnectionAccessor.isConnectionOpen()) {
 			return;
 		}
-		TunnelMC.instance.eventManager.fire(new EventPlayerTick(ticks++));
+		TunnelMC.instance.eventManager.fire(new PlayerTickEvent(ticks++));
 	}
 
 	@Inject(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/input/Input;tick(ZF)V"))

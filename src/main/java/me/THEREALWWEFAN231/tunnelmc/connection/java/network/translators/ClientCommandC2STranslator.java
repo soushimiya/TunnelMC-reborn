@@ -7,23 +7,23 @@ import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 
 @PacketIdentifier(ClientCommandC2SPacket.class)
 public class ClientCommandC2STranslator extends PacketTranslator<ClientCommandC2SPacket> {
 
 	@Override
-	public void translate(ClientCommandC2SPacket packet, Client client) {
+	public void translate(ClientCommandC2SPacket packet, BedrockConnection bedrockConnection) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}
 
 		switch (packet.getMode()) {
-			case PRESS_SHIFT_KEY -> client.startedSneaking.set(true);
-			case RELEASE_SHIFT_KEY -> client.stoppedSneaking.set(true);
-			case START_SPRINTING -> client.startedSprinting.set(true);
-			case STOP_SPRINTING -> client.stoppedSprinting.set(true);
+			case PRESS_SHIFT_KEY -> bedrockConnection.startedSneaking.set(true);
+			case RELEASE_SHIFT_KEY -> bedrockConnection.stoppedSneaking.set(true);
+			case START_SPRINTING -> bedrockConnection.startedSprinting.set(true);
+			case STOP_SPRINTING -> bedrockConnection.stoppedSprinting.set(true);
 		}
 
 		PlayerActionType actionType = switch (packet.getMode()) {
@@ -37,7 +37,7 @@ public class ClientCommandC2STranslator extends PacketTranslator<ClientCommandC2
 			case OPEN_INVENTORY -> null;
 			case START_FALL_FLYING -> null;
 		};
-		if(actionType == null && client.movementMode != AuthoritativeMovementMode.CLIENT) {
+		if(actionType == null && bedrockConnection.movementMode != AuthoritativeMovementMode.CLIENT) {
 			return;
 		}
 
@@ -46,6 +46,6 @@ public class ClientCommandC2STranslator extends PacketTranslator<ClientCommandC2
 		playerActionPacket.setAction(actionType);
 		playerActionPacket.setBlockPosition(Vector3i.ZERO);
 
-		client.sendPacket(playerActionPacket);
+		bedrockConnection.sendPacket(playerActionPacket);
 	}
 }

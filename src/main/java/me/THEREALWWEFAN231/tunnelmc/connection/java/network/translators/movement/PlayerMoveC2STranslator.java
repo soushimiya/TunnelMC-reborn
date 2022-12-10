@@ -11,9 +11,9 @@ import com.nukkitx.protocol.bedrock.packet.PlayerAuthInputPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
-import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
+import me.THEREALWWEFAN231.tunnelmc.events.PlayerTickEvent;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
@@ -28,12 +28,12 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 	}
 
 	@Override
-	public void translate(PlayerMoveC2SPacket packet, Client client) {
+	public void translate(PlayerMoveC2SPacket packet, BedrockConnection bedrockConnection) {
 		//this shouldn't even be called? I don't know, doesn't matter
-		PlayerMoveC2STranslator.translateMovementPacket(packet, MovePlayerPacket.Mode.NORMAL, client);
+		PlayerMoveC2STranslator.translateMovementPacket(packet, MovePlayerPacket.Mode.NORMAL, bedrockConnection);
 	}
 
-	public static void translateMovementPacket(PlayerMoveC2SPacket playerMoveC2SPacket, MovePlayerPacket.Mode mode, Client client) { // TODO: not here
+	public static void translateMovementPacket(PlayerMoveC2SPacket playerMoveC2SPacket, MovePlayerPacket.Mode mode, BedrockConnection bedrockConnection) { // TODO: not here
 		if(TunnelMC.mc.player == null) {
 			return;
 		}
@@ -50,7 +50,7 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 		Vector3f currentPos = Vector3f.from(currentPosX, currentPosY, currentPosZ);
 		Vector3f currentRot = Vector3f.from(currentPitch, currentYaw, currentHeadYaw);
 
-		switch (client.movementMode) {
+		switch (bedrockConnection.movementMode) {
 			case CLIENT -> {
 				if (lastPosition.equals(currentPos) && lastRotation.equals(currentRot) && lastOnGround == currentlyOnGround) {
 					return;
@@ -62,7 +62,7 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 				movePacket.setRotation(Vector3f.from(currentPitch, currentYaw, currentHeadYaw));
 				movePacket.setMode(mode);
 				movePacket.setOnGround(currentlyOnGround);
-				client.sendPacket(movePacket);
+				bedrockConnection.sendPacket(movePacket);
 			}
 			case SERVER -> {
 				PlayerAuthInputPacket movePacket = new PlayerAuthInputPacket();
@@ -88,29 +88,29 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 	private static PlayerAuthInputPacket playerAuthInputPacket;
 
 	@Listener
-	public void onEvent(EventPlayerTick event) {
+	private void onEvent(PlayerTickEvent event) {
 		if(playerAuthInputPacket == null) {
 			return;
 		}
-		Client client = BedrockConnectionAccessor.getCurrentConnection();
+		BedrockConnection bedrockConnection = BedrockConnectionAccessor.getCurrentConnection();
 
 		playerAuthInputPacket.setTick(event.tick());
 		playerAuthInputPacket.getInputData().clear();
-		if(client.startedSprinting.compareAndSet(true, false)) {
+		if(bedrockConnection.startedSprinting.compareAndSet(true, false)) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_SPRINTING);
 		}
-		if(client.stoppedSprinting.compareAndSet(true, false)) {
+		if(bedrockConnection.stoppedSprinting.compareAndSet(true, false)) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.STOP_SPRINTING);
 		}
-		if(client.startedSneaking.compareAndSet(true, false)) {
+		if(bedrockConnection.startedSneaking.compareAndSet(true, false)) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_SNEAKING);
 		}
-		if(client.stoppedSneaking.compareAndSet(true, false)) {
+		if(bedrockConnection.stoppedSneaking.compareAndSet(true, false)) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.STOP_SNEAKING);
 		}
-		if(client.jumping.get()) {
+		if(bedrockConnection.jumping.get()) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.JUMPING);
 		}
-		client.sendPacket(playerAuthInputPacket);
+		bedrockConnection.sendPacket(playerAuthInputPacket);
 	}
 }

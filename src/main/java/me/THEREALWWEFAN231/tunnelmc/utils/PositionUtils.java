@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.BlockPos;
 
 @UtilityClass
-public class PositionUtil {
+public class PositionUtils {
 
     public BlockPos toBlockPos(Vector3i vector) {
         return new BlockPos(vector.getX(), vector.getY(), vector.getZ());

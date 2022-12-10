@@ -5,7 +5,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerId;
 import com.nukkitx.protocol.bedrock.packet.MobEquipmentPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ import java.util.Collections;
 public class MobEquipmentTranslator extends PacketTranslator<MobEquipmentPacket> {
 
     @Override
-    public void translate(MobEquipmentPacket packet, Client client) {
+    public void translate(MobEquipmentPacket packet, BedrockConnection bedrockConnection) {
         EquipmentSlot equipmentSlot;
         switch (packet.getContainerId()) {
             case ContainerId.INVENTORY -> equipmentSlot = EquipmentSlot.MAINHAND;
@@ -31,6 +31,6 @@ public class MobEquipmentTranslator extends PacketTranslator<MobEquipmentPacket>
         Pair<EquipmentSlot, ItemStack> itemStackPair = new Pair<>(equipmentSlot, ItemTranslator.itemDataToItemStack(packet.getItem()));
         EntityEquipmentUpdateS2CPacket equipmentUpdatePacket = new EntityEquipmentUpdateS2CPacket((int) packet.getRuntimeEntityId(),
                 Collections.singletonList(itemStackPair));
-        client.javaConnection.processServerToClientPacket(equipmentUpdatePacket);
+        bedrockConnection.javaConnection.processServerToClientPacket(equipmentUpdatePacket);
     }
 }

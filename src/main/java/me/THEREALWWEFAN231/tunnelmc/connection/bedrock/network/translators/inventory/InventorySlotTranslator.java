@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.UpdateSelectedSlotC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
@@ -15,9 +15,9 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacket> {
 
 	@Override
-	public void translate(InventorySlotPacket packet, Client client) {
+	public void translate(InventorySlotPacket packet, BedrockConnection bedrockConnection) {
 		int syncId = packet.getContainerId();
-		BedrockContainer containerToChange = client.containers.getContainers().get(syncId);
+		BedrockContainer containerToChange = bedrockConnection.containers.getContainers().get(syncId);
 		if(containerToChange == null) {//TODO: create some sort of "temp" container, we use to do this, but for testing purposes this does for now
 			System.out.println("Couldn't find container with id " + syncId);
 			return;
@@ -33,14 +33,14 @@ public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacke
 			}
 		}
 
-		ScreenHandlerSlotUpdateS2CPacket handlerSlotUpdateS2CPacket = new ScreenHandlerSlotUpdateS2CPacket(syncId, client.nextRevision(), javaInventorySlot, stack);
-		client.javaConnection.processServerToClientPacket(handlerSlotUpdateS2CPacket);
+		ScreenHandlerSlotUpdateS2CPacket handlerSlotUpdateS2CPacket = new ScreenHandlerSlotUpdateS2CPacket(syncId, bedrockConnection.nextRevision(), javaInventorySlot, stack);
+		bedrockConnection.javaConnection.processServerToClientPacket(handlerSlotUpdateS2CPacket);
 
 		containerToChange.setItemBedrock(packet.getSlot(), packet.getItem());
 
 		//not fully sure if "vanilla" bedrock does it like this, but for example, we could be at slot 0, and get a new item in that slot, and we are still holding nothing, so we have to update our held item, this is stupid though, it should be server side
 		if (packetSlot == TunnelMC.mc.player.getInventory().selectedSlot) {
-			UpdateSelectedSlotC2STranslator.updateHotbarItem(packetSlot, client);
+			UpdateSelectedSlotC2STranslator.updateHotbarItem(packetSlot, bedrockConnection);
 		}
 	}
 

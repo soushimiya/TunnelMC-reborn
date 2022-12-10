@@ -6,14 +6,14 @@ import com.nukkitx.protocol.bedrock.packet.RespawnPacket.State;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 
 @PacketIdentifier(ClientStatusC2SPacket.class)
 public class ClientStatusC2STranslator extends PacketTranslator<ClientStatusC2SPacket> {
 
 	@Override
-	public void translate(ClientStatusC2SPacket packet, Client client) {
+	public void translate(ClientStatusC2SPacket packet, BedrockConnection bedrockConnection) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}
@@ -23,7 +23,7 @@ public class ClientStatusC2STranslator extends PacketTranslator<ClientStatusC2SP
 			respawnPacket.setState(State.CLIENT_READY);
 			respawnPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 
-			client.sendPacket(respawnPacket);
+			bedrockConnection.sendPacket(respawnPacket);
 		}
 	}
 }

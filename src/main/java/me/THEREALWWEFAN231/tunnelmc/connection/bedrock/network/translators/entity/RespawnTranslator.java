@@ -8,7 +8,7 @@ import com.nukkitx.protocol.bedrock.packet.RespawnPacket.State;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.world.GameMode;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class RespawnTranslator extends PacketTranslator<RespawnPacket> {
 
 	@Override
-	public void translate(RespawnPacket packet, Client client) {
+	public void translate(RespawnPacket packet, BedrockConnection bedrockConnection) {
 		if (TunnelMC.mc.player == null || MinecraftClient.getInstance().interactionManager == null) {
 			return;
 		}
@@ -33,12 +33,12 @@ public class RespawnTranslator extends PacketTranslator<RespawnPacket> {
 			playerActionPacket.setBlockPosition(Vector3i.ZERO);
 			playerActionPacket.setFace(-1);
 			
-			client.sendPacket(playerActionPacket);
+			bedrockConnection.sendPacket(playerActionPacket);
 			
 			// TODO: Correct the dimension value so it's not just over world.
 			GameMode gameMode = MinecraftClient.getInstance().interactionManager.getCurrentGameMode();
 			PlayerRespawnS2CPacket playerRespawnS2CPacket = new PlayerRespawnS2CPacket(DimensionTypes.OVERWORLD, World.OVERWORLD, -1, gameMode, gameMode, false, false, false, Optional.empty());
-			client.javaConnection.processServerToClientPacket(playerRespawnS2CPacket);
+			bedrockConnection.javaConnection.processServerToClientPacket(playerRespawnS2CPacket);
 		}
 	}
 }

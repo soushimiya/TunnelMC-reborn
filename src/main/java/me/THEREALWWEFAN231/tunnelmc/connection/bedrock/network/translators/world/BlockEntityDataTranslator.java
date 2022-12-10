@@ -5,10 +5,10 @@ import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.packet.BlockEntityDataPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityRegistry;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityTranslator;
-import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtil;
+import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtils;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -31,18 +31,18 @@ public class BlockEntityDataTranslator extends PacketTranslator<BlockEntityDataP
     }
 
     @Override
-    public void translate(BlockEntityDataPacket packet, Client client) {
+    public void translate(BlockEntityDataPacket packet, BedrockConnection bedrockConnection) {
         Vector3i blockPosition = packet.getBlockPosition();
         NbtMap blockEntityData = packet.getData();
-        client.blockEntityDataCache.getCachedBlockPositionsData().put(blockPosition, blockEntityData);
+        bedrockConnection.blockEntityDataCache.getCachedBlockPositionsData().put(blockPosition, blockEntityData);
 
         BlockEntityTranslator translator = BlockEntityRegistry.getBlockEntityTranslator(packet.getData());
         if (translator != null) {
             NbtCompound tag = translator.translateTag(packet.getData());
             try {
                 BlockEntityUpdateS2CPacket updatePacket = constructor.newInstance(
-                        PositionUtil.toBlockPos(packet.getBlockPosition()), translator.getJavaId(), tag);
-                client.javaConnection.processServerToClientPacket(updatePacket);
+                        PositionUtils.toBlockPos(packet.getBlockPosition()), translator.getJavaId(), tag);
+                bedrockConnection.javaConnection.processServerToClientPacket(updatePacket);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }

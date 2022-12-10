@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
@@ -18,7 +18,7 @@ import java.util.List;
 public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacket> {
 
 	@Override
-	public void translate(PlayerListPacket packet, Client client) {
+	public void translate(PlayerListPacket packet, BedrockConnection bedrockConnection) {
 		boolean add = packet.getAction() == PlayerListPacket.Action.ADD;
 		List<Entry> entries = new ArrayList<>();
 
@@ -29,6 +29,6 @@ public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacke
 		}
 
 		((IMixinPlayerListS2CPacket) playerListS2CPacket).getEntries().addAll(entries);
-		client.javaConnection.processServerToClientPacket(playerListS2CPacket);
+		bedrockConnection.javaConnection.processServerToClientPacket(playerListS2CPacket);
 	}
 }

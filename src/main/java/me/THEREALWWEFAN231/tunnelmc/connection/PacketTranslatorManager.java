@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
-import me.THEREALWWEFAN231.tunnelmc.events.EventPlayerTick;
+import me.THEREALWWEFAN231.tunnelmc.events.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +46,7 @@ public abstract class PacketTranslatorManager<P> {
 	}
 
 	@Listener
-	public void onEvent(EventPlayerTick event) {
+	private void onEvent(PlayerTickEvent event) {
 		for (int i = 0; i < this.idlePackets.size(); i++) {
 			IdlePacket idlePacket = this.idlePackets.get(i);
 			if (idlePacket.packetTranslator.idleUntil()) {

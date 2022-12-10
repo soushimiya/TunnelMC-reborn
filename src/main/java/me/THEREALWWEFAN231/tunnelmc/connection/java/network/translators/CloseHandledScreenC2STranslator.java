@@ -3,14 +3,14 @@ package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators;
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 
 @PacketIdentifier(CloseHandledScreenC2SPacket.class)
 public class CloseHandledScreenC2STranslator extends PacketTranslator<CloseHandledScreenC2SPacket> {
 
 	@Override
-	public void translate(CloseHandledScreenC2SPacket packet, Client client) {
+	public void translate(CloseHandledScreenC2SPacket packet, BedrockConnection bedrockConnection) {
 		byte id = (byte) packet.getSyncId();
 		if (id == 0) {
 			// The main inventory being closed does not send a container close packet.
@@ -20,6 +20,6 @@ public class CloseHandledScreenC2STranslator extends PacketTranslator<CloseHandl
 		ContainerClosePacket containerClosePacket = new ContainerClosePacket();
 		containerClosePacket.setId(id);
 		
-		client.sendPacket(containerClosePacket);
+		bedrockConnection.sendPacket(containerClosePacket);
 	}
 }

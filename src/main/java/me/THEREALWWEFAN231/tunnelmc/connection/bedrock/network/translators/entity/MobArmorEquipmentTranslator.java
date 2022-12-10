@@ -6,7 +6,7 @@ import com.nukkitx.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.Client;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -18,7 +18,7 @@ import java.util.List;
 public class MobArmorEquipmentTranslator extends PacketTranslator<MobArmorEquipmentPacket> {
 
     @Override
-    public void translate(MobArmorEquipmentPacket packet, Client client) {
+    public void translate(MobArmorEquipmentPacket packet, BedrockConnection bedrockConnection) {
         List<Pair<EquipmentSlot, ItemStack>> javaArmorSlots = new ObjectArrayList<>(4);
         javaArmorSlots.add(translateArmorSlot(packet.getHelmet(), EquipmentSlot.HEAD));
         javaArmorSlots.add(translateArmorSlot(packet.getChestplate(), EquipmentSlot.CHEST));
@@ -27,7 +27,7 @@ public class MobArmorEquipmentTranslator extends PacketTranslator<MobArmorEquipm
 
         EntityEquipmentUpdateS2CPacket equipmentUpdatePacket = new EntityEquipmentUpdateS2CPacket((int) packet.getRuntimeEntityId(),
                 javaArmorSlots);
-        client.javaConnection.processServerToClientPacket(equipmentUpdatePacket);
+        bedrockConnection.javaConnection.processServerToClientPacket(equipmentUpdatePacket);
     }
 
     private Pair<EquipmentSlot, ItemStack> translateArmorSlot(ItemData bedrockItem, EquipmentSlot slot) {
