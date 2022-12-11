@@ -1,6 +1,5 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock;
 
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.nukkitx.api.event.Listener;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.BedrockClient;
@@ -9,9 +8,9 @@ import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockSession;
 import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode;
 import com.nukkitx.protocol.bedrock.data.GameType;
-import com.nukkitx.protocol.bedrock.packet.LoginPacket;
-import com.nukkitx.protocol.bedrock.v545.Bedrock_v545;
-import io.netty.util.AsciiString;
+import com.nukkitx.protocol.bedrock.data.PacketCompressionAlgorithm;
+import com.nukkitx.protocol.bedrock.packet.RequestNetworkSettingsPacket;
+import com.nukkitx.protocol.bedrock.v560.Bedrock_v560;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
@@ -20,8 +19,6 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChai
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OnlineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.AuthData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ClientData;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.DeviceOS;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.BedrockPacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.ClientBatchHandler;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.BlockEntityDataCache;
@@ -30,26 +27,19 @@ import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.SessionInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
-import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.Packet;
 import net.minecraft.text.Text;
 
 import javax.crypto.SecretKey;
-import javax.imageio.ImageIO;
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
 @Log4j2
 public class BedrockConnection {
-	public static final BedrockPacketCodec CODEC = Bedrock_v545.V545_CODEC;
+	public static final BedrockPacketCodec CODEC = Bedrock_v560.V560_CODEC;
 
+	@Getter
 	private final InetSocketAddress targetAddress;
 	private final PacketTranslatorManager<BedrockPacket> packetTranslatorManager;
 	final BedrockClient bedrockClient;
@@ -77,6 +67,7 @@ public class BedrockConnection {
 
 	BedrockConnection(InetSocketAddress bindAddress, InetSocketAddress targetAddress) {
 		this.bedrockClient = new BedrockClient(bindAddress);
+		this.bedrockClient.setRakNetVersion(BedrockConnection.CODEC.getRaknetProtocolVersion());
 		this.bedrockClient.bind().join();
 		this.packetTranslatorManager = new BedrockPacketTranslatorManager();
 		this.targetAddress = targetAddress;
@@ -150,6 +141,10 @@ public class BedrockConnection {
 		}
 	}
 
+	public void setCompressionMethod(PacketCompressionAlgorithm compressionAlgorithm) {
+		this.bedrockClient.getSession().setCompression(compressionAlgorithm);
+	}
+
 	public void enableEncryption(SecretKey key) {
 		if(this.bedrockClient.getSession().isEncrypted()) {
 			throw new IllegalStateException("Connection is already encrypted");
@@ -162,7 +157,7 @@ public class BedrockConnection {
 		BedrockSession bedrockSession = event.getSession();
 		FakeJavaConnection javaConnection = new FakeJavaConnection(this);
 
-		bedrockSession.setPacketCodec(CODEC);
+		bedrockSession.setPacketCodec(BedrockConnection.CODEC);
 		bedrockSession.addDisconnectHandler(reason -> MinecraftClient.getInstance().execute(() -> {
 			// We disconnected ourselves.
 			if (reason == DisconnectReason.DISCONNECTED) {
@@ -176,47 +171,9 @@ public class BedrockConnection {
 		bedrockSession.setLogging(false);
 
 		try {
-			LoginPacket loginPacket = new LoginPacket();
-
-			UUID uuid = Objects.requireNonNull(TunnelMC.mc.getSession().getUuidOrNull());
-			ClientData clientData = new ClientData();
-			clientData.setArmSize(ClientData.ArmSizeType.fromUUID(uuid));
-			clientData.setClientRandomId(uuid.getLeastSignificantBits());
-			clientData.setCurrentInputMode(1);
-			clientData.setDefaultInputMode(1);
-			clientData.setDeviceOS(DeviceOS.MICROSOFT_WINDOWS_10);
-			clientData.setGameVersion(BedrockConnection.CODEC.getMinecraftVersion());
-			clientData.setSkinGeometryVersion(Base64.getEncoder().withoutPadding().encodeToString(BedrockConnection.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
-			clientData.setLanguageCode(TunnelMC.mc.getLanguageManager().getLanguage().getCode());
-			clientData.setSelfSignedId(uuid);
-			clientData.setServerAddress(this.targetAddress.getHostName() + ":" + this.targetAddress.getPort());
-			clientData.setThirdPartyName(authData.displayName());
-			clientData.setSkinGeometryData(Base64.getEncoder().withoutPadding().encodeToString(
-					JSON_MAPPER.writeValueAsBytes(FileUtils.getJsonFromResource("tunnel/geometry_data.json"))));
-			clientData.setSkinResourcePatch(clientData.getArmSize().getEncodedGeometryData());
-			clientData.setTrustedSkin(true);
-
-			Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = TunnelMC.mc.getSessionService().getTextures(TunnelMC.mc.getSession().getProfile(), false);
-			try {
-				MinecraftProfileTexture skinTexture = Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.SKIN))
-						.orElse(new MinecraftProfileTexture(clientData.getArmSize().getDefaultSkinUrl(), Collections.emptyMap()));
-				clientData.setSkin(ImageIO.read(new URL(skinTexture.getUrl())));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.CAPE))
-					.ifPresent(capeTexture -> {
-						try {
-							clientData.setCape(ImageIO.read(new URL(capeTexture.getUrl())));
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
-					});
-
-			loginPacket.setProtocolVersion(bedrockSession.getPacketCodec().getProtocolVersion());
-			loginPacket.setChainData(new AsciiString(chainData.rawData().getBytes()));
-			loginPacket.setSkinData(new AsciiString(clientData.getAsJWT(chainData)));
-			this.sendPacketImmediately(loginPacket);
+			RequestNetworkSettingsPacket packet = new RequestNetworkSettingsPacket();
+			packet.setProtocolVersion(BedrockConnection.CODEC.getProtocolVersion());
+			this.sendPacketImmediately(packet);
 
 			this.connectScreen.setStatus(Text.of("Loading resources..."));
 			this.javaConnection = javaConnection;
