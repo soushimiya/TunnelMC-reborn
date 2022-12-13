@@ -10,7 +10,6 @@ public class BedrockBlockState {
 	public HashMap<String, String> properties = new HashMap<>();
 
 	public void parseFromString(String string) {
-
 		int firstLeftBracketIndex = string.indexOf("[");
 		if (firstLeftBracketIndex != -1) {//if its found
 			this.identifier = string.substring(0, firstLeftBracketIndex);
@@ -38,19 +37,17 @@ public class BedrockBlockState {
 			return null;
 		}
 
-		StringBuilder string = new StringBuilder();
+		StringBuilder string = new StringBuilder(this.identifier);
 
-		string.append(this.identifier);
-		string.append("[");
-
-		for (Map.Entry<String, String> entry : this.properties.entrySet()) {
-			string.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
+		if(this.properties.size() >= 1) {
+			string.append("[");
+			for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+				string.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
+			}
+			string = new StringBuilder(string.substring(0, string.length() - 1)); // remove the last comma
+			string.append("]");
 		}
-		string = new StringBuilder(string.substring(0, string.length() - 1)); // remove the last comma
-
-		string.append("]");
 
 		return string.toString();
 	}
-
 }
