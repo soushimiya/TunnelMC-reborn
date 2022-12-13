@@ -11,6 +11,7 @@
     "MixinClientPlayerEntity",
     "MixinClientPlayerInteractionHandler",
     "MixinClientWorld",
+    "MixinEntity",
     "MixinHandledScreen",
     "MixinInGameHud",
     "MixinKeyboard",
