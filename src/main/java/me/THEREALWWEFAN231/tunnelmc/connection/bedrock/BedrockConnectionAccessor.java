@@ -27,6 +27,7 @@ public class BedrockConnectionAccessor {
     }
 
     public void closeConnection(Throwable throwable) {
+        throwable.printStackTrace();
         closeConnection(throwable.getMessage());
     }
 

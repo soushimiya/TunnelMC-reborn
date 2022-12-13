@@ -43,7 +43,11 @@ public abstract class PacketTranslatorManager<P> {
 			return;
 		}
 
-		packetTranslator.translate(packet, bedrockConnection, connection);
+		try {
+			packetTranslator.translate(packet, bedrockConnection, connection);
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
+		}
 	}
 
 	@Listener
