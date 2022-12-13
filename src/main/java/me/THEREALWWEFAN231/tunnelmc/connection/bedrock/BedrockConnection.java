@@ -59,11 +59,11 @@ public class BedrockConnection {
 	public int entityRuntimeId;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
 	public GameType defaultGameMode;
-	public AtomicBoolean startedSprinting = new AtomicBoolean();
-	public AtomicBoolean startedSneaking = new AtomicBoolean();
-	public AtomicBoolean stoppedSprinting = new AtomicBoolean();
-	public AtomicBoolean stoppedSneaking = new AtomicBoolean();
-	public AtomicBoolean jumping = new AtomicBoolean();
+	public final AtomicBoolean startedSprinting = new AtomicBoolean();
+	public final AtomicBoolean startedSneaking = new AtomicBoolean();
+	public final AtomicBoolean stoppedSprinting = new AtomicBoolean();
+	public final AtomicBoolean stoppedSneaking = new AtomicBoolean();
+	public final AtomicBoolean jumping = new AtomicBoolean();
 
 	BedrockConnection(InetSocketAddress bindAddress, InetSocketAddress targetAddress) {
 		this.bedrockClient = new BedrockClient(bindAddress);
