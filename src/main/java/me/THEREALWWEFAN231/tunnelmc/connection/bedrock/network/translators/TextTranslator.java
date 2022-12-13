@@ -37,6 +37,12 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 				javaConnection.processJavaPacket(gameMessageS2CPacket);
 				break;
 			}
+			case POPUP:
+			case TIP: {
+				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(Text.of(packet.getMessage()), true);
+				javaConnection.processJavaPacket(gameMessageS2CPacket);
+				break;
+			}
 		}
 	}
 }
