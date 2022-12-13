@@ -18,7 +18,7 @@ public class SetTimeTranslator extends PacketTranslator<SetTimePacket> {
 	}
 	
 	@Override
-	public boolean idleUntil() {
-		return TunnelMC.mc.world == null;
+	public boolean idleUntil(SetTimePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+		return TunnelMC.mc.world != null;
 	}
 }

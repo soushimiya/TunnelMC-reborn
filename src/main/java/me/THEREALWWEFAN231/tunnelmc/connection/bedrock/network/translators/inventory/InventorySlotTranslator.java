@@ -46,7 +46,7 @@ public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacke
 	}
 
 	@Override
-	public boolean idleUntil() {
-		return TunnelMC.mc.player == null;
+	public boolean idleUntil(InventorySlotPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+		return TunnelMC.mc.player != null;
 	}
 }

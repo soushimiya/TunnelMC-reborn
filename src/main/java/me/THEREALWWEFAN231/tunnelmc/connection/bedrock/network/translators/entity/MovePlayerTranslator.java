@@ -50,7 +50,7 @@ public class MovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
 	}
 	
 	@Override
-	public boolean idleUntil() {
-		return TunnelMC.mc.player == null;
+	public boolean idleUntil(MovePlayerPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+		return TunnelMC.mc.player != null;
 	}
 }

@@ -38,7 +38,7 @@ public abstract class PacketTranslatorManager<P> {
 			//System.out.println("Could not find a packet translator for the packet: " + packet.getClass());
 			return;
 		}
-		if (packetTranslator.idleUntil()) {
+		if (!packetTranslator.idleUntil(packet, bedrockConnection, connection)) {
 			this.idlePackets.add(new IdlePacket(bedrockConnection, connection, packetTranslator, packet));
 			return;
 		}
@@ -50,7 +50,7 @@ public abstract class PacketTranslatorManager<P> {
 	public void onEvent(PlayerTickEvent event) {
 		for (int i = 0; i < this.idlePackets.size(); i++) {
 			IdlePacket idlePacket = this.idlePackets.get(i);
-			if (idlePacket.getPacketTranslator().idleUntil()) {
+			if (!idlePacket.getPacketTranslator().idleUntil(idlePacket.getPacket(), idlePacket.getBedrockConnection(), idlePacket.getJavaConnection())) {
 				continue;
 			}
 
