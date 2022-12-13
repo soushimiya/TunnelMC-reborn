@@ -7,6 +7,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.EntityTranslator;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
@@ -35,19 +36,27 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 		float yaw = packet.getRotation().getY();
 		float headYaw = packet.getRotation().getZ();
 
-		Entity entity = entityType.create(TunnelMC.mc.world);
-		if (entity == null) {
-			System.out.println("Could not create entity type: " + packet.getIdentifier());
-			return;
+		Runnable runnable = () -> {
+			Entity entity = entityType.create(TunnelMC.mc.world);
+			if (entity == null) {
+				System.out.println("Could not create entity type: " + packet.getIdentifier());
+				return;
+			}
+
+			entity.setId(id);
+			entity.setPos(x, y, z);
+			entity.setVelocity(motionX, motionY, motionZ);
+			entity.setYaw(yaw);
+			entity.setHeadYaw(headYaw);
+			entity.setPitch(pitch);
+
+			javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
+		};
+
+		if (TunnelMC.mc.world != null) {
+			runnable.run();
+		} else {
+			MinecraftClient.getInstance().execute(runnable);
 		}
-
-		entity.setId(id);
-		entity.setPos(x, y, z);
-		entity.setVelocity(motionX, motionY, motionZ);
-		entity.setYaw(yaw);
-		entity.setHeadYaw(headYaw);
-		entity.setPitch(pitch);
-
-		javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
 	}
 }
