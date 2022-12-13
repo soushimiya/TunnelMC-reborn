@@ -8,6 +8,6 @@ public abstract class PacketTranslator<T> {
 	public abstract void translate(T packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection);
 
 	public boolean idleUntil(T packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		return false;
+		return true;
 	}
 }
