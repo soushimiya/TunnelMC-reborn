@@ -12,6 +12,7 @@
     "MixinClientPlayerInteractionHandler",
     "MixinClientWorld",
     "MixinHandledScreen",
+    "MixinInGameHud",
     "MixinKeyboard",
     "MixinMinecraftClient",
     "MixinMultiplayerScreen",
