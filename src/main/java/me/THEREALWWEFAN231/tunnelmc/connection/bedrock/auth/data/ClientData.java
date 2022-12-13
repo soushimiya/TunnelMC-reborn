@@ -73,6 +73,8 @@ public class ClientData {
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
     @JsonProperty("PlatformUserId")
     private UUID platformUserId;
+    @JsonProperty("PlayFabId")
+    private String playFabId;
     @JsonProperty("PremiumSkin")
     private boolean premiumSkin;
     @JsonProperty("SelfSignedId")
