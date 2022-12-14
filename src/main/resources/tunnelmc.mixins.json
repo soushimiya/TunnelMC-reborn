@@ -17,6 +17,7 @@
     "MixinKeyboard",
     "MixinMinecraftClient",
     "MixinMultiplayerScreen",
+    "MixinEntityRenderer",
     "MixinScreenHandler",
     "MixinWorldRenderer",
     "interfaces.IMixinClientPlayerInteractionManager",
