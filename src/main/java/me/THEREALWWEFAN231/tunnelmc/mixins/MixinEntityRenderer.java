@@ -1,5 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinTextRenderer;
 import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.font.GlyphRenderer;
@@ -10,7 +11,6 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -23,10 +23,11 @@ import java.util.function.Function;
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
 
-	@Shadow public abstract TextRenderer getTextRenderer();
-
 	@Redirect(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/text/Text;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)I"))
 	public int renderLabelIfPresent(TextRenderer textRenderer, Text text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
+		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+			return textRenderer.draw(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
+		}
 		Function<Integer, Float> getY = (i) -> y - i * (textRenderer.fontHeight + 1);
 		Function<String, Float> getX = (str) -> (float)-textRenderer.getWidth(str) / 2;
 
