@@ -20,12 +20,19 @@ public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacke
 
 	@Override
 	public void translate(PlayerListPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		boolean add = packet.getAction() == PlayerListPacket.Action.ADD;
-		List<Entry> entries = new ArrayList<>();
+		PlayerListS2CPacket.Action action = packet.getAction() == PlayerListPacket.Action.ADD
+				? PlayerListS2CPacket.Action.ADD_PLAYER
+				: PlayerListS2CPacket.Action.REMOVE_PLAYER;
+		PlayerListS2CPacket playerListS2CPacket = new PlayerListS2CPacket(action);
 
-		PlayerListS2CPacket playerListS2CPacket = new PlayerListS2CPacket(add ? PlayerListS2CPacket.Action.ADD_PLAYER : PlayerListS2CPacket.Action.REMOVE_PLAYER);
+		List<Entry> entries = new ArrayList<>();
 		for (PlayerListPacket.Entry entry : packet.getEntries()) {
-			// gamemode says nullable but is used in ClientGameSession/:
+			if(packet.getAction() == PlayerListPacket.Action.ADD
+					&& javaConnection.getClientPlayNetworkHandler().getPlayerListEntry(entry.getUuid()) != null) {
+				return;
+			}
+
+			bedrockConnection.profileNameToUuid.put(entry.getName(), entry.getUuid());
 			entries.add(new Entry(new GameProfile(entry.getUuid(), entry.getName()), 0, GameMode.SURVIVAL, Text.of(entry.getName()), null));
 		}
 

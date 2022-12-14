@@ -30,11 +30,15 @@ public class SetEntityDataTranslator extends PacketTranslator<SetEntityDataPacke
 			}
 			EntityDataMap metadata = packet.getMetadata();
 
-			if (metadata.containsKey(EntityData.AIR_SUPPLY)) {
-				entity.setAir(metadata.getShort(EntityData.AIR_SUPPLY));
-			} else if (metadata.containsKey(EntityData.HEALTH)) {
-				if (entity instanceof LivingEntity) {
-					((LivingEntity) entity).setHealth(metadata.getInt(EntityData.HEALTH));
+			for(EntityData entityData : metadata.keySet()) {
+				switch (entityData) {
+					case AIR_SUPPLY -> entity.setAir(metadata.getShort(entityData));
+					case HEALTH -> {
+						if (entity instanceof LivingEntity) {
+							((LivingEntity) entity).setHealth(metadata.getInt(entityData));
+						}
+					}
+					case NAMETAG -> bedrockConnection.displayNames.put(entity.getUuid(), metadata.getString(entityData, entity.getDisplayName().getString()));
 				}
 			}
 

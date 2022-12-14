@@ -1,5 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinTextRenderer;
 import net.minecraft.client.font.FontStorage;
@@ -14,10 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 @Mixin(EntityRenderer.class)
@@ -31,7 +29,11 @@ public abstract class MixinEntityRenderer {
 		Function<Integer, Float> getY = (i) -> y - i * (textRenderer.fontHeight + 1);
 		Function<String, Float> getX = (str) -> (float)-textRenderer.getWidth(str) / 2;
 
-		List<String> lines = new ArrayList<>(List.of(text.getString().split("\n")));
+		BedrockConnection connection = BedrockConnectionAccessor.getCurrentConnection();
+		String nameTag = Optional.ofNullable(connection.profileNameToUuid.get(text.getString()))
+				.map(connection.displayNames::get).orElse(text.getString());
+
+		List<String> lines = new ArrayList<>(List.of(nameTag.split("\n")));
 		Collections.reverse(lines);
 
 		int lastDraw = (int) x;

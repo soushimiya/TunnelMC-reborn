@@ -33,6 +33,9 @@ import net.minecraft.text.Text;
 
 import javax.crypto.SecretKey;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
@@ -59,6 +62,8 @@ public class BedrockConnection {
 	public int entityRuntimeId;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
 	public GameType defaultGameMode;
+	public final Map<UUID, String> displayNames = new HashMap<>();
+	public final Map<String, UUID> profileNameToUuid = new HashMap<>();
 	public final AtomicBoolean startedSprinting = new AtomicBoolean();
 	public final AtomicBoolean startedSneaking = new AtomicBoolean();
 	public final AtomicBoolean stoppedSprinting = new AtomicBoolean();

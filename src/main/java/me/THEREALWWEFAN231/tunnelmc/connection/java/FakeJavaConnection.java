@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.java;
 
 import com.mojang.authlib.GameProfile;
+import lombok.Getter;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
@@ -15,6 +16,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class FakeJavaConnection {
 	private final BedrockConnection bedrockConnection;
+	@Getter
 	private final ClientPlayNetworkHandler clientPlayNetworkHandler;
 	private final PacketTranslatorManager<Packet<?>> packetTranslatorManager;
 
