@@ -26,8 +26,7 @@ public abstract class MixinEntityRenderer {
 	@Shadow public abstract TextRenderer getTextRenderer();
 
 	@Redirect(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/text/Text;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)I"))
-	public int renderLabelIfPresent(TextRenderer instance, Text text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
-		TextRenderer textRenderer = getTextRenderer();
+	public int renderLabelIfPresent(TextRenderer textRenderer, Text text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
 		Function<Integer, Float> getY = (i) -> y - i * (textRenderer.fontHeight + 1);
 		Function<String, Float> getX = (str) -> (float)-textRenderer.getWidth(str) / 2;
 
