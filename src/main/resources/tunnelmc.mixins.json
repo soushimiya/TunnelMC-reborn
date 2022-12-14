@@ -12,18 +12,19 @@
     "MixinClientPlayerInteractionHandler",
     "MixinClientWorld",
     "MixinEntity",
+    "MixinEntityRenderer",
     "MixinHandledScreen",
     "MixinInGameHud",
     "MixinKeyboard",
     "MixinMinecraftClient",
     "MixinMultiplayerScreen",
-    "MixinEntityRenderer",
     "MixinScreenHandler",
     "MixinWorldRenderer",
     "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinClientWorld",
     "interfaces.IMixinPlayerInteractEntityC2SPacket",
     "interfaces.IMixinPlayerListS2CPacket",
+    "interfaces.IMixinTextRenderer",
     "interfaces.IMixinWorldRenderer"
   ]
 }
