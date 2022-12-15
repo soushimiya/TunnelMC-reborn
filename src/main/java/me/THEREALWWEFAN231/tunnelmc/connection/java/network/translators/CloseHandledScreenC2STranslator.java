@@ -1,10 +1,10 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators;
 
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 
 @PacketIdentifier(CloseHandledScreenC2SPacket.class)

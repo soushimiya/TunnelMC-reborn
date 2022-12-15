@@ -3,10 +3,10 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 import com.nukkitx.protocol.bedrock.data.GameRuleData;
 import com.nukkitx.protocol.bedrock.packet.GameRulesChangedPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.world.GameRules;
 
 import java.util.List;

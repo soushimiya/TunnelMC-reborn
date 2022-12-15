@@ -3,12 +3,12 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inve
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.type.ContainerTypeTranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;

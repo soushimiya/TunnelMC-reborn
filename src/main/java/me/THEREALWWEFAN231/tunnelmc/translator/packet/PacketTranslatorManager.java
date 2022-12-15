@@ -1,4 +1,4 @@
-package me.THEREALWWEFAN231.tunnelmc.connection;
+package me.THEREALWWEFAN231.tunnelmc.translator.packet;
 
 import com.nukkitx.api.event.Listener;
 import lombok.Getter;
@@ -7,13 +7,14 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerTickEvent;
+import me.THEREALWWEFAN231.tunnelmc.translator.TranslatorManager;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class PacketTranslatorManager<P> {
+public abstract class PacketTranslatorManager<P> extends TranslatorManager<PacketTranslator<?>, P> {
 	private final Map<Class<P>, PacketTranslator<P>> packetTranslatorsByPacketClass = new HashMap<>();
 	private final List<IdlePacket> idlePackets = new CopyOnWriteArrayList<>();
 
@@ -22,6 +23,7 @@ public abstract class PacketTranslatorManager<P> {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	protected void addTranslator(PacketTranslator<?> translator) {
 		if(!translator.getClass().isAnnotationPresent(PacketIdentifier.class)) {
 			System.out.println("Skipping translator due to not having an annotation: " + translator.getClass().getSimpleName());
@@ -32,7 +34,8 @@ public abstract class PacketTranslatorManager<P> {
 		this.packetTranslatorsByPacketClass.put((Class<P>) identifier.value(), (PacketTranslator<P>) translator);
 	}
 
-	public void translatePacket(P packet, BedrockConnection bedrockConnection, FakeJavaConnection connection) {
+	@Override
+	public void translateData(P packet, BedrockConnection bedrockConnection, FakeJavaConnection connection) {
 		PacketTranslator<P> packetTranslator = this.packetTranslatorsByPacketClass.get(packet.getClass());
 		if (packetTranslator == null) {
 			//System.out.println("Could not find a packet translator for the packet: " + packet.getClass());
@@ -44,7 +47,7 @@ public abstract class PacketTranslatorManager<P> {
 		}
 
 		try {
-			packetTranslator.translate(packet, bedrockConnection, connection);
+			packetTranslator.translateType(packet, bedrockConnection, connection);
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
@@ -58,7 +61,7 @@ public abstract class PacketTranslatorManager<P> {
 				continue;
 			}
 
-			idlePacket.getPacketTranslator().translate(idlePacket.getPacket(), idlePacket.getBedrockConnection(), idlePacket.getJavaConnection());
+			idlePacket.getPacketTranslator().translateType(idlePacket.getPacket(), idlePacket.getBedrockConnection(), idlePacket.getJavaConnection());
 			this.idlePackets.remove(i);
 			i--;
 		}

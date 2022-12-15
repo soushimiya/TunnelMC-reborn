@@ -6,9 +6,9 @@ import com.nukkitx.protocol.bedrock.handler.BatchHandler;
 import io.netty.buffer.ByteBuf;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 
 import java.util.Collection;
 

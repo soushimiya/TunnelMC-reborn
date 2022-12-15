@@ -1,11 +1,11 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.java.network;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.FullMoveC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.LookAndOnGroundMoveC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.PlayerMoveC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.PositionAndOnGroundMoveC2STranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 import net.minecraft.network.Packet;
 
 public class JavaPacketTranslatorManager extends PacketTranslatorManager<Packet<?>> {

@@ -3,9 +3,9 @@ package me.THEREALWWEFAN231.tunnelmc.connection.java;
 import com.mojang.authlib.GameProfile;
 import lombok.Getter;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.JavaPacketTranslatorManager;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.utils.NOOPTelemetrySender;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.ClientConnection;
@@ -28,7 +28,7 @@ public class FakeJavaConnection {
 	}
 
 	public void translatePacket(Packet<?> packet) {
-		this.packetTranslatorManager.translatePacket(packet, bedrockConnection, this);
+		this.packetTranslatorManager.translateData(packet, bedrockConnection, this);
 	}
 
 	public void processJavaPacket(Packet<ClientPlayPacketListener> packet) {

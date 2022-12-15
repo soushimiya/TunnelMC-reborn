@@ -1,13 +1,12 @@
-package me.THEREALWWEFAN231.tunnelmc.translator;
-
-import java.util.*;
+package me.THEREALWWEFAN231.tunnelmc.translator.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
+
+import java.util.*;
 
 public class EntityTranslator {
 

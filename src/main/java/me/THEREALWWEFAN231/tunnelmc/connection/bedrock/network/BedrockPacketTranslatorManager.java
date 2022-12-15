@@ -1,10 +1,10 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network;
 
 import com.nukkitx.protocol.bedrock.BedrockPacket;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.entity.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.*;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 
 public class BedrockPacketTranslatorManager extends PacketTranslatorManager<BedrockPacket> {
 

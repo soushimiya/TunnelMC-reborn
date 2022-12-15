@@ -2,10 +2,10 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 
 import com.nukkitx.protocol.bedrock.packet.ResourcePackClientResponsePacket;
 import com.nukkitx.protocol.bedrock.packet.ResourcePackStackPacket;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketIdentifier;
-import me.THEREALWWEFAN231.tunnelmc.connection.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
+import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 
 @PacketIdentifier(ResourcePackStackPacket.class)
 public class ResourcePackStackTranslator extends PacketTranslator<ResourcePackStackPacket> {
