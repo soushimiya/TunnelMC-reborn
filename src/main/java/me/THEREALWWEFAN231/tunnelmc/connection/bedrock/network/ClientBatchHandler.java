@@ -26,7 +26,7 @@ public class ClientBatchHandler implements BatchHandler {
 				log.info("Inbound {}: {}", session.getAddress(), packet.toString().substring(0, Math.min(packet.toString().length(), 200)));
 			}
 
-			this.packetTranslatorManager.translatePacket(packet, this.bedrockConnection, this.javaConnection);
+			this.packetTranslatorManager.translateData(packet, this.bedrockConnection, this.javaConnection);
 			
 			//packet.handle(session.getPacketHandler());
 		}
