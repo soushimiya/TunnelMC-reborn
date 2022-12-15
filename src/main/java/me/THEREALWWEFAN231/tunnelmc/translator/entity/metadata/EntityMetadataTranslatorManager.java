@@ -36,7 +36,7 @@ public class EntityMetadataTranslatorManager extends TranslatorManager<EntityMet
             try {
                 translator.translateType(data.ensureAndGet(entityData), bedrockConnection, connection);
             } catch (Throwable throwable) {
-                throwable.printStackTrace();
+                log.error(throwable);
             }
         }
     }

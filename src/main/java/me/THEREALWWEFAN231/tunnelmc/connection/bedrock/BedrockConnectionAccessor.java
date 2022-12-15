@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinClientWorld;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
@@ -9,6 +10,7 @@ import net.minecraft.text.Text;
 
 import java.net.InetSocketAddress;
 
+@Log4j2
 @UtilityClass
 public class BedrockConnectionAccessor {
     private BedrockConnection currentConnection;
@@ -27,7 +29,7 @@ public class BedrockConnectionAccessor {
     }
 
     public void closeConnection(Throwable throwable) {
-        throwable.printStackTrace();
+        log.error(throwable);
         closeConnection(throwable.getMessage());
     }
 

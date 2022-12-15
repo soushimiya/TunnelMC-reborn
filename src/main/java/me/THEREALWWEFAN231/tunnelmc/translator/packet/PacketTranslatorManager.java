@@ -51,7 +51,7 @@ public abstract class PacketTranslatorManager<P> extends TranslatorManager<Packe
 		try {
 			packetTranslator.translateType(packet, bedrockConnection, connection);
 		} catch (Throwable throwable) {
-			throwable.printStackTrace();
+			log.error(throwable);
 		}
 	}
 
