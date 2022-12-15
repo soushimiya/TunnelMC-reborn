@@ -3,9 +3,11 @@ package me.THEREALWWEFAN231.tunnelmc.translator.item;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.HashBiMap;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.enchantment.EnchantmentTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
@@ -22,10 +24,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 public class ItemTranslator {
-
 	//key, is the item id:damage, so for example could be 218:13
-	public static final HashMap<String, Item> BEDROCK_ITEM_INFO_TO_JAVA_ITEM = new HashMap<>();
+	public static final HashBiMap<String, Item> BEDROCK_ITEM_INFO_TO_JAVA_ITEM = HashBiMap.create();
 
 	public static void load() {
 		ObjectNode itemsObject = (ObjectNode) FileUtils.getJsonFromResource("geyser/items.json");
@@ -52,7 +54,7 @@ public class ItemTranslator {
 			Item item = Registry.ITEM.get(javaIdentifier);
 
 			if (item == Items.AIR && !javaStringIdentifier.equals("minecraft:air")) {//item not found
-				System.out.println(javaStringIdentifier + " item was not found, this generally isn't good.");
+				log.error(javaStringIdentifier + " item was not found, this generally isn't good.");
 				continue;
 			}
 
@@ -82,7 +84,7 @@ public class ItemTranslator {
 					
 					Enchantment javaEnchantment = EnchantmentTranslator.BEDROCK_TO_JAVA_ENCHANTMENTS.get(bedrockEnchantmentId);
 					if(javaEnchantment == null) {
-						System.out.println("Enchantment " + bedrockEnchantmentId + " not found");
+						log.error("Enchantment " + bedrockEnchantmentId + " not found");
 						continue;
 					}
 
@@ -97,29 +99,19 @@ public class ItemTranslator {
 
 	//TODO: tags and what ever
 	public static ItemData itemStackToItemData(ItemStack itemStack) {
-		String idDamageString = null;
-		for (Map.Entry<String, Item> entry : BEDROCK_ITEM_INFO_TO_JAVA_ITEM.entrySet()) {
-
-			if (entry.getValue().equals(itemStack.getItem())) {
-				idDamageString = entry.getKey();
-				break;
-			}
-
+		if(BEDROCK_ITEM_INFO_TO_JAVA_ITEM.containsValue(itemStack.getItem())) {
+			throw new RuntimeException("Cannot find java item");
 		}
-
-		if (idDamageString == null) {
-			System.out.println("ouch");
-		}
-
+		String idDamageString = BEDROCK_ITEM_INFO_TO_JAVA_ITEM.inverse().get(itemStack.getItem());
 		String[] idDamageSplit = idDamageString.split(":");
 
 		int blockRuntimeId = BlockPaletteTranslator.BLOCK_STATE_TO_RUNTIME_ID.getInt(Block.getBlockFromItem(itemStack.getItem()).getDefaultState());
-
-		NbtMap nbtMap = NbtMap.builder().putInt("Damage", 1).build();
-
-		ItemData itemData = ItemData.builder().id(Integer.parseInt(idDamageSplit[0])).damage(Integer.parseInt(idDamageSplit[1])).count(itemStack.getCount()).tag(nbtMap).blockRuntimeId(blockRuntimeId).build();
-
-		return itemData;
+		return ItemData.builder()
+				.id(Integer.parseInt(idDamageSplit[0]))
+				.damage(Integer.parseInt(idDamageSplit[1]))
+				.count(itemStack.getCount())
+				.tag(NbtMap.builder().putInt("Damage", 1).build())
+				.blockRuntimeId(blockRuntimeId)
+				.build();
 	}
-
 }
