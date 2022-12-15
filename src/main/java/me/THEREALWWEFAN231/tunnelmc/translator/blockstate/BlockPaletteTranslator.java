@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
@@ -15,6 +16,7 @@ import java.util.Map;
  * as of 1.16.100, the block palette is static between all servers, so we can load this once and be over it
  * it uses BlockStateTranslator which loaded blocks.json, from BlockStateTranslator we can match blocks and get their runtime id for a Bedrock server
  */
+@Log4j2
 public class BlockPaletteTranslator {
 
 	public static int AIR_BEDROCK_BLOCK_ID;
@@ -42,7 +44,7 @@ public class BlockPaletteTranslator {
 					WATER_BEDROCK_BLOCK_ID = runtimeId;
 				}
 			} else {
-				System.out.println("Unable to find suitable block state for " + bedrockBlockState);
+				log.debug("Unable to find suitable block state for " + bedrockBlockState);
 				RUNTIME_ID_TO_BLOCK_STATE.put(runtimeId, Blocks.STONE.getDefaultState());//we could probably put the default state, but for now we will use stone
 			}
 
@@ -63,7 +65,6 @@ public class BlockPaletteTranslator {
 		bedrockBlockState.identifier = mcbeStringBlockName;
 
 		for (Map.Entry<String, Object> blockState : blockStates.entrySet()) {
-
 			String value = "";
 			if (blockState.getValue() instanceof String || blockState.getValue() instanceof Integer) {
 				value = blockState.getValue().toString();
@@ -71,12 +72,12 @@ public class BlockPaletteTranslator {
 				byte theByte = (byte) blockState.getValue();
 				value = theByte == 0 ? "false" : "true";
 			} else {
-				System.out.println("Unknown type " + blockState.getValue().getClass());
+				log.debug("Unknown type: " + blockState.getValue().getClass());
 			}
 
 			bedrockBlockState.properties.put(blockState.getKey(), value);
 		}
+
 		return bedrockBlockState;
 	}
-
 }

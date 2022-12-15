@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.entity;
 
 import com.nukkitx.protocol.bedrock.packet.AddEntityPacket;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
@@ -13,6 +14,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
+@Log4j2
 @PacketIdentifier(AddEntityPacket.class)
 public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 	// TODO: Handle non living entities differently, with the EntitySpawnS2CPacket.
@@ -21,7 +23,7 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 	public void translate(AddEntityPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		EntityType<?> entityType = EntityTranslator.BEDROCK_IDENTIFIER_TO_ENTITY_TYPE.get(packet.getIdentifier());
 		if (entityType == null) {
-			System.out.println("Could not find entity type: " + packet.getIdentifier());
+			log.error("Could not find entity type: " + packet.getIdentifier());
 			return;
 		}
 
@@ -39,7 +41,7 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 		Runnable runnable = () -> {
 			Entity entity = entityType.create(TunnelMC.mc.world);
 			if (entity == null) {
-				System.out.println("Could not create entity type: " + packet.getIdentifier());
+				log.error("Could not create entity type: " + packet.getIdentifier());
 				return;
 			}
 

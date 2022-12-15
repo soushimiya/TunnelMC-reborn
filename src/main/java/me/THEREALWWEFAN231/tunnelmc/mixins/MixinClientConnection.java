@@ -2,6 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.mixins;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
@@ -17,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@Log4j2
 @Mixin(ClientConnection.class)
 public class MixinClientConnection {
 	@Shadow private Channel channel;
@@ -54,7 +56,7 @@ public class MixinClientConnection {
 				return;
 			}
 			
-			System.out.println("got packet " + packet.getClass());
+			log.debug("Received: " + packet.getClass());
 		}
 	}
 

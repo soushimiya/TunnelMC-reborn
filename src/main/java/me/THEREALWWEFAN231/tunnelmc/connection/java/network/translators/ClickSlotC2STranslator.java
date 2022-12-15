@@ -7,6 +7,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.InventorySource.Flag;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.data.inventory.TransactionType;
 import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
@@ -21,6 +22,7 @@ import me.THEREALWWEFAN231.tunnelmc.utils.ItemDataUtils;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 
+@Log4j2
 public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket> {
 	// TODO: Re-review this code and clean it up later on, seems incorrect.
 	// TODO: should this still be a packet translator?
@@ -91,12 +93,10 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		BedrockContainer cursorContainer = BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerContainerCursorContainer();
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(event.getScreenHandler(), clickedSlotId);
 		if (containerForClickedSlot == null) {
-			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
 			return;
 		}
 		Integer bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(event.getScreenHandler(), clickedSlotId, containerForClickedSlot);
 		if (bedrockSlotId == null) {
-			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
 			return;
 		}
 		ItemData cursorItemData = cursorContainer.getItemFromSlot(0);
@@ -133,12 +133,10 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		BedrockContainer cursorContainer = BedrockConnectionAccessor.getCurrentConnection().getWrappedContainers().getPlayerContainerCursorContainer();
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(event.getScreenHandler(), clickedSlotId);
 		if (containerForClickedSlot == null) {
-			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
 			return;
 		}
 		Integer bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(event.getScreenHandler(), clickedSlotId, containerForClickedSlot);
 		if (bedrockSlotId == null) {
-			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
 			return;
 		}
 		ItemData clickedSlotItemData = containerForClickedSlot.getItemFromSlot(bedrockSlotId);
@@ -164,15 +162,12 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		inventoryTransactionPacket.setRuntimeEntityId(TunnelMC.mc.player.getId());
 
 		BedrockContainer containerForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerFromJava(event.getScreenHandler(), clickedSlotId);
-
 		if (containerForClickedSlot == null) {
-			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
 			return;
 		}
 
 		Integer bedrockSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(event.getScreenHandler(), clickedSlotId, containerForClickedSlot);
 		if (bedrockSlotId == null) {
-			System.out.println("FIX THIS, unknown slot clicked " + clickedSlotId);
 			return;
 		}
 

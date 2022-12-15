@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory;
 
 import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
@@ -12,6 +13,7 @@ import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 
+@Log4j2
 @PacketIdentifier(InventorySlotPacket.class)
 public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacket> {
 
@@ -20,7 +22,7 @@ public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacke
 		int syncId = packet.getContainerId();
 		BedrockContainer containerToChange = bedrockConnection.getWrappedContainers().getContainers().get(syncId);
 		if(containerToChange == null) {//TODO: create some sort of "temp" container, we use to do this, but for testing purposes this does for now
-			System.out.println("Couldn't find container with id " + syncId);
+			log.error("Couldn't find the correct container id for: " + packet);
 			return;
 		}
 		

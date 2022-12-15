@@ -3,6 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.packet;
 import com.nukkitx.api.event.Listener;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Log4j2
 public abstract class PacketTranslatorManager<P> extends TranslatorManager<PacketTranslator<?>, P> {
 	private final Map<Class<P>, PacketTranslator<P>> packetTranslatorsByPacketClass = new HashMap<>();
 	private final List<IdlePacket> idlePackets = new CopyOnWriteArrayList<>();
@@ -26,7 +28,7 @@ public abstract class PacketTranslatorManager<P> extends TranslatorManager<Packe
 	@Override
 	protected void addTranslator(PacketTranslator<?> translator) {
 		if(!translator.getClass().isAnnotationPresent(PacketIdentifier.class)) {
-			System.out.println("Skipping translator due to not having an annotation: " + translator.getClass().getSimpleName());
+			log.warn("Skipping translator due to not having an annotation: " + translator.getClass().getSimpleName());
 			return;
 		}
 
@@ -38,7 +40,7 @@ public abstract class PacketTranslatorManager<P> extends TranslatorManager<Packe
 	public void translateData(P packet, BedrockConnection bedrockConnection, FakeJavaConnection connection) {
 		PacketTranslator<P> packetTranslator = this.packetTranslatorsByPacketClass.get(packet.getClass());
 		if (packetTranslator == null) {
-			//System.out.println("Could not find a packet translator for the packet: " + packet.getClass());
+			log.debug("Could not find a packet translator for the packet: " + packet.getClass());
 			return;
 		}
 		if (!packetTranslator.idleUntil(packet, bedrockConnection, connection)) {

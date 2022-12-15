@@ -1,5 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler;
 
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators.GenericContainerScreenHandlerTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators.PlayerScreenHandlerTranslator;
@@ -7,9 +8,9 @@ import net.minecraft.screen.ScreenHandler;
 
 import java.util.HashMap;
 
+@Log4j2
 public class ScreenHandlerTranslatorManager {
-	
-	private static final HashMap<Class<? extends ScreenHandler>, ScreenHandlerTranslator<?>> REGISTRY = new HashMap<Class<? extends ScreenHandler>, ScreenHandlerTranslator<?>>();
+	private static final HashMap<Class<? extends ScreenHandler>, ScreenHandlerTranslator<?>> REGISTRY = new HashMap<>();
 	
 	public static void load() {
 		ScreenHandlerTranslatorManager.add(new PlayerScreenHandlerTranslator());
@@ -25,7 +26,7 @@ public class ScreenHandlerTranslatorManager {
 		ScreenHandlerTranslator<ScreenHandler> translator = (ScreenHandlerTranslator<ScreenHandler>) ScreenHandlerTranslatorManager.REGISTRY.get(screenHandlerClass);
 		
 		if(translator == null) {
-			System.out.println("No screen handler found for " + screenHandlerClass);
+			log.error("No screen handler found for " + screenHandlerClass);
 			return null;
 		}
 		

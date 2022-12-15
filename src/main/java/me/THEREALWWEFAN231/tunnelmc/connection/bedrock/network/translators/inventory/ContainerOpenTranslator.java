@@ -3,6 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inve
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
@@ -13,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
 
+@Log4j2
 @PacketIdentifier(ContainerOpenPacket.class)
 public class ContainerOpenTranslator extends PacketTranslator<ContainerOpenPacket> {
 
@@ -26,7 +28,7 @@ public class ContainerOpenTranslator extends PacketTranslator<ContainerOpenPacke
 		
 		ScreenHandlerType<?> screenHandlerType = ContainerTypeTranslator.bedrockToJava(packet.getType());
 		if(screenHandlerType == null) {
-			System.out.println("No screen handler " + packet.getType());
+			log.error("Couldn't find the correct screen handler for: " + packet);
 			return;
 		}
 

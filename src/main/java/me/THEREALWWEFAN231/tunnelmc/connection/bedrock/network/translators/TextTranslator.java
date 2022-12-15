@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 
 import com.nukkitx.protocol.bedrock.packet.TextPacket;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
@@ -8,6 +9,7 @@ import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.text.Text;
 
+@Log4j2
 @PacketIdentifier(TextPacket.class)
 public class TextTranslator extends PacketTranslator<TextPacket> {
 
@@ -15,7 +17,7 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 	public void translate(TextPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		switch (packet.getType()) {
 			default: {
-				System.out.println("Falling back to raw translation for " + packet);
+				log.debug("Falling back to raw translation for " + packet);
 			}
 			case RAW: {
 				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(Text.of(packet.getMessage()), false);

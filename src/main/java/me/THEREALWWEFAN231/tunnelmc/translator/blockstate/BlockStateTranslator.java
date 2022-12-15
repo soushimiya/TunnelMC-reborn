@@ -1,21 +1,13 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.blockstate;
 
-import java.io.DataInputStream;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.zip.GZIPInputStream;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-
 import com.nukkitx.nbt.NBTInputStream;
 import com.nukkitx.nbt.NbtList;
 import com.nukkitx.nbt.NbtMap;
 import com.nukkitx.nbt.NbtType;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -24,6 +16,15 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.io.DataInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.zip.GZIPInputStream;
+
+@Log4j2
 public class BlockStateTranslator {
 	//TODO: create an override file, which allows us to override the blocks.json information and or create new information, once we do that fix all the printlns' from BlockPaletteTranslator
 	//TODO: i also dont think water logged blocks work, i cant test right now as i cant connect to a dedicated bedrock server
@@ -62,16 +63,12 @@ public class BlockStateTranslator {
 					} else if (node.isTextual()) {
 						value = node.asText();
 					} else {
-						System.out.println("Unknown block state value, key=" + stateEntry.getKey() + " value=" + node + ":" + node.getClass());
+						log.error("Unknown block state value, key=" + stateEntry.getKey() + " value=" + node + ":" + node.getClass());
 						continue;
 					}
 
 					bedrockBlockState.properties.put(stateEntry.getKey(), value);
 				}
-			}
-
-			if (entry.getKey().equals("minecraft:water[level=1]")) {
-				System.out.println(bedrockBlockState.toString());
 			}
 
 			BlockState blockState = BlockStateTranslator.parseBlockState(javaBlockState);
@@ -112,7 +109,7 @@ public class BlockStateTranslator {
 		Block block = Registry.BLOCK.get(new Identifier(javaBlockIdentifier));
 		//do not use block instanceof AirBlock, as there is void_air and cave_air, i guess, never knew they existed
 		if (block == Blocks.AIR && !javaBlockIdentifier.equals("minecraft:air")) {//Registry.BLOCK.get returns air if its not found, so if this is true, the block is not found, and this generally isn't good
-			System.out.println(javaBlockIdentifier + " block was not found, this generally isn't good.");
+			log.error(javaBlockIdentifier + " block was not found, this generally isn't good.");
 			return null;
 		}
 
@@ -130,21 +127,19 @@ public class BlockStateTranslator {
 
 				Property<?> property = block.getStateManager().getProperty(key);
 				if (property == null) {
-					System.out.println("Could not find the property " + key);
+					log.warn("Could not find the property " + key);
 					return null;
 				}
 
 				theBlockState = parsePropertyValue(theBlockState, property, value);
 				if (theBlockState == null) {
-					System.out.println("Could not find the state " + key + " or set the value " + value + " " + blockStateInformation);
+					log.error("Could not find the state " + key + " or set the value " + value + ": " + blockStateInformation);
 					return null;
 				}
 			}
-
 		}
 
 		return theBlockState;
-
 	}
 
 	private static <T extends Comparable<T>> BlockState parsePropertyValue(BlockState before, Property<T> property, String value) {
