@@ -66,7 +66,7 @@ public class BedrockConnectionScreen extends Screen {
 					return;
 				}
 
-				connection.connect(chainData);
+				connection.connect(chainData, this);
 			};
 
 			if (this.onlineModeWidget.isChecked()) {

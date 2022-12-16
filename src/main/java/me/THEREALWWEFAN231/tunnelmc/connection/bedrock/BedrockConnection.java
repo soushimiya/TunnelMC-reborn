@@ -27,6 +27,7 @@ import me.THEREALWWEFAN231.tunnelmc.events.SessionInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.network.Packet;
 import net.minecraft.text.Text;
 
@@ -80,8 +81,8 @@ public class BedrockConnection {
 		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 	}
 
-	public void connect(ChainData chainData) {
-		this.connectScreen = new BedrockConnectingScreen(MinecraftClient.getInstance().currentScreen, MinecraftClient.getInstance(), BedrockConnectionAccessor::closeConnection);
+	public void connect(ChainData chainData, Screen parent) {
+		this.connectScreen = new BedrockConnectingScreen(parent, MinecraftClient.getInstance(), BedrockConnectionAccessor::closeConnection);
 		TunnelMC.mc.setScreen(this.connectScreen);
 
 		this.chainData = chainData;
