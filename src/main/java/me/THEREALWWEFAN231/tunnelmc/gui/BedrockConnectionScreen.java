@@ -1,6 +1,11 @@
 package me.THEREALWWEFAN231.tunnelmc.gui;
 
+import lombok.extern.log4j.Log4j2;
+import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChainSupplier;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,10 +18,13 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.File;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.function.BiConsumer;
 
+@Log4j2
 @Environment(EnvType.CLIENT)
 public class BedrockConnectionScreen extends Screen {
 
@@ -26,6 +34,7 @@ public class BedrockConnectionScreen extends Screen {
 	private TextFieldWidget addressField;
 	private TextFieldWidget portField;
 	private CheckboxWidget onlineModeWidget;
+	private CheckboxWidget rememberAccountWidget;
 	private final Screen parent;
 
 	public BedrockConnectionScreen(Screen parent) {
@@ -43,23 +52,38 @@ public class BedrockConnectionScreen extends Screen {
 				return;
 			}
 
-			int port;
+			int port = 19132;
 			try {
 				port = Integer.parseInt(this.portField.getText());
-			} catch (NumberFormatException e) {
-				port = 19132;
+			} catch (NumberFormatException ignore) {}
+
+			BedrockConnection connection = BedrockConnectionAccessor.createNewConnection(
+					new InetSocketAddress("0.0.0.0", getRandomPort()),
+					new InetSocketAddress(this.addressField.getText(), port));
+			BiConsumer<ChainData, Throwable> whenComplete = (chainData, throwable) -> {
+				if(throwable != null) {
+					log.error("Got error when getting chain data", throwable);
+					return;
+				}
+
+				connection.connect(chainData);
+			};
+
+			if (this.onlineModeWidget.isChecked()) {
+				File tokenFile = TunnelMC.getInstance().getConfigPath().resolve("bedrock.tok").toFile();
+				this.client.setScreen(new BedrockLoggingInScreen(this, this.client, this.rememberAccountWidget.isChecked() ? tokenFile : null, whenComplete));
+				return;
 			}
 
-			BedrockConnectionAccessor.createNewConnection(
-					new InetSocketAddress("0.0.0.0", getRandomPort()),
-					new InetSocketAddress(this.addressField.getText(), port))
-						.connect(this.onlineModeWidget.isChecked());
+			new OfflineModeLoginChainSupplier(TunnelMC.mc.getSession().getUsername())
+					.get().whenComplete(whenComplete);
 		}));
 
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));
 		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 16, 200, 20, Text.of("Enter IP"));
 		this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 46, 200, 20, Text.of("Enter Port"));
-		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 200, 20, Text.of("Online mode"), false); // online mode is garbage rn
+		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 200, 20, Text.of("Online mode"), true);
+		this.rememberAccountWidget = new CheckboxWidget(this.width / 2, (this.height / 4) + 80, 200, 20, Text.of("Remember Account"), true);
 		this.addressField.setMaxLength(128);
 		this.portField.setMaxLength(6);
 		this.addressField.setTextFieldFocused(true);
@@ -85,6 +109,7 @@ public class BedrockConnectionScreen extends Screen {
 		this.addressField.render(matrices, mouseX, mouseY, delta);
 		this.portField.render(matrices, mouseX, mouseY, delta);
 		this.onlineModeWidget.render(matrices, mouseX, mouseY, delta);
+		this.rememberAccountWidget.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -92,6 +117,7 @@ public class BedrockConnectionScreen extends Screen {
 		this.addressField.mouseClicked(mouseX, mouseY, button);
 		this.portField.mouseClicked(mouseX, mouseY, button);
 		this.onlineModeWidget.mouseClicked(mouseX, mouseY, button);
+		this.rememberAccountWidget.mouseClicked(mouseX, mouseY, button);
 
 		return super.mouseClicked(mouseX, mouseY, button);
 	}

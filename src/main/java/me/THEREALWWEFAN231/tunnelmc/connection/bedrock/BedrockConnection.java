@@ -15,8 +15,6 @@ import com.nukkitx.protocol.bedrock.v560.Bedrock_v560;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChainSupplier;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OnlineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.AuthData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.BedrockPacketTranslatorManager;
@@ -82,36 +80,22 @@ public class BedrockConnection {
 		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 	}
 
-	public void connect(boolean onlineMode) {
+	public void connect(ChainData chainData) {
 		this.connectScreen = new BedrockConnectingScreen(MinecraftClient.getInstance().currentScreen, MinecraftClient.getInstance(), BedrockConnectionAccessor::closeConnection);
 		TunnelMC.mc.setScreen(this.connectScreen);
 
-		LoginChainSupplier supplier;
-		if (onlineMode) {
-			supplier = new OnlineModeLoginChainSupplier(s -> this.connectScreen.setStatus(Text.of(s)));
-		} else {
-			supplier = new OfflineModeLoginChainSupplier(TunnelMC.mc.getSession().getUsername());
-		}
+		this.chainData = chainData;
+		this.authData = this.chainData.decodeAuthData();
+		this.connectScreen.setStatus(Text.translatable("connect.connecting"));
 
-		supplier.get().whenComplete((chainData, throwable) -> {
-			if(throwable != null) {
-				BedrockConnectionAccessor.closeConnection(throwable);
+		this.bedrockClient.connect(this.targetAddress).whenComplete((session, throwable1) -> {
+			if (throwable1 != null) {
+				BedrockConnectionAccessor.closeConnection(throwable1);
 				return;
 			}
 
-			this.chainData = chainData;
-			this.authData = this.chainData.decodeAuthData();
-			this.connectScreen.setStatus(Text.translatable("connect.connecting"));
-
-			this.bedrockClient.connect(this.targetAddress).whenComplete((session, throwable1) -> {
-				if (throwable1 != null) {
-					BedrockConnectionAccessor.closeConnection(throwable1);
-					return;
-				}
-
-				this.connectScreen.setStatus(Text.of("Logging in..."));
-				TunnelMC.getInstance().getEventManager().fire(new SessionInitializedEvent(session));
-			});
+			this.connectScreen.setStatus(Text.of("Logging in..."));
+			TunnelMC.getInstance().getEventManager().fire(new SessionInitializedEvent(session));
 		});
 	}
 

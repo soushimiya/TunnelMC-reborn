@@ -8,7 +8,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.XboxToken;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URL;
-import java.security.interfaces.ECPublicKey;
+import java.security.PublicKey;
 import java.util.Base64;
 
 import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
@@ -17,7 +17,7 @@ import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 public class MinecraftAuthentication {
     private final String MINECRAFT_AUTHENTICATE_URL = "https://multiplayer.minecraft.net/authentication";
 
-    public String getMinecraftChain(ECPublicKey publicKey, XboxToken xboxToken) {
+    public String getMinecraftChain(PublicKey publicKey, XboxToken xboxToken) {
         ObjectNode data = JSON_MAPPER.createObjectNode()
                 .put("identityPublicKey", Base64.getEncoder().encodeToString(publicKey.getEncoded()));
 
