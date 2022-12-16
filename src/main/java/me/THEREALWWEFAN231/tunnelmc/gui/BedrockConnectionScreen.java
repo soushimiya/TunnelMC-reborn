@@ -82,8 +82,8 @@ public class BedrockConnectionScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));
 		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 16, 200, 20, Text.of("Enter IP"));
 		this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 46, 200, 20, Text.of("Enter Port"));
-		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 200, 20, Text.of("Online mode"), true);
-		this.rememberAccountWidget = new CheckboxWidget(this.width / 2, (this.height / 4) + 80, 200, 20, Text.of("Remember Account"), true);
+		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 100, 20, Text.of("Online mode"), true);
+		this.rememberAccountWidget = new CheckboxWidget(this.width / 2, (this.height / 4) + 80, 100, 20, Text.of("Remember Account"), true);
 		this.addressField.setMaxLength(128);
 		this.portField.setMaxLength(6);
 		this.addressField.setTextFieldFocused(true);
@@ -109,7 +109,9 @@ public class BedrockConnectionScreen extends Screen {
 		this.addressField.render(matrices, mouseX, mouseY, delta);
 		this.portField.render(matrices, mouseX, mouseY, delta);
 		this.onlineModeWidget.render(matrices, mouseX, mouseY, delta);
-		this.rememberAccountWidget.render(matrices, mouseX, mouseY, delta);
+		if(this.onlineModeWidget.isChecked()) {
+			this.rememberAccountWidget.render(matrices, mouseX, mouseY, delta);
+		}
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -117,7 +119,9 @@ public class BedrockConnectionScreen extends Screen {
 		this.addressField.mouseClicked(mouseX, mouseY, button);
 		this.portField.mouseClicked(mouseX, mouseY, button);
 		this.onlineModeWidget.mouseClicked(mouseX, mouseY, button);
-		this.rememberAccountWidget.mouseClicked(mouseX, mouseY, button);
+		if(this.onlineModeWidget.isChecked()) {
+			this.rememberAccountWidget.mouseClicked(mouseX, mouseY, button);
+		}
 
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
