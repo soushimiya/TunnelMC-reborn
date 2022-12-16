@@ -7,6 +7,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerListS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 import net.minecraft.text.Text;
@@ -23,19 +24,32 @@ public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacke
 		PlayerListS2CPacket.Action action = packet.getAction() == PlayerListPacket.Action.ADD
 				? PlayerListS2CPacket.Action.ADD_PLAYER
 				: PlayerListS2CPacket.Action.REMOVE_PLAYER;
-		PlayerListS2CPacket playerListS2CPacket = new PlayerListS2CPacket(action);
 
+		List<Entry> removalEntries = new ArrayList<>();
 		List<Entry> entries = new ArrayList<>();
 		for (PlayerListPacket.Entry entry : packet.getEntries()) {
-			if(packet.getAction() == PlayerListPacket.Action.ADD
-					&& javaConnection.getClientPlayNetworkHandler().getPlayerListEntry(entry.getUuid()) != null) {
-				return;
+			GameProfile profile = new GameProfile(entry.getUuid(), entry.getName());
+
+			bedrockConnection.profileNameToUuid.put(profile.getName(), profile.getId());
+			bedrockConnection.serializedSkins.put(profile.getId(), entry.getSkin());
+
+			Entry listEntry = new Entry(profile, 0, GameMode.SURVIVAL, Text.of(profile.getName()), null);
+
+			PlayerListEntry javaEntry = javaConnection.getClientPlayNetworkHandler().getPlayerListEntry(profile.getId());
+			if(packet.getAction() == PlayerListPacket.Action.ADD && javaEntry != null) {
+				removalEntries.add(listEntry);
 			}
 
-			bedrockConnection.profileNameToUuid.put(entry.getName(), entry.getUuid());
-			entries.add(new Entry(new GameProfile(entry.getUuid(), entry.getName()), 0, GameMode.SURVIVAL, Text.of(entry.getName()), null));
+			entries.add(listEntry);
 		}
 
+		if(!removalEntries.isEmpty()) {
+			PlayerListS2CPacket playerListS2CPacket = new PlayerListS2CPacket(PlayerListS2CPacket.Action.REMOVE_PLAYER);
+			((IMixinPlayerListS2CPacket) playerListS2CPacket).getEntries().addAll(removalEntries);
+			javaConnection.processJavaPacket(playerListS2CPacket);
+		}
+
+		PlayerListS2CPacket playerListS2CPacket = new PlayerListS2CPacket(action);
 		((IMixinPlayerListS2CPacket) playerListS2CPacket).getEntries().addAll(entries);
 		javaConnection.processJavaPacket(playerListS2CPacket);
 	}

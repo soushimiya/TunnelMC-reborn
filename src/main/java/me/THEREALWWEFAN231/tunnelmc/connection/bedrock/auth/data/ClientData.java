@@ -6,14 +6,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nukkitx.protocol.bedrock.data.skin.AnimatedTextureType;
 import com.nukkitx.protocol.bedrock.data.skin.AnimationExpressionType;
+import com.nukkitx.protocol.bedrock.data.skin.ImageData;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.THEREALWWEFAN231.tunnelmc.utils.SkinUtils;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -115,42 +114,18 @@ public class ClientData {
     private boolean trustedSkin;
 
     public void setSkin(BufferedImage image) {
-        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            for (int y = 0; y < image.getHeight(); y++) {
-                for (int x = 0; x < image.getWidth(); x++) {
-                    Color color = new Color(image.getRGB(x, y), true);
-                    byteArrayOutputStream.write(color.getRed());
-                    byteArrayOutputStream.write(color.getGreen());
-                    byteArrayOutputStream.write(color.getBlue());
-                    byteArrayOutputStream.write(color.getAlpha());
-                }
-            }
-            this.setSkinData(Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        this.setSkinImageHeight(image.getHeight());
-        this.setSkinImageWidth(image.getWidth());
+        ImageData imageData = SkinUtils.toImageData(image);
+        this.setSkinData(Base64.getEncoder().encodeToString(imageData.getImage()));
+        this.setSkinImageHeight(imageData.getHeight());
+        this.setSkinImageWidth(imageData.getWidth());
         this.setSkinId(UUID.randomUUID() + "_Custom");
     }
 
     public void setCape(BufferedImage image) {
-        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            for (int y = 0; y < image.getHeight(); y++) {
-                for (int x = 0; x < image.getWidth(); x++) {
-                    Color color = new Color(image.getRGB(x, y));
-                    byteArrayOutputStream.write(color.getRed());
-                    byteArrayOutputStream.write(color.getGreen());
-                    byteArrayOutputStream.write(color.getBlue());
-                    byteArrayOutputStream.write(color.getAlpha());
-                }
-            }
-            this.setCapeData(Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        this.setCapeImageHeight(image.getHeight());
-        this.setCapeImageWidth(image.getWidth());
+        ImageData imageData = SkinUtils.toImageData(image);
+        this.setCapeData(Base64.getEncoder().encodeToString(imageData.getImage()));
+        this.setCapeImageHeight(imageData.getHeight());
+        this.setCapeImageWidth(imageData.getWidth());
         this.setCapeId(UUID.randomUUID().toString());
         this.setCapeOnClassicSkin(true);
     }

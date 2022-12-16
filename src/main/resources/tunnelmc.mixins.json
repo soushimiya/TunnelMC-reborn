@@ -4,7 +4,6 @@
   "package": "me.THEREALWWEFAN231.tunnelmc.mixins",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "MixinAbstractClientPlayerEntity",
     "MixinBlock",
     "MixinBlockItem",
     "MixinClientConnection",
@@ -18,8 +17,10 @@
     "MixinKeyboard",
     "MixinMinecraftClient",
     "MixinMultiplayerScreen",
+    "MixinPlayerSkinProvider",
     "MixinScreenHandler",
     "MixinWorldRenderer",
+    "MixinYggdrasilMinecraftSessionService",
     "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinClientWorld",
     "interfaces.IMixinPlayerInteractEntityC2SPacket",

@@ -9,6 +9,7 @@ import com.nukkitx.protocol.bedrock.BedrockSession;
 import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode;
 import com.nukkitx.protocol.bedrock.data.GameType;
 import com.nukkitx.protocol.bedrock.data.PacketCompressionAlgorithm;
+import com.nukkitx.protocol.bedrock.data.skin.SerializedSkin;
 import com.nukkitx.protocol.bedrock.packet.RequestNetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.v560.Bedrock_v560;
 import lombok.Getter;
@@ -63,6 +64,7 @@ public class BedrockConnection {
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
 	public GameType defaultGameMode;
 	public final Map<UUID, String> displayNames = new HashMap<>();
+	public final Map<UUID, SerializedSkin> serializedSkins = new HashMap<>();
 	public final Map<String, UUID> profileNameToUuid = new HashMap<>();
 	public final AtomicBoolean startedSprinting = new AtomicBoolean();
 	public final AtomicBoolean startedSneaking = new AtomicBoolean();
