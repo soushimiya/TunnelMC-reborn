@@ -38,8 +38,10 @@ dependencies {
 	}
 	library "com.github.scribejava:scribejava-apis:8.3.3"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
+	// Fabric API and adventure. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation include("net.kyori:adventure-platform-fabric:5.5.1")
+	implementation "net.kyori:adventure-text-serializer-legacy:4.12.0"
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok:1.18.24'
