@@ -1,6 +1,5 @@
 package me.THEREALWWEFAN231.tunnelmc.gui;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.LoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OnlineModeLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.SavedLoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
@@ -25,7 +24,6 @@ public class BedrockLoggingInScreen extends Screen {
     private CompletableFuture<ChainData> future;
     private final Screen parent;
     private final File rememberAccountFile;
-    private final LoginChainSupplier originalSupplier;
     private final BiConsumer<ChainData, Throwable> whenComplete;
 
     public BedrockLoggingInScreen(Screen parent, MinecraftClient client, File rememberAccountFile, BiConsumer<ChainData, Throwable> whenComplete) {
@@ -34,7 +32,6 @@ public class BedrockLoggingInScreen extends Screen {
         this.parent = parent;
         this.whenComplete = whenComplete;
         this.rememberAccountFile = rememberAccountFile;
-        this.originalSupplier = new OnlineModeLoginChainSupplier(s -> this.setStatus(Text.of(s)), rememberAccountFile);
     }
 
     public void setStatus(Text status) {
@@ -45,7 +42,8 @@ public class BedrockLoggingInScreen extends Screen {
         if (this.client == null) {
             return;
         }
-        this.future = this.originalSupplier.get().whenComplete(this.whenComplete); // Minecraft doesn't like calling this on a different thread
+        this.future = new OnlineModeLoginChainSupplier(s -> this.setStatus(Text.of(s)), this.rememberAccountFile)
+                .get().whenComplete(this.whenComplete); // Minecraft doesn't like calling this on a different thread
 
         if(this.rememberAccountFile != null && this.rememberAccountFile.exists()) {
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 100 + 12, 200, 20, Text.of("Use saved account"), (buttonWidget) -> {
