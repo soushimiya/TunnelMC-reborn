@@ -3,6 +3,9 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.entity.*;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.ContainerOpenTranslator;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.InventoryContentTranslator;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.InventorySlotTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.*;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 
@@ -22,7 +25,7 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new AddEntityTranslator());
 		this.addTranslator(new SetTimeTranslator());
 		this.addTranslator(new RemoveEntityTranslator());
-//		this.addTranslator(new InventorySlotTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+		this.addTranslator(new InventorySlotTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
 		this.addTranslator(new AddItemEntityTranslator());
 		this.addTranslator(new MovePlayerTranslator());
 		this.addTranslator(new MoveEntityAbsoluteTranslator());
@@ -32,8 +35,8 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new TakeItemEntityTranslator());
 		this.addTranslator(new NetworkChunkPublisherUpdateTranslator());
 		this.addTranslator(new SetEntityDataTranslator());
-//		this.addTranslator(new ContainerOpenTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
-//		this.addTranslator(new InventoryContentTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+		this.addTranslator(new ContainerOpenTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+		this.addTranslator(new InventoryContentTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
 		this.addTranslator(new DisconnectTranslator());
 		this.addTranslator(new SetPlayerGameTypeTranslator());
 		this.addTranslator(new AdventureSettingsTranslator());

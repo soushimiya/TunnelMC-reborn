@@ -4,41 +4,41 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.DeviceAuthorization;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import lombok.experimental.UtilityClass;
+import com.nukkitx.api.event.Listener;
+import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.oauth.ExtendedLiveApi;
+import me.THEREALWWEFAN231.tunnelmc.events.GameTickEvent;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.CompletableFuture;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-@UtilityClass
 public class LiveAuthorization {
+    public static final LiveAuthorization INSTANCE = new LiveAuthorization();
     private static final OAuth20Service SERVICE = new ServiceBuilder("0000000048183522")
             .responseType("device_code")
             .defaultScope("service::user.auth.xboxlive.com::MBI_SSL")
             .build(ExtendedLiveApi.instance());
 
-    public CompletableFuture<OAuth2AccessToken> getAccessToken(Consumer<String> callback) {
-        CompletableFuture<OAuth2AccessToken> future = new CompletableFuture<>();
+    private final Map<AccessTokenTask, Consumer<OAuth2AccessToken>> tasks = new HashMap<>();
+
+    private LiveAuthorization() {
+        TunnelMC.getInstance().getEventManager().registerListeners(this, this);
+    }
+
+    public String getAccessToken(Consumer<OAuth2AccessToken> callback) {
         try {
             DeviceAuthorization authorization = SERVICE.getDeviceAuthorizationCodes();
-            callback.accept("Authenticate at " + authorization.getVerificationUri() + " with code " + authorization.getUserCode());
+            tasks.put(new AccessTokenTask(SERVICE, authorization), callback);
 
-            new Thread(() -> {
-                try {
-                    future.complete(SERVICE.pollAccessTokenDeviceAuthorizationGrant(authorization));
-                } catch (InterruptedException | ExecutionException | IOException e) {
-                    future.completeExceptionally(e);
-                }
-            }).start();
+            return "Authenticate at " + authorization.getVerificationUri() + " with code " + authorization.getUserCode();
         } catch (InterruptedException | ExecutionException | IOException e) {
-            future.completeExceptionally(e);
+            throw new RuntimeException(e);
         }
-
-        return future;
     }
 
     public OAuth2AccessToken getRefreshedToken(OAuth2AccessToken token) {
@@ -50,6 +50,24 @@ public class LiveAuthorization {
             return SERVICE.refreshAccessToken(token.getRefreshToken());
         } catch (IOException | InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Listener
+    public void onEvent(GameTickEvent event) {
+        for (AccessTokenTask task : tasks.keySet()) {
+            if(!task.canExecute()) {
+                continue;
+            }
+
+            OAuth2AccessToken accessToken = task.get();
+            if(accessToken == null) {
+                continue;
+            }
+
+            tasks.get(task).accept(accessToken);
+            tasks.remove(task);
+            return;
         }
     }
 }

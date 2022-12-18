@@ -41,19 +41,21 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
     }
 
     public CompletableFuture<ChainData> get() {
-        return LiveAuthorization.getAccessToken(infoCallback)
-                .exceptionally(throwable -> {
-                    infoCallback.accept(throwable.getMessage());
-                    return null;
-                }).whenComplete((token, throwable) -> {
-                    if(throwable == null && this.rememberAccountFile != null) {
-                        try {
-                            JSON_MAPPER.writeValue(this.rememberAccountFile, token);
-                        } catch (IOException e) {
-                            log.error(e);
-                        }
-                    }
-                }).thenApply(this::getChain);
+        CompletableFuture<ChainData> future = new CompletableFuture<>();
+        String info = LiveAuthorization.INSTANCE.getAccessToken(accessToken -> {
+            if(this.rememberAccountFile != null) {
+                try {
+                    JSON_MAPPER.writeValue(this.rememberAccountFile, accessToken);
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+
+            future.complete(this.getChain(accessToken));
+        });
+
+        infoCallback.accept(info);
+        return future;
     }
 
     protected ChainData getChain(OAuth2AccessToken accessToken) {

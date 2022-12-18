@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.packet.InteractPacket;
 import com.nukkitx.protocol.bedrock.packet.InteractPacket.Action;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.events.GameTickEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.util.math.BlockPos;
@@ -16,6 +17,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient {
+	private long ticks;
+
+	@Inject(method = "tick", at = @At("HEAD"))
+	private void onTick(CallbackInfo ci) {
+		TunnelMC.getInstance().getEventManager().fire(new GameTickEvent(ticks++));
+	}
+
 	@Redirect(method = "handleBlockBreaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleManager;addBlockBreakingParticles(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;)V"))
 	public void onBlockBreaking(ParticleManager particleManager, BlockPos pos, Direction direction) {
 		if (!BedrockConnectionAccessor.isConnectionOpen()) {
