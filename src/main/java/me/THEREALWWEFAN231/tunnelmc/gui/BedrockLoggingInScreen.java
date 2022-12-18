@@ -14,6 +14,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 import java.io.File;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -42,8 +43,8 @@ public class BedrockLoggingInScreen extends Screen {
         if (this.client == null) {
             return;
         }
-        this.future = new OnlineModeLoginChainSupplier(s -> this.setStatus(Text.of(s)), this.rememberAccountFile)
-                .get().whenComplete(this.whenComplete); // Minecraft doesn't like calling this on a different thread
+        this.future = new OnlineModeLoginChainSupplier(s -> this.setStatus(Text.of(s)), this.rememberAccountFile).get();
+        this.future.whenComplete(this.whenComplete);
 
         if(this.rememberAccountFile != null && this.rememberAccountFile.exists()) {
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 100 + 12, 200, 20, Text.of("Use saved account"), (buttonWidget) -> {
@@ -57,13 +58,14 @@ public class BedrockLoggingInScreen extends Screen {
                                 return;
                             }
 
-                            this.future.cancel(true);
+                            this.future.completeExceptionally(new CancellationException());
                         })
                         .whenComplete(this.whenComplete);
             }));
         }
 
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, (buttonWidget) -> {
+            this.future.completeExceptionally(new CancellationException());
             this.client.setScreen(this.parent);
         }));
     }

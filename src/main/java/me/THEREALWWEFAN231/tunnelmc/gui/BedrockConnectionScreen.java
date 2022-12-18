@@ -22,6 +22,7 @@ import java.io.File;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.concurrent.CancellationException;
 import java.util.function.BiConsumer;
 
 @Log4j2
@@ -61,7 +62,7 @@ public class BedrockConnectionScreen extends Screen {
 					new InetSocketAddress("0.0.0.0", getRandomPort()),
 					new InetSocketAddress(this.addressField.getText(), port));
 			BiConsumer<ChainData, Throwable> whenComplete = (chainData, throwable) -> {
-				if(throwable != null) {
+				if(throwable != null && !(throwable instanceof CancellationException)) {
 					log.error("Got error when getting chain data", throwable);
 					return;
 				}

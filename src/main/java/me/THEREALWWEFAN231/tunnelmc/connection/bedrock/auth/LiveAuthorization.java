@@ -5,6 +5,7 @@ import com.github.scribejava.core.model.DeviceAuthorization;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.nukkitx.api.event.Listener;
+import it.unimi.dsi.fastutil.Pair;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.oauth.ExtendedLiveApi;
 import me.THEREALWWEFAN231.tunnelmc.events.GameTickEvent;
@@ -24,18 +25,18 @@ public class LiveAuthorization {
             .defaultScope("service::user.auth.xboxlive.com::MBI_SSL")
             .build(ExtendedLiveApi.instance());
 
-    private final Map<AccessTokenTask, Consumer<OAuth2AccessToken>> tasks = new HashMap<>();
+    private final Map<String, Pair<AccessTokenTask, Consumer<OAuth2AccessToken>>> tasks = new HashMap<>();
 
     private LiveAuthorization() {
         TunnelMC.getInstance().getEventManager().registerListeners(this, this);
     }
 
-    public String getAccessToken(Consumer<OAuth2AccessToken> callback) {
+    public DeviceAuthorization getAccessToken(Consumer<OAuth2AccessToken> consumer) {
         try {
             DeviceAuthorization authorization = SERVICE.getDeviceAuthorizationCodes();
-            tasks.put(new AccessTokenTask(SERVICE, authorization), callback);
+            tasks.put(authorization.getUserCode(), Pair.of(new AccessTokenTask(SERVICE, authorization), consumer));
 
-            return "Authenticate at " + authorization.getVerificationUri() + " with code " + authorization.getUserCode();
+            return authorization;
         } catch (InterruptedException | ExecutionException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -53,9 +54,22 @@ public class LiveAuthorization {
         }
     }
 
+    public void cancel(String id) {
+        Pair<AccessTokenTask, Consumer<OAuth2AccessToken>> pair = tasks.get(id);
+        pair.first().setCancelled(true);
+        tasks.remove(id);
+    }
+
     @Listener
     public void onEvent(GameTickEvent event) {
-        for (AccessTokenTask task : tasks.keySet()) {
+        for (String id : tasks.keySet()) {
+            Pair<AccessTokenTask, Consumer<OAuth2AccessToken>> pair = tasks.get(id);
+            AccessTokenTask task = pair.first();
+            if(task.isCancelled()) {
+                cancel(id);
+                return;
+            }
+
             if(!task.canExecute()) {
                 continue;
             }
@@ -65,8 +79,9 @@ public class LiveAuthorization {
                 continue;
             }
 
-            tasks.get(task).accept(accessToken);
-            tasks.remove(task);
+            Consumer<OAuth2AccessToken> future = pair.second();
+            future.accept(accessToken);
+            cancel(id);
             return;
         }
     }

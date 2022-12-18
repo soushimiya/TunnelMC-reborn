@@ -1,14 +1,13 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.google.common.primitives.Longs;
 import lombok.experimental.UtilityClass;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.XboxToken;
 import me.THEREALWWEFAN231.tunnelmc.utils.JoseUtils;
-import me.THEREALWWEFAN231.tunnelmc.utils.exceptions.TokenExpiredException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +25,7 @@ import java.util.UUID;
 
 import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
+@Log4j2
 @UtilityClass
 public class XboxAuthorization {
     private final String XBOX_DEVICE_AUTHENTICATE_URL = "https://device.auth.xboxlive.com/device/authenticate";
@@ -33,7 +33,7 @@ public class XboxAuthorization {
 
     public XboxToken getXBLToken(OAuth2AccessToken liveToken, String relyingParty) {
         if(Instant.now().isAfter(Instant.now().plus(liveToken.getExpiresIn(), ChronoUnit.SECONDS))) {
-            throw new TokenExpiredException();
+            return null;
         }
 
         KeyPair ecdsa256KeyPair = createKeyPair();
@@ -74,7 +74,8 @@ public class XboxAuthorization {
                     .get(0);
             return new XboxToken(authorizationNode.get("Token").asText(), userInfoNode.get("uhs").asText());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error(e);
+            return null;
         }
     }
 
@@ -104,7 +105,8 @@ public class XboxAuthorization {
             JsonNode response = JSON_MAPPER.readTree(connection.getInputStream());
             return response.get("Token").asText();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error(e);
+            return null;
         }
     }
 

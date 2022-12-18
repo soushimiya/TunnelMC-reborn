@@ -3,6 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.github.scribejava.core.model.DeviceAuthorization;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.LoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.XboxToken;
+import me.THEREALWWEFAN231.tunnelmc.utils.exceptions.TokenException;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +44,8 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
 
     public CompletableFuture<ChainData> get() {
         CompletableFuture<ChainData> future = new CompletableFuture<>();
-        String info = LiveAuthorization.INSTANCE.getAccessToken(accessToken -> {
+
+        DeviceAuthorization authorization = LiveAuthorization.INSTANCE.getAccessToken(accessToken -> {
             if(this.rememberAccountFile != null) {
                 try {
                     JSON_MAPPER.writeValue(this.rememberAccountFile, accessToken);
@@ -51,10 +54,20 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
                 }
             }
 
-            future.complete(this.getChain(accessToken));
+            ChainData chainData = this.getChain(accessToken);
+            if(chainData == null) {
+                future.completeExceptionally(new TokenException());
+            }
+
+            future.complete(chainData);
+        });
+        future.whenComplete((chainData, throwable) -> {
+            if(throwable != null) {
+                LiveAuthorization.INSTANCE.cancel(authorization.getUserCode());
+            }
         });
 
-        infoCallback.accept(info);
+        infoCallback.accept("Authenticate at " + authorization.getVerificationUri() + " with code " + authorization.getUserCode());
         return future;
     }
 
@@ -64,17 +77,36 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
         }
 
         KeyPair keyPair = EncryptionUtils.createKeyPair();
-        return new ChainData(JSON_MAPPER.createObjectNode().set("chain",
-                getSelfSignedChain(getAuthenticatedChain(accessToken, keyPair.getPublic()), keyPair)).toString(), keyPair);
+        ArrayNode selfSignedChain = getSelfSignedChain(getAuthenticatedChain(accessToken, keyPair.getPublic()), keyPair);
+        if(selfSignedChain == null) {
+            return null;
+        }
+
+        return new ChainData(JSON_MAPPER.createObjectNode().set("chain", selfSignedChain).toString(), keyPair);
     }
 
     private String getAuthenticatedChain(OAuth2AccessToken token, PublicKey publicKey) {
-        infoCallback.accept("Login Successful! Please Wait...");
+        infoCallback.accept("Microsoft login successful! Please wait...");
         XboxToken xboxToken = XboxAuthorization.getXBLToken(token, "https://multiplayer.minecraft.net/");
-        return MinecraftAuthentication.getMinecraftChain(publicKey, xboxToken);
+        if(xboxToken == null) {
+            infoCallback.accept("Xbox login unsuccessful. Please try and login again.");
+            return null;
+        }
+        infoCallback.accept("Xbox login successful! Please wait...");
+        String minecraftChain = MinecraftAuthentication.getMinecraftChain(publicKey, xboxToken);
+        if(minecraftChain == null) {
+            infoCallback.accept("Minecraft login unsuccessful. Please try and login again.");
+            return null;
+        }
+        infoCallback.accept("Minecraft login successful! Please wait...");
+        return minecraftChain;
     }
 
     private ArrayNode getSelfSignedChain(String authenticatedChain, KeyPair keyPair) {
+        if(authenticatedChain == null) {
+            return null;
+        }
+
         ArrayNode chainArray;
         String x5uKey;
         try {

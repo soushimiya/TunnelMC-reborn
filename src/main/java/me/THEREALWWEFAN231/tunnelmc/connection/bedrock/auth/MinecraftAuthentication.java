@@ -2,6 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.experimental.UtilityClass;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.XboxToken;
 
@@ -13,6 +14,7 @@ import java.util.Base64;
 
 import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
+@Log4j2
 @UtilityClass
 public class MinecraftAuthentication {
     private final String MINECRAFT_AUTHENTICATE_URL = "https://multiplayer.minecraft.net/authentication";
@@ -36,7 +38,8 @@ public class MinecraftAuthentication {
 
             return new String(connection.getInputStream().readAllBytes());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error(e);
+            return null;
         }
     }
 }

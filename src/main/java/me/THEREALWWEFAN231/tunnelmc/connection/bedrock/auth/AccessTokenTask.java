@@ -17,6 +17,7 @@ public class AccessTokenTask implements Supplier<OAuth2AccessToken> {
     @Getter
     private long intervalMillis;
     private long nextExecution;
+    private boolean cancelled;
 
     public AccessTokenTask(OAuth20Service service, DeviceAuthorization authorization) {
         this.service = service;
@@ -46,5 +47,13 @@ public class AccessTokenTask implements Supplier<OAuth2AccessToken> {
 
     public boolean canExecute() {
         return System.currentTimeMillis() > this.nextExecution;
+    }
+
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 }
