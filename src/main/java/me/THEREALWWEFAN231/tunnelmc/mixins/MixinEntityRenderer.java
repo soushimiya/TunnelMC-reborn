@@ -9,17 +9,29 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 import java.util.function.Function;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
+	@Unique
+	private Entity currentEntity;
+
+	@Inject(method = "renderLabelIfPresent", at = @At("HEAD"))
+	public void renderLabelIfPresent(Entity entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+		this.currentEntity = entity;
+	}
 
 	@Redirect(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/text/Text;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)I"))
 	public int renderLabelIfPresent(TextRenderer textRenderer, Text text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
@@ -30,8 +42,8 @@ public abstract class MixinEntityRenderer {
 		Function<String, Float> getX = (str) -> (float)-textRenderer.getWidth(str) / 2;
 
 		BedrockConnection connection = BedrockConnectionAccessor.getCurrentConnection();
-		String nameTag = Optional.ofNullable(connection.profileNameToUuid.get(text.getString()))
-				.map(connection.displayNames::get).orElse(text.getString());
+		String nameTag = Optional.ofNullable(connection.displayNames.get(this.currentEntity.getUuid()))
+				.orElse(text.getString());
 
 		List<String> lines = new ArrayList<>(List.of(nameTag.split("\n")));
 		Collections.reverse(lines);

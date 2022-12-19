@@ -32,7 +32,6 @@ public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacke
 			Entry listEntry = new Entry(profile, 0, GameMode.SURVIVAL, Text.of(profile.getName()), null);
 
 			if(packet.getAction() == PlayerListPacket.Action.ADD) {
-				bedrockConnection.profileNameToUuid.put(profile.getName(), profile.getId());
 				bedrockConnection.serializedSkins.put(profile.getId(), entry.getSkin());
 
 				PlayerListEntry javaEntry = javaConnection.getClientPlayNetworkHandler().getPlayerListEntry(profile.getId());

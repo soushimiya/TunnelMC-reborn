@@ -18,7 +18,6 @@ public class RemoveEntityTranslator extends PacketTranslator<RemoveEntityPacket>
 		if (TunnelMC.mc.world != null) {
 			Entity entity = TunnelMC.mc.world.getEntityById(id);
 			if (entity != null) {
-				bedrockConnection.profileNameToUuid.remove(entity.getName().getString());
 				bedrockConnection.displayNames.remove(entity.getUuid());
 			}
 		}

@@ -59,7 +59,6 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 				PlayerListS2CPacket playerListS2CPacket = new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER);
 				((IMixinPlayerListS2CPacket) playerListS2CPacket).getEntries().add(new PlayerListS2CPacket.Entry(
 						profile, 0, GameMode.SURVIVAL, Text.of(profile.getName()), null));
-				bedrockConnection.profileNameToUuid.put(profile.getName(), profile.getId());
 				javaConnection.processJavaPacket(playerListS2CPacket);
 			}
 			bedrockConnection.displayNames.put(profile.getId(), packet.getMetadata().getString(EntityData.NAMETAG, profile.getName()));
