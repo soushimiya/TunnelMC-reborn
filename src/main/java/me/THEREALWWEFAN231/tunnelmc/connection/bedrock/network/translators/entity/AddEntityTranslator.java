@@ -53,6 +53,7 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 			entity.setPitch(pitch);
 
 			javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
+			entity.updateTrackedHeadRotation(headYaw, 3);
 		};
 
 		if (TunnelMC.mc.world != null) {
