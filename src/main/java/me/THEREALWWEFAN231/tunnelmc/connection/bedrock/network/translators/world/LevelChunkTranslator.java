@@ -43,15 +43,18 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
 			ChunkSection chunkSection = new ChunkSection(sectionIndex, BIOMES_REGISTRY);
 			int chunkVersion = byteBuf.readByte();
-			if (chunkVersion != 1 && chunkVersion != 8) {
+			if (chunkVersion != 1 && chunkVersion != 8 && chunkVersion != 9) {
 //				System.out.println("Decoding a version zero chunk...");
 				LevelChunkDecoder.networkDecodeVersionZero(byteBuf, chunkSection);
 			} else if (chunkVersion == 1) {
 //				System.out.println("Decoding a version one chunk...");
 				LevelChunkDecoder.networkDecodeVersionOne(byteBuf, chunkSection);
-			} else {
+			} else if (chunkVersion == 8){
 //				System.out.println("Decoding a version eight chunk...");
 				LevelChunkDecoder.networkDecodeVersionEight(byteBuf, chunkSection, byteBuf.readByte());
+			} else {
+//				System.out.println("Decoding a version nine chunk...");
+				LevelChunkDecoder.networkDecodeVersionNine(byteBuf, chunkSection, byteBuf.readByte());
 			}
 			chunkSections[sectionIndex] = chunkSection;
 		}

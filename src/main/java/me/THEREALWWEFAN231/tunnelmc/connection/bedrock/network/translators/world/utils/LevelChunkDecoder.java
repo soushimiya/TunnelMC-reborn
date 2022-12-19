@@ -22,7 +22,16 @@ import java.io.IOException;
 public class LevelChunkDecoder {
 
     /**
-     * Version eight is the newest chunk format introduced by Bedrock.
+     * Version nine is the newest chunk format by Bedrock.
+     * It is essentially the same as version eight, however there is now an added height which won't be used by us yet.
+     */
+    public static void networkDecodeVersionNine(ByteBuf byteBuf, ChunkSection chunkSection, byte storageSize) {
+        byteBuf.readByte(); // height
+        networkDecodeVersionEight(byteBuf, chunkSection, storageSize);
+    }
+
+    /**
+     * Version eight is the second-newest chunk format introduced by Bedrock.
      * It allows up to 256 layers for one sub chunk.
      */
     public static void networkDecodeVersionEight(ByteBuf byteBuf, ChunkSection chunkSection, byte storageSize) {
@@ -82,8 +91,7 @@ public class LevelChunkDecoder {
     }
 
     /**
-     * Version one is the second-newest chunk format by Bedrock.
-     * It is essentially the same as version eight, however there is only 1 layer per subchunk.
+     * This version is essentially the same as version eight, however there is only 1 layer per subchunk.
      */
     public static void networkDecodeVersionOne(ByteBuf byteBuf, ChunkSection chunkSection) {
         networkDecodeVersionEight(byteBuf, chunkSection, (byte) 1);
