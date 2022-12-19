@@ -3,6 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode;
 import com.nukkitx.protocol.bedrock.data.PlayerActionType;
+import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
@@ -20,13 +21,6 @@ public class ClientCommandC2STranslator extends PacketTranslator<ClientCommandC2
 			return;
 		}
 
-		switch (packet.getMode()) {
-			case PRESS_SHIFT_KEY -> bedrockConnection.startedSneaking.set(true);
-			case RELEASE_SHIFT_KEY -> bedrockConnection.stoppedSneaking.set(true);
-			case START_SPRINTING -> bedrockConnection.startedSprinting.set(true);
-			case STOP_SPRINTING -> bedrockConnection.stoppedSprinting.set(true);
-		}
-
 		PlayerActionType actionType = switch (packet.getMode()) {
 			case PRESS_SHIFT_KEY -> PlayerActionType.START_SNEAK;
 			case RELEASE_SHIFT_KEY -> PlayerActionType.STOP_SNEAK;
@@ -38,7 +32,22 @@ public class ClientCommandC2STranslator extends PacketTranslator<ClientCommandC2
 			case OPEN_INVENTORY -> null;
 			case START_FALL_FLYING -> null;
 		};
-		if(actionType == null && bedrockConnection.movementMode != AuthoritativeMovementMode.CLIENT) {
+
+		if(bedrockConnection.movementMode != AuthoritativeMovementMode.CLIENT) {
+			PlayerAuthInputData data = null;
+			switch (packet.getMode()) {
+				case PRESS_SHIFT_KEY -> data = PlayerAuthInputData.START_SNEAKING;
+				case RELEASE_SHIFT_KEY -> data = PlayerAuthInputData.STOP_SNEAKING;
+				case START_SPRINTING -> data = PlayerAuthInputData.START_SPRINTING;
+				case STOP_SPRINTING -> data = PlayerAuthInputData.STOP_SPRINTING;
+			}
+			if(data != null) {
+				bedrockConnection.authInputData.add(data);
+				return;
+			}
+		}
+
+		if(actionType == null) {
 			return;
 		}
 

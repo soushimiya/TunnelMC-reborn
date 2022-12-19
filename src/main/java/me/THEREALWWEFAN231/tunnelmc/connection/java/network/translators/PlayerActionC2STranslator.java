@@ -3,10 +3,14 @@ package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators;
 import com.nukkitx.api.event.Listener;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.data.PlayerActionType;
+import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
+import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
 import com.nukkitx.protocol.bedrock.data.inventory.TransactionType;
 import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayerActionPacket;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
@@ -19,6 +23,7 @@ import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 
+@Log4j2
 @PacketIdentifier(PlayerActionC2SPacket.class)
 public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SPacket> {
 	private Direction lastDirection;
@@ -42,8 +47,10 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				playerActionPacket.setAction(PlayerActionType.START_BREAK);
 				playerActionPacket.setBlockPosition(blockPosition);
 				playerActionPacket.setFace(packet.getDirection().ordinal());
-
-				bedrockConnection.sendPacket(playerActionPacket);
+				BedrockPacket pk = getPlayerActionPacket(bedrockConnection, playerActionPacket);
+				if(pk != null) {
+					bedrockConnection.sendPacket(pk);
+				}
 
 				TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 
@@ -62,17 +69,19 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				playerActionPacket.setAction(PlayerActionType.STOP_BREAK);
 				playerActionPacket.setBlockPosition(blockPosition);
 				playerActionPacket.setFace(packet.getDirection().ordinal());
-
-				bedrockConnection.sendPacket(playerActionPacket);
+				BedrockPacket pk = getPlayerActionPacket(bedrockConnection, playerActionPacket);
+				if(pk != null) {
+					bedrockConnection.sendPacket(pk);
+				}
 
 				if (MinecraftClient.getInstance().interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
 					PlayerActionPacket creativePacket = new PlayerActionPacket();
 					creativePacket.setRuntimeEntityId(runtimeId);
 					creativePacket.setAction(PlayerActionType.DIMENSION_CHANGE_REQUEST_OR_CREATIVE_DESTROY_BLOCK);
 					creativePacket.setBlockPosition(blockPosition);
-					playerActionPacket.setFace(packet.getDirection().ordinal());
+					creativePacket.setFace(packet.getDirection().ordinal());
 
-					bedrockConnection.sendPacket(playerActionPacket);
+					bedrockConnection.sendPacket(creativePacket);
 				}
 
 				this.lastDirection = null;
@@ -97,8 +106,10 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 				playerActionPacket.setAction(PlayerActionType.ABORT_BREAK);
 				playerActionPacket.setBlockPosition(blockPosition);
 				playerActionPacket.setFace(packet.getDirection().ordinal());
-
-				bedrockConnection.sendPacket(playerActionPacket);
+				BedrockPacket pk = getPlayerActionPacket(bedrockConnection, playerActionPacket);
+				if(pk != null) {
+					bedrockConnection.sendPacket(pk);
+				}
 
 				this.lastDirection = null;
 				this.lastBlockPosition = null;
@@ -107,20 +118,43 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 		}
 	}
 
+	private BedrockPacket getPlayerActionPacket(BedrockConnection bedrockConnection, PlayerActionPacket packet) {
+		switch (bedrockConnection.movementMode) {
+			case CLIENT -> {
+				return packet;
+			}
+			case SERVER -> {
+				PlayerBlockActionData actionData = new PlayerBlockActionData();
+				actionData.setAction(packet.getAction());
+				actionData.setFace(packet.getFace());
+				actionData.setBlockPosition(packet.getBlockPosition());
+
+				bedrockConnection.authInputData.add(PlayerAuthInputData.PERFORM_BLOCK_ACTIONS);
+				bedrockConnection.blockActions.add(actionData);
+			}
+			default -> log.error("Cannot translate " + bedrockConnection.movementMode);
+		}
+		return null;
+	}
+
 	@Listener
 	public void onEvent(PlayerTickEvent event) {
 		if (TunnelMC.mc.player == null) {
 			return;
 		}
+		BedrockConnection bedrockConnection = BedrockConnectionAccessor.getCurrentConnection();
 		int runtimeId = TunnelMC.mc.player.getId();
-		PlayerActionType action = PlayerActionType.CONTINUE_BREAK;
 
 		PlayerActionPacket playerActionPacket = new PlayerActionPacket();
 		playerActionPacket.setRuntimeEntityId(runtimeId);
-		playerActionPacket.setAction(action);
+		playerActionPacket.setAction(PlayerActionType.CONTINUE_BREAK);
 		playerActionPacket.setBlockPosition(this.lastBlockPosition);
 		playerActionPacket.setFace(this.lastDirection.ordinal());
+		BedrockPacket pk = getPlayerActionPacket(bedrockConnection, playerActionPacket);
+		if(pk == null) {
+			return;
+		}
 
-		BedrockConnectionAccessor.getCurrentConnection().sendPacket(playerActionPacket);
+		bedrockConnection.sendPacket(pk);
 	}
 }

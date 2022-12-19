@@ -6,9 +6,7 @@ import com.nukkitx.protocol.bedrock.BedrockClient;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockSession;
-import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode;
-import com.nukkitx.protocol.bedrock.data.GameType;
-import com.nukkitx.protocol.bedrock.data.PacketCompressionAlgorithm;
+import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.data.skin.SerializedSkin;
 import com.nukkitx.protocol.bedrock.packet.RequestNetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.v560.Bedrock_v560;
@@ -33,9 +31,7 @@ import net.minecraft.text.Text;
 
 import javax.crypto.SecretKey;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
@@ -70,6 +66,8 @@ public class BedrockConnection {
 	public final AtomicBoolean stoppedSprinting = new AtomicBoolean();
 	public final AtomicBoolean stoppedSneaking = new AtomicBoolean();
 	public final AtomicBoolean jumping = new AtomicBoolean();
+	public final Set<PlayerAuthInputData> authInputData = new HashSet<>();
+	public final List<PlayerBlockActionData> blockActions = new ArrayList<>();
 
 	BedrockConnection(InetSocketAddress bindAddress, InetSocketAddress targetAddress) {
 		this.bedrockClient = new BedrockClient(bindAddress);

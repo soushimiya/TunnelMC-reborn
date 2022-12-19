@@ -96,7 +96,6 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 		BedrockConnection bedrockConnection = BedrockConnectionAccessor.getCurrentConnection();
 
 		playerAuthInputPacket.setTick(event.getTick());
-		playerAuthInputPacket.getInputData().clear();
 		if(bedrockConnection.startedSprinting.compareAndSet(true, false)) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_SPRINTING);
 		}
@@ -112,6 +111,15 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 		if(bedrockConnection.jumping.get()) {
 			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.JUMPING);
 		}
+		if(bedrockConnection.authInputData.contains(PlayerAuthInputData.PERFORM_BLOCK_ACTIONS)) {
+			if(playerAuthInputPacket.getPlayerActions().addAll(bedrockConnection.blockActions)) {
+				bedrockConnection.blockActions.clear();
+			}
+		}
+		if(playerAuthInputPacket.getInputData().addAll(bedrockConnection.authInputData)) {
+			bedrockConnection.authInputData.clear();
+		}
 		bedrockConnection.sendPacket(playerAuthInputPacket);
+		playerAuthInputPacket.getInputData().clear();
 	}
 }
