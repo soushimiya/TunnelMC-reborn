@@ -23,11 +23,18 @@ public class AnimateTranslator extends PacketTranslator<AnimatePacket> {
             return;
         }
 
-        switch (packet.getAction()) {
-            case SWING_ARM -> {
-                EntityAnimationS2CPacket swingArmPacket = new EntityAnimationS2CPacket(entity, EntityAnimationS2CPacket.SWING_MAIN_HAND);
-                javaConnection.processJavaPacket(swingArmPacket);
-            }
+        Integer action = switch (packet.getAction()) {
+            case WAKE_UP -> EntityAnimationS2CPacket.WAKE_UP;
+            case SWING_ARM -> EntityAnimationS2CPacket.SWING_MAIN_HAND;
+            case CRITICAL_HIT -> EntityAnimationS2CPacket.CRIT;
+            case MAGIC_CRITICAL_HIT -> EntityAnimationS2CPacket.ENCHANTED_HIT;
+            default -> null;
+        };
+        if(action == null) {
+            return;
         }
+
+        EntityAnimationS2CPacket swingArmPacket = new EntityAnimationS2CPacket(entity, action);
+        javaConnection.processJavaPacket(swingArmPacket);
     }
 }
