@@ -6,6 +6,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.nukkitx.protocol.bedrock.data.skin.ImageData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ClientData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,20 +29,25 @@ public class MixinYggdrasilMinecraftSessionService {
         BedrockConnection connection = BedrockConnectionAccessor.getCurrentConnection();
         Optional.ofNullable(connection.serializedSkins.get(profile.getId())).ifPresent(serializedSkin -> {
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = new HashMap<>();
-            map.put(MinecraftProfileTexture.Type.SKIN, new MinecraftProfileTexture(profile.getId().toString(), getImageDataMetadata(serializedSkin.getSkinData())));
+            map.put(MinecraftProfileTexture.Type.SKIN, new MinecraftProfileTexture(profile.getId().toString(), getImageDataMetadata(serializedSkin.getSkinData(),
+                    ClientData.ArmSizeType.valueOf(serializedSkin.getArmSize().toUpperCase()))));
             if(serializedSkin.getCapeData().getImage().length != 0) {
-                map.put(MinecraftProfileTexture.Type.CAPE, new MinecraftProfileTexture(profile.getId().toString(), getImageDataMetadata(serializedSkin.getCapeData())));
+                map.put(MinecraftProfileTexture.Type.CAPE, new MinecraftProfileTexture(profile.getId().toString(), getImageDataMetadata(serializedSkin.getCapeData(),
+                        ClientData.ArmSizeType.WIDE)));
             }
 
             cir.setReturnValue(map);
         });
     }
 
-    private static Map<String, String> getImageDataMetadata(ImageData imageData) {
+    private static Map<String, String> getImageDataMetadata(ImageData imageData, ClientData.ArmSizeType type) {
         Map<String, String> map = new HashMap<>();
         map.put("tunnelmc:width", String.valueOf(imageData.getWidth()));
         map.put("tunnelmc:height", String.valueOf(imageData.getHeight()));
         map.put("tunnelmc:data", Base64.getEncoder().encodeToString(imageData.getImage()));
+        if(type == ClientData.ArmSizeType.SLIM) {
+            map.put("model", "slim");
+        }
 
         return map;
     }
