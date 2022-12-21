@@ -74,7 +74,7 @@ public class XboxAuthorization {
                     .get(0);
             return new XboxToken(authorizationNode.get("Token").asText(), userInfoNode.get("uhs").asText());
         } catch (IOException e) {
-            log.error(e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -105,7 +105,7 @@ public class XboxAuthorization {
             JsonNode response = JSON_MAPPER.readTree(connection.getInputStream());
             return response.get("Token").asText();
         } catch (IOException e) {
-            log.error(e);
+            e.printStackTrace();
             return null;
         }
     }
