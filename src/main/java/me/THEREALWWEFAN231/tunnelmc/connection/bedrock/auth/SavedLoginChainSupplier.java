@@ -21,8 +21,11 @@ public class SavedLoginChainSupplier extends OnlineModeLoginChainSupplier {
         }
 
         try {
-            return CompletableFuture.completedFuture(getChain(LiveAuthorization.INSTANCE.getRefreshedToken(
-                    JSON_MAPPER.readValue(this.rememberAccountFile, OAuth2AccessToken.class))));
+            OAuth2AccessToken accessToken = LiveAuthorization.INSTANCE.getRefreshedToken(
+                    JSON_MAPPER.readValue(this.rememberAccountFile, OAuth2AccessToken.class));
+            JSON_MAPPER.writeValue(this.rememberAccountFile, accessToken); // Write refreshed token back
+
+            return CompletableFuture.completedFuture(getChain(accessToken));
         } catch (IOException e) {
             return CompletableFuture.failedFuture(e);
         }
