@@ -57,6 +57,7 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
             ChainData chainData = this.getChain(accessToken);
             if(chainData == null) {
                 future.completeExceptionally(new TokenException());
+                return;
             }
 
             future.complete(chainData);
