@@ -19,19 +19,18 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 public class ItemTranslator {
 	//key, is the item id:damage, so for example could be 218:13
 	public static final HashBiMap<String, Item> BEDROCK_ITEM_INFO_TO_JAVA_ITEM = HashBiMap.create();
+	public static final List<Item> BLOCKED_ITEMS = new ArrayList<>();
 
 	public static void load() {
 		ObjectNode itemsObject = (ObjectNode) FileUtils.getJsonFromResource("geyser/items.json");
 		ArrayNode statesArray = (ArrayNode) FileUtils.getJsonFromResource("geyser/runtime_item_states.json");
+		ArrayNode overrideTranslations = (ArrayNode) FileUtils.getJsonFromResource("tunnel/item_override_translations.json");
 		if (itemsObject == null || statesArray == null) {
 			throw new RuntimeException("Items list not found!");
 		}
@@ -45,13 +44,21 @@ public class ItemTranslator {
 			Map.Entry<String, JsonNode> entry = it.next();
 			String javaStringIdentifier = entry.getKey();
 			Identifier javaIdentifier = new Identifier(javaStringIdentifier);
+			Item item = Registry.ITEM.get(javaIdentifier);
+
+			for(JsonNode blockedItem : overrideTranslations) {
+				if(blockedItem.asText().equals(javaStringIdentifier)) {
+					BLOCKED_ITEMS.add(item);
+				}
+			}
+			if(BLOCKED_ITEMS.contains(item)) {
+				continue;
+			}
 
 			JsonNode bedrockItemData = entry.getValue();
 			String bedrockIdentifier = bedrockItemData.get("bedrock_identifier").asText();
 			int bedrockId = identifierToIntId.get(bedrockIdentifier);
 			int bedrockData = bedrockItemData.get("bedrock_data").asInt();
-
-			Item item = Registry.ITEM.get(javaIdentifier);
 
 			if (item == Items.AIR && !javaStringIdentifier.equals("minecraft:air")) {//item not found
 				log.error(javaStringIdentifier + " item was not found, this generally isn't good.");
@@ -60,7 +67,6 @@ public class ItemTranslator {
 
 			BEDROCK_ITEM_INFO_TO_JAVA_ITEM.put(bedrockId + ":" + bedrockData, item);
 		}
-
 	}
 
 	//TODO: tags and what ever
