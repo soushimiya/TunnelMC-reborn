@@ -96,20 +96,9 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 		BedrockConnection bedrockConnection = BedrockConnectionAccessor.getCurrentConnection();
 
 		playerAuthInputPacket.setTick(event.getTick());
-		if(bedrockConnection.startedSprinting.compareAndSet(true, false)) {
-			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_SPRINTING);
-		}
-		if(bedrockConnection.stoppedSprinting.compareAndSet(true, false)) {
-			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.STOP_SPRINTING);
-		}
-		if(bedrockConnection.startedSneaking.compareAndSet(true, false)) {
-			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_SNEAKING);
-		}
-		if(bedrockConnection.stoppedSneaking.compareAndSet(true, false)) {
-			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.STOP_SNEAKING);
-		}
+		playerAuthInputPacket.getInputData().clear();
 		if(bedrockConnection.jumping.get()) {
-			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.JUMPING);
+			playerAuthInputPacket.getInputData().add(PlayerAuthInputData.START_JUMPING); // TODO: Correct?
 		}
 		if(bedrockConnection.authInputData.contains(PlayerAuthInputData.PERFORM_BLOCK_ACTIONS)) {
 			if(playerAuthInputPacket.getPlayerActions().addAll(bedrockConnection.blockActions)) {
@@ -120,6 +109,5 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 			bedrockConnection.authInputData.clear();
 		}
 		bedrockConnection.sendPacket(playerAuthInputPacket);
-		playerAuthInputPacket.getInputData().clear();
 	}
 }

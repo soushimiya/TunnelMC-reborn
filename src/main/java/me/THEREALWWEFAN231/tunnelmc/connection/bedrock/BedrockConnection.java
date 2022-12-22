@@ -64,10 +64,6 @@ public class BedrockConnection {
 	public final Map<UUID, SerializedSkin> serializedSkins = new HashMap<>();
 	private final List<Class<? extends BedrockPacket>> expectedPackets = new ArrayList<>();
 	private final AtomicBoolean spawned = new AtomicBoolean(false);
-	public final AtomicBoolean startedSprinting = new AtomicBoolean();
-	public final AtomicBoolean startedSneaking = new AtomicBoolean();
-	public final AtomicBoolean stoppedSprinting = new AtomicBoolean();
-	public final AtomicBoolean stoppedSneaking = new AtomicBoolean();
 	public final AtomicBoolean jumping = new AtomicBoolean();
 	public final Set<PlayerAuthInputData> authInputData = new HashSet<>();
 	public final List<PlayerBlockActionData> blockActions = new ArrayList<>();

@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPlayerEntity.class)
 public class MixinClientPlayerEntity {
 	@Shadow public Input input;
+	@Shadow private boolean lastOnGround;
 	private long ticks;
 
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;tick()V"))
@@ -29,6 +30,6 @@ public class MixinClientPlayerEntity {
 		if(!BedrockConnectionAccessor.isConnectionOpen()) {
 			return;
 		}
-		BedrockConnectionAccessor.getCurrentConnection().jumping.set(input.jumping);
+		BedrockConnectionAccessor.getCurrentConnection().jumping.set(input.jumping && lastOnGround);
 	}
 }
