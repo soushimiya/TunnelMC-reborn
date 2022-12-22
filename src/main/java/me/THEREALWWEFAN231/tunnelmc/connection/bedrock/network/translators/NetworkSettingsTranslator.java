@@ -3,6 +3,8 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkSettingsPacket;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
+import com.nukkitx.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import io.netty.util.AsciiString;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
@@ -66,6 +68,8 @@ public class NetworkSettingsTranslator extends PacketTranslator<NetworkSettingsP
                         throw new RuntimeException(e);
                     }
                 });
+
+        bedrockConnection.expect(ServerToClientHandshakePacket.class, PlayStatusPacket.class);
 
         loginPacket.setProtocolVersion(BedrockConnection.CODEC.getProtocolVersion());
         loginPacket.setChainData(new AsciiString(bedrockConnection.getChainData().rawData().getBytes()));

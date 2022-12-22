@@ -1,9 +1,10 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 
 import com.nukkitx.protocol.bedrock.data.GameRuleData;
+import com.nukkitx.protocol.bedrock.packet.ChunkRadiusUpdatedPacket;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
 import com.nukkitx.protocol.bedrock.packet.RequestChunkRadiusPacket;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
-import com.nukkitx.protocol.bedrock.packet.TickSyncPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
@@ -32,16 +33,6 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
 	@Override
 	public void translate(StartGamePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-//		for (StartGamePacket.ItemEntry itemEntry : packet.getItemEntries()) {
-//			if (itemEntry.getIdentifier().equals("minecraft:shield")) {
-//				bedrockConnection.setHardcodedBlockingId(itemEntry.getId());
-//				break;
-//			}
-//		}
-
-		bedrockConnection.entityRuntimeId = (int) packet.getRuntimeEntityId();
-		bedrockConnection.defaultGameMode = packet.getLevelGameType();
-
 		GameMode gameMode = GameModeTranslator.bedrockToJava(packet.getPlayerGameType());
 
 		Dimension dimension = Dimension.getDimensionFromId(packet.getDimensionId()).orElse(Dimension.OVERWORLD);
@@ -62,10 +53,11 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
 		Set<RegistryKey<World>> dimensionIds = Stream.of(World.OVERWORLD, World.NETHER, World.END).collect(Collectors.toSet());
 
-		GameJoinS2CPacket gameJoinS2CPacket = new GameJoinS2CPacket(bedrockConnection.entityRuntimeId, false, gameMode, gameMode, dimensionIds, DynamicRegistryManager.BUILTIN.get(), dimensionRegistryKey, worldRegistryKey, seed, maxPlayers, chunkLoadDistance, chunkLoadDistance, false, showDeathScreen, false, false, Optional.empty());
+		GameJoinS2CPacket gameJoinS2CPacket = new GameJoinS2CPacket((int) packet.getRuntimeEntityId(), false, gameMode, gameMode, dimensionIds, DynamicRegistryManager.BUILTIN.get(), dimensionRegistryKey, worldRegistryKey, seed, maxPlayers, chunkLoadDistance, chunkLoadDistance, false, showDeathScreen, false, false, Optional.empty());
 		javaConnection.processJavaPacket(gameJoinS2CPacket);
 
 		TunnelMC.getInstance().getEventManager().fire(new PlayerInitializedEvent());
+		bedrockConnection.movementMode = packet.getPlayerMovementSettings().getMovementMode();
 
 		// TODO: Send a complete SynchronizeTagsS2CPacket so that water can work.
 
@@ -80,9 +72,6 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 		RequestChunkRadiusPacket requestChunkRadiusPacket = new RequestChunkRadiusPacket();
 		requestChunkRadiusPacket.setRadius(TunnelMC.mc.options.getViewDistance().getValue());
 		bedrockConnection.sendPacketImmediately(requestChunkRadiusPacket);
-
-		bedrockConnection.sendPacketImmediately(new TickSyncPacket());
-
-		bedrockConnection.movementMode = packet.getPlayerMovementSettings().getMovementMode();
+		bedrockConnection.expect(ChunkRadiusUpdatedPacket.class, PlayStatusPacket.class);
 	}
 }

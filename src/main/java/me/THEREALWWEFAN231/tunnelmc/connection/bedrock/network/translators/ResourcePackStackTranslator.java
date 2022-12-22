@@ -2,6 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 
 import com.nukkitx.protocol.bedrock.packet.ResourcePackClientResponsePacket;
 import com.nukkitx.protocol.bedrock.packet.ResourcePackStackPacket;
+import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
@@ -15,6 +16,7 @@ public class ResourcePackStackTranslator extends PacketTranslator<ResourcePackSt
 		ResourcePackClientResponsePacket resourcePackClientResponsePacket = new ResourcePackClientResponsePacket();
 		resourcePackClientResponsePacket.setStatus(ResourcePackClientResponsePacket.Status.COMPLETED);
 
+		bedrockConnection.expect(StartGamePacket.class);
 		bedrockConnection.sendPacketImmediately(resourcePackClientResponsePacket);
 	}
 }

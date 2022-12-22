@@ -6,8 +6,12 @@ import com.nukkitx.protocol.bedrock.BedrockClient;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockSession;
-import com.nukkitx.protocol.bedrock.data.*;
+import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode;
+import com.nukkitx.protocol.bedrock.data.PacketCompressionAlgorithm;
+import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
+import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
 import com.nukkitx.protocol.bedrock.data.skin.SerializedSkin;
+import com.nukkitx.protocol.bedrock.packet.NetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.RequestNetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.v560.Bedrock_v560;
 import lombok.Getter;
@@ -55,12 +59,11 @@ public class BedrockConnection {
 	@Getter
 	private BlockEntityDataCache blockEntityDataCache;
 
-	public int entityRuntimeId;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
-	public GameType defaultGameMode;
 	public final Map<UUID, String> displayNames = new HashMap<>();
 	public final Map<UUID, SerializedSkin> serializedSkins = new HashMap<>();
-	public final Map<String, UUID> profileNameToUuid = new HashMap<>();
+	private final List<Class<? extends BedrockPacket>> expectedPackets = new ArrayList<>();
+	private final AtomicBoolean spawned = new AtomicBoolean(false);
 	public final AtomicBoolean startedSprinting = new AtomicBoolean();
 	public final AtomicBoolean startedSneaking = new AtomicBoolean();
 	public final AtomicBoolean stoppedSprinting = new AtomicBoolean();
@@ -124,13 +127,6 @@ public class BedrockConnection {
 		}
 	}
 
-	public void setHardcodedBlockingId(int id) {
-		System.out.println(this.bedrockClient.getSession().getHardcodedBlockingId().get());
-		if(!this.bedrockClient.getSession().getHardcodedBlockingId().compareAndSet(-1, id)) {
-			throw new IllegalStateException("Blocking id is already set");
-		}
-	}
-
 	public void setCompressionMethod(PacketCompressionAlgorithm compressionAlgorithm) {
 		this.bedrockClient.getSession().setCompression(compressionAlgorithm);
 	}
@@ -140,6 +136,24 @@ public class BedrockConnection {
 			throw new IllegalStateException("Connection is already encrypted");
 		}
 		this.bedrockClient.getSession().enableEncryption(key);
+	}
+
+	@SafeVarargs
+	public final void expect(Class<? extends BedrockPacket>... packet) {
+		this.expectedPackets.clear();
+		this.expectedPackets.addAll(List.of(packet));
+	}
+
+	public List<Class<? extends BedrockPacket>> getExpectedPackets() {
+		return Collections.unmodifiableList(this.expectedPackets);
+	}
+
+	public boolean isSpawned() {
+		return this.spawned.get();
+	}
+
+	public void spawned() {
+		this.spawned.set(true);
 	}
 
 	@Listener
@@ -161,6 +175,7 @@ public class BedrockConnection {
 		bedrockSession.setLogging(false);
 
 		try {
+			this.expect(NetworkSettingsPacket.class);
 			RequestNetworkSettingsPacket packet = new RequestNetworkSettingsPacket();
 			packet.setProtocolVersion(BedrockConnection.CODEC.getProtocolVersion());
 			this.sendPacketImmediately(packet);
