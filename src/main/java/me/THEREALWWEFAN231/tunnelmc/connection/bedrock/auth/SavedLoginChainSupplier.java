@@ -2,6 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth;
 
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
+import me.THEREALWWEFAN231.tunnelmc.utils.exceptions.TokenException;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +24,14 @@ public class SavedLoginChainSupplier extends OnlineModeLoginChainSupplier {
         try {
             OAuth2AccessToken accessToken = LiveAuthorization.INSTANCE.getRefreshedToken(
                     JSON_MAPPER.readValue(this.rememberAccountFile, OAuth2AccessToken.class));
-            JSON_MAPPER.writeValue(this.rememberAccountFile, accessToken); // Write refreshed token back
 
-            return CompletableFuture.completedFuture(getChain(accessToken));
+            ChainData chainData = this.getChain(accessToken);
+            if(chainData == null) {
+                return CompletableFuture.failedFuture(new TokenException());
+            }
+
+            JSON_MAPPER.writeValue(this.rememberAccountFile, accessToken); // Write refreshed token back
+            return CompletableFuture.completedFuture(chainData);
         } catch (IOException e) {
             return CompletableFuture.failedFuture(e);
         }
