@@ -1,5 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.java.network;
 
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.FullMoveC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.LookAndOnGroundMoveC2STranslator;
@@ -10,10 +11,10 @@ import net.minecraft.network.Packet;
 
 public class JavaPacketTranslatorManager extends PacketTranslatorManager<Packet<?>> {
 
-	public JavaPacketTranslatorManager() {
-		super();
+	public JavaPacketTranslatorManager(BedrockConnection bedrockConnection) {
+		super(bedrockConnection);
 		this.addTranslator(new HandSwingC2STranslator());
-		this.addTranslator(new PlayerMoveC2STranslator());
+		this.addTranslator(new PlayerMoveC2STranslator(bedrockConnection));
 		this.addTranslator(new LookAndOnGroundMoveC2STranslator());
 		this.addTranslator(new PositionAndOnGroundMoveC2STranslator());
 		this.addTranslator(new FullMoveC2STranslator());
@@ -25,7 +26,7 @@ public class JavaPacketTranslatorManager extends PacketTranslatorManager<Packet<
 		this.addTranslator(new PlayerInteractEntityC2STranslator());
 		this.addTranslator(new ClientCommandC2STranslator());
 		this.addTranslator(new CloseHandledScreenC2STranslator());
-		this.addTranslator(new ClickSlotC2STranslator());
+		this.addTranslator(new ClickSlotC2STranslator(bedrockConnection));
 		this.addTranslator(new UpdatePlayerAbilitiesC2STranslator());
 		this.addTranslator(new ClientStatusC2STranslator());
 		this.addTranslator(new CommandExecutionC2STranslator());

@@ -24,8 +24,8 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 	private static Vector3f lastRotation = Vector3f.ZERO; // x for pitch, y for yaw, z for head yaw
 	private static boolean lastOnGround;
 
-	public PlayerMoveC2STranslator() {
-		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
+	public PlayerMoveC2STranslator(BedrockConnection bedrockConnection) {
+		TunnelMC.getInstance().getEventManager().registerListeners(bedrockConnection, this);
 	}
 
 	@Override

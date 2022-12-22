@@ -73,7 +73,7 @@ public class BedrockConnection {
 		this.bedrockClient = new BedrockClient(bindAddress);
 		this.bedrockClient.setRakNetVersion(BedrockConnection.CODEC.getRaknetProtocolVersion());
 		this.bedrockClient.bind().join();
-		this.packetTranslatorManager = new BedrockPacketTranslatorManager();
+		this.packetTranslatorManager = new BedrockPacketTranslatorManager(this);
 		this.targetAddress = targetAddress;
 
 		TunnelMC.getInstance().getEventManager().registerListeners(this, this);

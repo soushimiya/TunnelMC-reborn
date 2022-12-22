@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network;
 
 import com.nukkitx.protocol.bedrock.BedrockPacket;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.entity.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.ContainerOpenTranslator;
@@ -11,8 +12,8 @@ import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 
 public class BedrockPacketTranslatorManager extends PacketTranslatorManager<BedrockPacket> {
 
-	public BedrockPacketTranslatorManager() {
-		super();
+	public BedrockPacketTranslatorManager(BedrockConnection bedrockConnection) {
+		super(bedrockConnection);
 		this.addTranslator(new StartGameTranslator());
 		this.addTranslator(new ChunkRadiusUpdatedTranslator());
 		this.addTranslator(new LevelChunkTranslator());

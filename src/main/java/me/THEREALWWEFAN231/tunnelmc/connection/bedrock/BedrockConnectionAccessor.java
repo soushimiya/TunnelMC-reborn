@@ -34,11 +34,14 @@ public class BedrockConnectionAccessor {
     }
 
     public void closeConnection(String message) {
-        if(!isConnectionOpen()) {
+        if(currentConnection == null) {
             return;
         }
 
-        currentConnection.bedrockClient.close();
+        if(currentConnection.bedrockClient.getRakNet() != null && currentConnection.bedrockClient.getRakNet().isRunning()) {
+            currentConnection.bedrockClient.close();
+        }
+        TunnelMC.getInstance().getEventManager().deregisterAllListeners(currentConnection);
         currentConnection = null;
 
         if (TunnelMC.mc.world != null) {

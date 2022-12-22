@@ -27,8 +27,8 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 	// TODO: Re-review this code and clean it up later on, seems incorrect.
 	// TODO: should this still be a packet translator?
 
-	public ClickSlotC2STranslator() {
-		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
+	public ClickSlotC2STranslator(BedrockConnection bedrockConnection) {
+		TunnelMC.getInstance().getEventManager().registerListeners(bedrockConnection, this);
 	}
 
 	@Override

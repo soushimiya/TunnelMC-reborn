@@ -24,7 +24,7 @@ public class FakeJavaConnection {
 		this.bedrockConnection = bedrockConnection;
 		ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		this.clientPlayNetworkHandler = new ClientPlayNetworkHandler(TunnelMC.mc, null, clientConnection, new GameProfile(bedrockConnection.getAuthData().identity(), bedrockConnection.getAuthData().displayName()), NOOPTelemetrySender.INSTANCE);
-		this.packetTranslatorManager = new JavaPacketTranslatorManager();
+		this.packetTranslatorManager = new JavaPacketTranslatorManager(bedrockConnection);
 	}
 
 	public void translatePacket(Packet<?> packet) {

@@ -20,8 +20,8 @@ public abstract class PacketTranslatorManager<P> extends TranslatorManager<Packe
 	private final Map<Class<P>, PacketTranslator<P>> packetTranslatorsByPacketClass = new HashMap<>();
 	private final List<IdlePacket> idlePackets = new CopyOnWriteArrayList<>();
 
-	public PacketTranslatorManager() {
-		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
+	public PacketTranslatorManager(BedrockConnection bedrockConnection) {
+		TunnelMC.getInstance().getEventManager().registerListeners(bedrockConnection, this);
 	}
 
 	@SuppressWarnings("unchecked")

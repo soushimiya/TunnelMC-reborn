@@ -52,7 +52,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 					bedrockConnection.sendPacket(pk);
 				}
 
-				TunnelMC.getInstance().getEventManager().registerListeners(this, this);
+				TunnelMC.getInstance().getEventManager().registerListeners(bedrockConnection, this);
 
 				// For some reason, blocks with a hardness of 0 don't have the stop action sent.
 				// If you're in creative, the same issue occurs.
