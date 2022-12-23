@@ -1,9 +1,8 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
 
-public class PlayerOffhandContainer extends BedrockContainer {
+public class PlayerOffhandContainer extends GenericContainer {
 
 	public static final int SIZE = 1;
 

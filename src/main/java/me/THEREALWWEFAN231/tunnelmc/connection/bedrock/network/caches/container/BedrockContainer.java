@@ -2,35 +2,34 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container
 
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class BedrockContainer {
+public abstract class BedrockContainer {
 
 	protected int size;
-	protected ArrayList<ItemData> items;
+	protected Map<Integer, ItemData> items = new HashMap<>();
 	protected int id;
 
 	public BedrockContainer(int size, int id) {
 		this.size = size;
 		this.id = id;
 
-		this.items = new ArrayList<ItemData>();
 		for (int i = 0; i < size; i++) {
-			this.items.add(ItemData.AIR);
+			this.items.put(i, ItemData.AIR);
 		}
 	}
 
 	public void setItemBedrock(int slot, ItemData itemData) {
-		this.items.set(slot, itemData);
+		this.items.put(slot, itemData);
 	}
 
 	public void setItemFromJavaSlot(int javaSlot, ItemData itemData) {
-		this.items.set(javaSlot, itemData);
+		this.setItemBedrock(convertJavaSlotIdToBedrockSlotId(javaSlot), itemData);
 	}
 	
-	public int convertJavaSlotIdToBedrockSlotId(int javaSlotId) {
-		return 0;
-	}
+	public abstract int convertJavaSlotIdToBedrockSlotId(int javaSlotId);
 
 	public ItemData getItemFromSlot(int slot) {
 		return this.items.get(slot);
@@ -40,8 +39,8 @@ public class BedrockContainer {
 		return this.size;
 	}
 
-	public ArrayList<ItemData> getItems() {
-		return this.items;
+	public Collection<ItemData> getItems() {
+		return this.items.values();
 	}
 
 	public int getId() {
