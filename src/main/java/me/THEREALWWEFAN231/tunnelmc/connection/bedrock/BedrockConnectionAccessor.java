@@ -38,10 +38,9 @@ public class BedrockConnectionAccessor {
             return;
         }
 
-        if(currentConnection.bedrockClient.getRakNet() != null && currentConnection.bedrockClient.getRakNet().isRunning()) {
-            currentConnection.bedrockClient.close();
-        }
         TunnelMC.getInstance().getEventManager().deregisterAllListeners(currentConnection);
+        currentConnection.bedrockClient.getSession().disconnect();
+        currentConnection.bedrockClient.close();
         currentConnection = null;
 
         if (TunnelMC.mc.world != null) {

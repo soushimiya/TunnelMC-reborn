@@ -63,8 +63,8 @@ public class BedrockConnectionScreen extends Screen {
 					new InetSocketAddress(this.addressField.getText(), port));
 			BiConsumer<ChainData, Throwable> whenComplete = (chainData, throwable) -> {
 				if(throwable != null) {
-					BedrockConnectionAccessor.closeConnection();
 					if(!(throwable instanceof CancellationException)) {
+						BedrockConnectionAccessor.closeConnection();
 						log.error("Got error when getting chain data", throwable);
 					}
 					return;
