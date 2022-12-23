@@ -16,6 +16,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -71,19 +72,18 @@ public class ItemTranslator {
 
 	//TODO: tags and what ever
 	public static ItemStack itemDataToItemStack(ItemData itemData) {
-		int damage = 0;
-		if (itemData.getTag() != null) {
-			damage = itemData.getTag().getInt("Damage");
-		}
+		int damage = itemData.getDamage();
 
 		//keep the short cast, the server can send us non short numbers that, "need to be rolled over" to their correct id
 		ItemStack itemStack = new ItemStack(BEDROCK_ITEM_INFO_TO_JAVA_ITEM.get((short) itemData.getId() + ":" + damage));
 		itemStack.setCount(itemData.getCount());
 
 		if (itemData.getTag() != null) {
+			itemStack.setDamage(itemData.getTag().getInt("Damage", damage));
+			itemStack.setCustomName(Text.literal(itemData.getTag().getCompound("display").getString("Name")));
+
 			List<NbtMap> bedrockEnchantments = itemData.getTag().getList("ench", NbtType.COMPOUND, null);
 			if (bedrockEnchantments != null) {
-				
 				for(NbtMap enchantmentData : bedrockEnchantments) {
 					int bedrockEnchantmentId = enchantmentData.getShort("id");
 					int enchantmentLevel = enchantmentData.getShort("lvl");
@@ -96,7 +96,6 @@ public class ItemTranslator {
 
 					itemStack.addEnchantment(javaEnchantment, enchantmentLevel);
 				}
-				
 			}
 		}
 
@@ -111,12 +110,12 @@ public class ItemTranslator {
 		String idDamageString = BEDROCK_ITEM_INFO_TO_JAVA_ITEM.inverse().get(itemStack.getItem());
 		String[] idDamageSplit = idDamageString.split(":");
 
-		int blockRuntimeId = BlockPaletteTranslator.BLOCK_STATE_TO_RUNTIME_ID.getInt(Block.getBlockFromItem(itemStack.getItem()).getDefaultState());
+		int blockRuntimeId = BlockPaletteTranslator.BLOCK_STATE_TO_RUNTIME_ID.getOrDefault(Block.getBlockFromItem(itemStack.getItem()).getDefaultState(), 0);
 		return ItemData.builder()
 				.id(Integer.parseInt(idDamageSplit[0]))
 				.damage(Integer.parseInt(idDamageSplit[1]))
 				.count(itemStack.getCount())
-				.tag(NbtMap.builder().putInt("Damage", 1).build())
+				.tag(NbtMap.builder().putInt("Damage", itemStack.getDamage()).build())
 				.blockRuntimeId(blockRuntimeId)
 				.build();
 	}
