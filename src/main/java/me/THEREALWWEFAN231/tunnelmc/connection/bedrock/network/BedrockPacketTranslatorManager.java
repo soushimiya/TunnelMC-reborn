@@ -40,7 +40,6 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new InventoryContentTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
 		this.addTranslator(new DisconnectTranslator());
 		this.addTranslator(new SetPlayerGameTypeTranslator());
-		this.addTranslator(new AdventureSettingsTranslator());
 		this.addTranslator(new AnimateTranslator());
 		this.addTranslator(new MobEquipmentTranslator());
 		this.addTranslator(new MobArmorEquipmentTranslator());

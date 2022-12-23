@@ -9,6 +9,7 @@ import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 
+@Deprecated
 @PacketIdentifier(AdventureSettingsPacket.class)
 public class AdventureSettingsTranslator extends PacketTranslator<AdventureSettingsPacket> { // TODO: UPDATE THIS
 
