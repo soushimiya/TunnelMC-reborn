@@ -33,6 +33,9 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
 	@Override
 	public void translate(StartGamePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+		bedrockConnection.runtimeId = packet.getRuntimeEntityId();
+		bedrockConnection.uniqueId = packet.getUniqueEntityId();
+
 		GameMode gameMode = GameModeTranslator.bedrockToJava(packet.getPlayerGameType());
 
 		Dimension dimension = Dimension.getDimensionFromId(packet.getDimensionId()).orElse(Dimension.OVERWORLD);

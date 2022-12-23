@@ -59,6 +59,8 @@ public class BedrockConnection {
 	@Getter
 	private BlockEntityDataCache blockEntityDataCache;
 
+	public long runtimeId;
+	public long uniqueId;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
 	public final Map<UUID, String> displayNames = new HashMap<>();
 	public final Map<UUID, SerializedSkin> serializedSkins = new HashMap<>();

@@ -11,7 +11,7 @@ import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 
 @Deprecated
 @PacketIdentifier(AdventureSettingsPacket.class)
-public class AdventureSettingsTranslator extends PacketTranslator<AdventureSettingsPacket> { // TODO: UPDATE THIS
+public class AdventureSettingsTranslator extends PacketTranslator<AdventureSettingsPacket> {
 
     @Override
     public void translate(AdventureSettingsPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
