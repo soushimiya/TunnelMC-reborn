@@ -53,5 +53,6 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new PlayStatusTranslator());
 		this.addTranslator(new EntityEventTranslator());
 		this.addTranslator(new NetworkSettingsTranslator());
+		this.addTranslator(new UpdateAbilitiesTranslator());
 	}
 }
