@@ -24,6 +24,7 @@
     "MixinYggdrasilMinecraftSessionService",
     "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinClientWorld",
+    "interfaces.IMixinNbtCompound",
     "interfaces.IMixinPlayerInteractEntityC2SPacket",
     "interfaces.IMixinPlayerListS2CPacket",
     "interfaces.IMixinTextRenderer",

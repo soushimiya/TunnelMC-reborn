@@ -1,13 +1,17 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.item;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.HashBiMap;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import lombok.extern.log4j.Log4j2;
+import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinNbtCompound;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.enchantment.EnchantmentTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
@@ -16,11 +20,16 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.io.IOException;
 import java.util.*;
+
+import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
 @Log4j2
 public class ItemTranslator {
@@ -72,15 +81,30 @@ public class ItemTranslator {
 
 	//TODO: tags and what ever
 	public static ItemStack itemDataToItemStack(ItemData itemData) {
-		int damage = itemData.getDamage();
+		//keep the short cast, the server can send us non-short numbers that, "need to be rolled over" to their correct id
+		Item item = BEDROCK_ITEM_INFO_TO_JAVA_ITEM.get((short) itemData.getId() + ":" + itemData.getDamage());
+		if(item == null) {
+			Item defaultItem = BEDROCK_ITEM_INFO_TO_JAVA_ITEM.get((short) itemData.getId() + ":0");
+			if(defaultItem == null) {
+				return ItemStack.EMPTY;
+			}
+			if(!defaultItem.isDamageable()) {
+				throw new RuntimeException("Cannot find java item: " + (short) itemData.getId() + ":0");
+			}
 
-		//keep the short cast, the server can send us non short numbers that, "need to be rolled over" to their correct id
-		ItemStack itemStack = new ItemStack(BEDROCK_ITEM_INFO_TO_JAVA_ITEM.get((short) itemData.getId() + ":" + damage));
+			item = defaultItem;
+		}
+
+		ItemStack itemStack = new ItemStack(item);
 		itemStack.setCount(itemData.getCount());
+		if(itemStack.isDamageable()) {
+			itemStack.setDamage(itemData.getDamage());
+		}
 
 		if (itemData.getTag() != null) {
-			itemStack.setDamage(itemData.getTag().getInt("Damage", damage));
-			itemStack.setCustomName(Text.literal(itemData.getTag().getCompound("display").getString("Name")));
+			itemStack.setNbt(convertBedrockToJavaTags(itemData.getTag()));
+			itemStack.setDamage(itemData.getTag().getInt("Damage", itemData.getDamage()));
+			itemStack.setCustomName(Text.literal(itemData.getTag().getCompound("display").getString("Name", null)));
 
 			List<NbtMap> bedrockEnchantments = itemData.getTag().getList("ench", NbtType.COMPOUND, null);
 			if (bedrockEnchantments != null) {
@@ -115,8 +139,32 @@ public class ItemTranslator {
 				.id(Integer.parseInt(idDamageSplit[0]))
 				.damage(Integer.parseInt(idDamageSplit[1]))
 				.count(itemStack.getCount())
-				.tag(NbtMap.builder().putInt("Damage", itemStack.getDamage()).build())
+				.tag(convertJavaToBedrockTags(itemStack.getOrCreateNbt()))
 				.blockRuntimeId(blockRuntimeId)
 				.build();
+	}
+
+	private static NbtMap convertJavaToBedrockTags(NbtCompound root) {
+		NbtMapBuilder builder = NbtMap.builder();
+
+		try {
+			byte[] flattened = JSON_MAPPER.writeValueAsBytes(((IMixinNbtCompound) root).getEntries());
+			Map<String, Object> map = JSON_MAPPER.readValue(flattened, new TypeReference<>() {});
+			builder.putAll(map);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return builder.build();
+	}
+
+	private static NbtCompound convertBedrockToJavaTags(NbtMap root) {
+		try {
+			return StringNbtReader.parse(root.toString());
+		} catch (CommandSyntaxException e) {
+			e.printStackTrace();
+		}
+
+		return new NbtCompound();
 	}
 }
