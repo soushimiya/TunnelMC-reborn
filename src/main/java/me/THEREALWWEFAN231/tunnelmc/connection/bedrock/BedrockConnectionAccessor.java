@@ -39,7 +39,9 @@ public class BedrockConnectionAccessor {
         }
 
         TunnelMC.getInstance().getEventManager().deregisterAllListeners(currentConnection);
-        currentConnection.bedrockClient.getSession().disconnect();
+        if(currentConnection.bedrockClient.getSession() != null) {
+            currentConnection.bedrockClient.getSession().disconnect();
+        }
         currentConnection.bedrockClient.close();
         currentConnection = null;
 
