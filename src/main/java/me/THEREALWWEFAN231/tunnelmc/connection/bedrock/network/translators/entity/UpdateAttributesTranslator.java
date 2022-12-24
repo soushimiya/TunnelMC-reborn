@@ -15,11 +15,11 @@ import net.minecraft.util.math.MathHelper;
 @Log4j2
 @PacketIdentifier(UpdateAttributesPacket.class)
 public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttributesPacket> {
-    private float health;
-    private int food;
-    private float saturation;
-    private int level;
-    private float experience;
+    private float health = 20;
+    private int food = 20;
+    private float saturation = 5;
+    private int level = 1;
+    private float experience = 0;
 
     @Override
     public void translate(UpdateAttributesPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
@@ -50,5 +50,10 @@ public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttribute
         }
 
         return (int) (4.5 * MathHelper.square(level) - 162.5 * level + 2220);
+    }
+
+    @Override
+    public boolean idleUntil(UpdateAttributesPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+        return TunnelMC.mc.player != null;
     }
 }
