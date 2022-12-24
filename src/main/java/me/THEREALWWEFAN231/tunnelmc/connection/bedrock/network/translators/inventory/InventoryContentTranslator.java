@@ -20,10 +20,6 @@ public class InventoryContentTranslator extends PacketTranslator<InventoryConten
 
 	@Override
 	public void translate(InventoryContentPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		if (TunnelMC.mc.player == null) {
-			return;
-		}
-
 		int syncId = packet.getContainerId();
 		int javaContainerSize = packet.getContents().size();
 
@@ -76,5 +72,10 @@ public class InventoryContentTranslator extends PacketTranslator<InventoryConten
 				javaConnection.processJavaPacket(inventoryS2CPacket);
 			}
 		}
+	}
+
+	@Override
+	public boolean idleUntil(InventoryContentPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
+		return TunnelMC.mc.player != null;
 	}
 }
