@@ -88,9 +88,6 @@ public class ItemTranslator {
 			if(defaultItem == null) {
 				return ItemStack.EMPTY;
 			}
-			if(!defaultItem.isDamageable()) {
-				throw new RuntimeException("Cannot find java item: " + (short) itemData.getId() + ":0");
-			}
 
 			item = defaultItem;
 		}
