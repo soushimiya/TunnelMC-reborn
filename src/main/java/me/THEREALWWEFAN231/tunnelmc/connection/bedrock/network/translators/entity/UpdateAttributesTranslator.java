@@ -39,7 +39,7 @@ public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttribute
         }
 
         javaConnection.processJavaPacket(new HealthUpdateS2CPacket(this.health, this.food, this.saturation));
-        javaConnection.processJavaPacket(new ExperienceBarUpdateS2CPacket(this.experience, this.level, getTotalExperience(this.level)));
+        javaConnection.processJavaPacket(new ExperienceBarUpdateS2CPacket(this.experience, getTotalExperience(this.level), this.level));
     }
 
     private int getTotalExperience(int level) {
