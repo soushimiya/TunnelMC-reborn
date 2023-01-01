@@ -24,8 +24,6 @@ public class ContainerOpenTranslator extends PacketTranslator<ContainerOpenPacke
 			return;
 		}
 		
-		bedrockConnection.getWrappedContainers().openContainerId = packet.getId();
-		
 		ScreenHandlerType<?> screenHandlerType = ContainerTypeTranslator.bedrockToJava(packet.getType());
 		if(screenHandlerType == null) {
 			log.error("Couldn't find the correct screen handler for: " + packet);
@@ -46,6 +44,6 @@ public class ContainerOpenTranslator extends PacketTranslator<ContainerOpenPacke
 		OpenScreenS2CPacket openScreenS2CPacket = new OpenScreenS2CPacket(packet.getId() & 0xff, screenHandlerType, Text.of(name));
 		javaConnection.processJavaPacket(openScreenS2CPacket);
 
-		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(new GenericContainer(27, packet.getId()));
+		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(packet.getId(), new GenericContainer(27));
 	}
 }

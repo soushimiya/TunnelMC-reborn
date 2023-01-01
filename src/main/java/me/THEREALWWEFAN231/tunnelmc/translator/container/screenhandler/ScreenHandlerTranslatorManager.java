@@ -33,13 +33,18 @@ public class ScreenHandlerTranslatorManager {
 		return translator;
 	}
 
-	public static BedrockContainer getBedrockContainerFromJava(ScreenHandler javaContainer, int javaSlotId) {
+	public static Integer getBedrockContainerIdFromJava(ScreenHandler javaContainer, int javaSlotId) {
 		ScreenHandlerTranslator<ScreenHandler> translator = ScreenHandlerTranslatorManager.getTranslator(javaContainer);
 		if(translator == null) {
 			return null;
 		}
 
-		return translator.getBedrockContainerFromJava(javaContainer, javaSlotId);
+		Integer containerId = translator.getBedrockContainerId(javaContainer, javaSlotId);
+		if(containerId == null) {
+			throw new IllegalStateException("Cannot find container");
+		}
+
+		return containerId;
 	}
 
 	public static Integer getJavaSlotFromBedrockContainer(ScreenHandler javaContainer, BedrockContainer bedrockContainer, int bedrockSlotId) {
@@ -48,15 +53,15 @@ public class ScreenHandlerTranslatorManager {
 			return null;
 		}
 
-		return translator.getJavaSlotFromBedrockContainer(javaContainer, bedrockContainer, bedrockSlotId);
+		return translator.getJavaSlotId(bedrockContainer, bedrockSlotId);
 	}
 
-	public static Integer getBedrockSlotFromJavaContainer(ScreenHandler javaContainer, int javaSlotId, BedrockContainer bedrockContainer) {
+	public static Integer getBedrockSlotFromJavaContainer(ScreenHandler javaContainer, int javaSlotId) {
 		ScreenHandlerTranslator<ScreenHandler> translator = ScreenHandlerTranslatorManager.getTranslator(javaContainer);
 		if(translator == null) {
 			return null;
 		}
 
-		return translator.getBedrockSlotFromJavaContainer(javaContainer, javaSlotId, bedrockContainer);
+		return translator.getBedrockSlotId(javaContainer, javaSlotId);
 	}
 }

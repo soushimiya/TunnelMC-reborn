@@ -18,6 +18,7 @@ public class CloseHandledScreenC2STranslator extends PacketTranslator<CloseHandl
 			// Sending this on PocketMine servers also crashes the client.
 			return;
 		}
+		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(id, null);
 		ContainerClosePacket containerClosePacket = new ContainerClosePacket();
 		containerClosePacket.setId(id);
 		

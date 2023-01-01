@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
@@ -36,7 +37,7 @@ public class UpdateSelectedSlotC2STranslator extends PacketTranslator<UpdateSele
 		mobEquipmentPacket.setItem(item);
 		mobEquipmentPacket.setInventorySlot(hotbarSlot);
 		mobEquipmentPacket.setHotbarSlot(hotbarSlot);
-		mobEquipmentPacket.setContainerId(container.getId());
+		mobEquipmentPacket.setContainerId(BedrockContainers.PLAYER_INVENTORY_COTNAINER_ID);
 
 		bedrockConnection.sendPacket(mobEquipmentPacket);
 	}

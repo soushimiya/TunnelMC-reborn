@@ -7,14 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BedrockContainer {
-
 	protected int size;
 	protected Map<Integer, ItemData> items = new HashMap<>();
-	protected int id;
 
-	public BedrockContainer(int size, int id) {
+	public BedrockContainer(int size) {
 		this.size = size;
-		this.id = id;
 
 		for (int i = 0; i < size; i++) {
 			this.items.put(i, ItemData.AIR);
@@ -42,9 +39,4 @@ public abstract class BedrockContainer {
 	public Collection<ItemData> getItems() {
 		return this.items.values();
 	}
-
-	public int getId() {
-		return this.id;
-	}
-
 }
