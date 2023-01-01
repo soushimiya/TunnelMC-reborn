@@ -166,14 +166,14 @@ public class ClientData {
     }
 
     public record PersonaPieceTintColor(@JsonProperty("PieceType") boolean pieceType,
-                                         @JsonProperty("Colors") List<String> colors) {
+                                        @JsonProperty("Colors") List<String> colors) {
     }
 
     @Getter
     @RequiredArgsConstructor
     public enum ArmSizeType {
-        @JsonProperty("wide") WIDE("geometry.humanoid.custom", "https://raw.githubusercontent.com/Flonja/TunnelMC/big-refactor/resources/steve.png"),
-        @JsonProperty("slim") SLIM("geometry.humanoid.customSlim", "https://raw.githubusercontent.com/Flonja/TunnelMC/big-refactor/resources/alex.png");
+        @JsonProperty("wide") WIDE("geometry.humanoid.custom", "https://raw.githubusercontent.com/Flonja/TunnelMC/master/resources/steve.png"),
+        @JsonProperty("slim") SLIM("geometry.humanoid.customSlim", "https://raw.githubusercontent.com/Flonja/TunnelMC/master/resources/alex.png");
 
         private final String geometryName;
         private final String defaultSkinUrl;
