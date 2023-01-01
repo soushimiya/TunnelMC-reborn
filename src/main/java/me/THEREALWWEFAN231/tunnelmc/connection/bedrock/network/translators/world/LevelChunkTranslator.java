@@ -9,15 +9,16 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.UpgradeData;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.*;
 import net.minecraft.world.tick.ChunkTickScheduler;
 
 import java.util.Objects;
@@ -59,30 +60,32 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 			chunkSections[sectionIndex] = chunkSection;
 		}
 
-//		byte[] bedrockBiomes = new byte[256];
-//		byteBuf.readBytes(bedrockBiomes);
-//		byteBuf.readBytes(byteBuf.readableBytes());
+		for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
+			ReadableContainer<RegistryEntry<Biome>> biomes = LevelChunkDecoder.biomeDecodingFromPalette(byteBuf, BIOMES_REGISTRY);
 
-		// TODO: BIOMES
-		// TODO: Block entities
+			ChunkSection section = chunkSections[sectionIndex];
+			if(section == null) {
+				throw new IllegalStateException("Should exist");
+			}
 
-//		int[] javaBiomes = new int[1024];
-//		int javaBiomesCount = 0;
-//		for (ChunkSection chunkSection : chunkSections) {
-//			PalettedContainer<RegistryEntry<Biome>> container = (PalettedContainer<RegistryEntry<Biome>>) chunkSection.getBiomeContainer();
-//			byte desiredBiome = bedrockBiome;
-//
-//			if (BIOMES_REGISTRY.get(desiredBiome) == null) {
-//				desiredBiome = 1;
+			PacketByteBuf buf = PacketByteBufs.create();
+			biomes.writePacket(buf);
+
+			PalettedContainer<RegistryEntry<Biome>> container = (PalettedContainer<RegistryEntry<Biome>>) section.getBiomeContainer();
+			container.readPacket(buf);
+//			for (int x = 0; x < 16; x++) {
+//				for (int z = 0; z < 16; z++) {
+//					for (int y = 0; y < 16; y++) {
+//						container.set(x, y, z, biomes.get(x, y, z));
+//					}
+//				}
 //			}
-//
-//			for ()
-//			container.set();
-//			javaBiomes[javaBiomesCount++] = desiredBiome;
-//			javaBiomes[javaBiomesCount++] = desiredBiome;
-//			javaBiomes[javaBiomesCount++] = desiredBiome;
-//			javaBiomes[javaBiomesCount++] = desiredBiome;
-//		}
+		}
+		byte borderBlocks = byteBuf.readByte();
+		for (int entry = 0; entry < borderBlocks; entry++) {
+			byteBuf.readByte(); // Useless data for us
+		}
+		// TODO: Block entities
 
 		Runnable runnable = () -> {
 			WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, chunkSections, null, null);

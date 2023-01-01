@@ -8,11 +8,12 @@ public enum BitArrayVersion {
     V4(4, 8, V5),
     V3(3, 10, V4), // 2 bit padding
     V2(2, 16, V3),
-    V1(1, 32, V2);
+    V1(1, 32, V2),
+    V0(0, 0, V1);
 
-    public final byte bits;//TODO: probably make this private again just because
-    public final byte entriesPerWord;//TODO: probably make this private again just because
-    public final int maxEntryValue;//TODO: probably make this private again just because
+    final byte bits;//TODO: probably make this private again just because
+    final byte entriesPerWord;//TODO: probably make this private again just because
+    final int maxEntryValue;//TODO: probably make this private again just because
     final BitArrayVersion next;
 
     BitArrayVersion(int bits, int entriesPerWord, BitArrayVersion next) {
@@ -40,6 +41,10 @@ public enum BitArrayVersion {
     }
 
     public int getWordsForSize(int size) {
+        if(entriesPerWord == 0) {
+            return 0;
+        }
+
         return (size / entriesPerWord) + (size % entriesPerWord == 0 ? 0 : 1);
     }
 
@@ -52,6 +57,10 @@ public enum BitArrayVersion {
     }
 
     public BitArray createPalette(int size, int[] words) {
+        if (this == V0) {
+            return EmptyBitArray.INSTANCE;
+        }
+
         if (this == V3 || this == V5 || this == V6) {
             // Padded palettes aren't able to use bitwise operations due to their padding.
             return new PaddedBitArray(this, size, words);

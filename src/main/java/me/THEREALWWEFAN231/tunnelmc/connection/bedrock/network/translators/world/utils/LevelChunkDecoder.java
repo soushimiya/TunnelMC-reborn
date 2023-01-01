@@ -9,10 +9,17 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.BitArray;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.BitArrayVersion;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.EmptyBitArray;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.LegacyBlockPaletteManager;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.PalettedContainer;
+import net.minecraft.world.chunk.ReadableContainer;
 
 import java.io.IOException;
 
@@ -77,7 +84,6 @@ public class LevelChunkDecoder {
                             int paletteIndex = bitArray.get(index);
                             int mcbeBlockId = sectionPalette[paletteIndex];
                             if (mcbeBlockId != BlockPaletteTranslator.AIR_BEDROCK_BLOCK_ID) {
-
                                 BlockState blockState = BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(mcbeBlockId);
 
                                 chunkSection.setBlockState(x, y, z, blockState);
@@ -124,5 +130,68 @@ public class LevelChunkDecoder {
                 }
             }
         }
+    }
+
+    public static ReadableContainer<RegistryEntry<Biome>> biomeDecodingFromLegacyFormat(ByteBuf byteBuf, Registry<Biome> registry) {
+        byte[] bedrockBiomes = new byte[256];
+        byteBuf.readBytes(bedrockBiomes);
+
+        PalettedContainer<RegistryEntry<Biome>> javaBiomes = new PalettedContainer<>(registry.getIndexedEntries(),
+                registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BLOCK_STATE);
+
+        for (int index = 0; index < bedrockBiomes.length; index++) {
+            byte biomeId = bedrockBiomes[index];
+            int x = index & 0xf;
+            int z = index >> 4;
+
+            for (int y = 0; y < 16; y++) {
+                javaBiomes.set(x, y, z, registry.getEntry(biomeId).orElse(registry.entryOf(BiomeKeys.PLAINS)));
+            }
+        }
+
+        return javaBiomes;
+    }
+
+    public static ReadableContainer<RegistryEntry<Biome>> biomeDecodingFromPalette(ByteBuf byteBuf, Registry<Biome> registry) {
+        PalettedContainer<RegistryEntry<Biome>> javaBiomes = new PalettedContainer<>(registry.getIndexedEntries(),
+                registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BLOCK_STATE);
+
+        byte paletteHeader = byteBuf.readByte();
+        int paletteVersion = paletteHeader >> 1;
+        BitArrayVersion bitArrayVersion = BitArrayVersion.get(paletteVersion, true);
+
+        int size = 4096;
+        BitArray bitArray = bitArrayVersion.createPalette(size);
+        int wordsSize = bitArrayVersion.getWordsForSize(size);
+        javaBiomes.onResize(wordsSize * 4, registry.entryOf(BiomeKeys.PLAINS));
+
+        for (int wordIterationIndex = 0; wordIterationIndex < wordsSize; wordIterationIndex++) {
+            int word = byteBuf.readIntLE();
+            bitArray.getWords()[wordIterationIndex] = word;
+        }
+
+        int paletteSize = VarInts.readInt(byteBuf);
+        if(bitArray instanceof EmptyBitArray) {
+            return javaBiomes;
+        }
+
+        int[] sectionPalette = new int[paletteSize];
+        for (int i = 0; i < paletteSize; i++) {
+            sectionPalette[i] = VarInts.readInt(byteBuf);
+        }
+
+        int index = 0;
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < 16; y++) {
+                    int paletteIndex = bitArray.get(index++);
+                    int biomeId = sectionPalette[paletteIndex];
+
+                    javaBiomes.set(x, y, z, registry.getEntry(biomeId).orElse(registry.entryOf(BiomeKeys.PLAINS)));
+                }
+            }
+        }
+
+        return javaBiomes;
     }
 }
