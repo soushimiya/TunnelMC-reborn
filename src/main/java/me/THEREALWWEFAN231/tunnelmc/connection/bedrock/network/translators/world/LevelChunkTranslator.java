@@ -1,8 +1,12 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world;
 
+import com.nukkitx.nbt.NBTInputStream;
+import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.LevelChunkDecoder;
@@ -21,12 +25,14 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.*;
 import net.minecraft.world.tick.ChunkTickScheduler;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
  * For more information, check out the following gist:
  * <a href="https://gist.github.com/dktapps/8a4f23d2bf32ea7091ef14e4aac46170">Block Changes in Beta 1.2.13</a>
  */
+@Log4j2
 @PacketIdentifier(LevelChunkPacket.class)
 public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 	private static final Registry<Biome> BIOMES_REGISTRY = BuiltinRegistries.BIOME;
@@ -88,7 +94,17 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		for (int entry = 0; entry < borderBlocks; entry++) {
 			byteBuf.readByte(); // Useless data for us
 		}
-		// TODO: Block entities
+
+		log.debug("start print");
+		while (byteBuf.isReadable()) {
+			try(NBTInputStream nbtStream = NbtUtils.createNetworkReader(new ByteBufInputStream(byteBuf))) {
+				log.debug(nbtStream.readTag());
+			}catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+		}
+		log.debug("end print");
 
 		Runnable runnable = () -> {
 			WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, chunkSections, null, null);
