@@ -60,8 +60,18 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 			chunkSections[sectionIndex] = chunkSection;
 		}
 
+		ReadableContainer<RegistryEntry<Biome>> last = null;
 		for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
 			ReadableContainer<RegistryEntry<Biome>> biomes = LevelChunkDecoder.biomeDecodingFromPalette(byteBuf, BIOMES_REGISTRY);
+			if(biomes == null) {
+				if(sectionIndex == 0) {
+					throw new IllegalStateException("Cannot use last palette at index 0");
+				}
+
+				biomes = last;
+			}else{
+				last = biomes;
+			}
 
 			ChunkSection section = chunkSections[sectionIndex];
 			if(section == null) {
@@ -73,13 +83,6 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 
 			PalettedContainer<RegistryEntry<Biome>> container = (PalettedContainer<RegistryEntry<Biome>>) section.getBiomeContainer();
 			container.readPacket(buf);
-//			for (int x = 0; x < 16; x++) {
-//				for (int z = 0; z < 16; z++) {
-//					for (int y = 0; y < 16; y++) {
-//						container.set(x, y, z, biomes.get(x, y, z));
-//					}
-//				}
-//			}
 		}
 		byte borderBlocks = byteBuf.readByte();
 		for (int entry = 0; entry < borderBlocks; entry++) {
