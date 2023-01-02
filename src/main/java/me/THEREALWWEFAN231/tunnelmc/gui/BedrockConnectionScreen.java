@@ -8,6 +8,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.OfflineModeLoginChai
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.impl.util.SystemProperties;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -28,8 +29,7 @@ import java.util.function.BiConsumer;
 @Log4j2
 @Environment(EnvType.CLIENT)
 public class BedrockConnectionScreen extends Screen {
-
-	//	The UI that comes up after you click on Connect To Bedrock.
+	private final boolean isDevelopment = Boolean.parseBoolean(System.getProperty(SystemProperties.DEVELOPMENT, "false"));
 
 	private ButtonWidget joinServerButton;
 	private TextFieldWidget addressField;
@@ -86,7 +86,7 @@ public class BedrockConnectionScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 125 + 12, 204, 20, ScreenTexts.CANCEL, button -> BedrockConnectionScreen.this.client.setScreen(BedrockConnectionScreen.this.parent)));
 		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 16, 200, 20, Text.of("Enter IP"));
 		this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, (this.height / 4) + 46, 200, 20, Text.of("Enter Port"));
-		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 100, 20, Text.of("Online mode"), true);
+		this.onlineModeWidget = new CheckboxWidget(this.width / 2 - 100, (this.height / 4) + 80, 100, 20, Text.of("Online mode"), !isDevelopment);
 		this.rememberAccountWidget = new CheckboxWidget(this.width / 2, (this.height / 4) + 80, 100, 20, Text.of("Remember Account"), true);
 		this.addressField.setMaxLength(128);
 		this.portField.setMaxLength(6);
