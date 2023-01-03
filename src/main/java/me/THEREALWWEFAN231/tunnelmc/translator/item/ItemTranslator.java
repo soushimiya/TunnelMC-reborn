@@ -125,8 +125,8 @@ public class ItemTranslator {
 
 	//TODO: tags and what ever
 	public static ItemData itemStackToItemData(ItemStack itemStack) {
-		if(BEDROCK_ITEM_INFO_TO_JAVA_ITEM.containsValue(itemStack.getItem())) {
-			throw new RuntimeException("Cannot find java item");
+		if(!BEDROCK_ITEM_INFO_TO_JAVA_ITEM.containsValue(itemStack.getItem())) {
+			throw new RuntimeException("Cannot find java item: " + itemStack.getItem().getName().getString());
 		}
 		String idDamageString = BEDROCK_ITEM_INFO_TO_JAVA_ITEM.inverse().get(itemStack.getItem());
 		String[] idDamageSplit = idDamageString.split(":");
@@ -136,12 +136,16 @@ public class ItemTranslator {
 				.id(Integer.parseInt(idDamageSplit[0]))
 				.damage(Integer.parseInt(idDamageSplit[1]))
 				.count(itemStack.getCount())
-				.tag(convertJavaToBedrockTags(itemStack.getOrCreateNbt()))
+				.tag(convertJavaToBedrockTags(itemStack.getNbt()))
 				.blockRuntimeId(blockRuntimeId)
 				.build();
 	}
 
 	private static NbtMap convertJavaToBedrockTags(NbtCompound root) {
+		if(root == null) {
+			return null;
+		}
+
 		NbtMapBuilder builder = NbtMap.builder();
 
 		try {

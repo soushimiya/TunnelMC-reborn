@@ -57,7 +57,7 @@
     },
     {
         "name" : "minecraft:air",
-        "id" : -158
+        "id" : 0
     },
     {
         "name" : "minecraft:allay_spawn_egg",
