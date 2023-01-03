@@ -1,4 +1,4 @@
-package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators;
+package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.inventory;
 
 import com.nukkitx.protocol.bedrock.packet.ContainerClosePacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
@@ -12,15 +12,14 @@ public class CloseHandledScreenC2STranslator extends PacketTranslator<CloseHandl
 
 	@Override
 	public void translate(CloseHandledScreenC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		byte id = (byte) packet.getSyncId();
+		int id = packet.getSyncId();
 		if (id == 0) {
-			// The main inventory being closed does not send a container close packet.
-			// Sending this on PocketMine servers also crashes the client.
-			return;
+			id = bedrockConnection.getWrappedContainers().getCurrentlyOpenContainerId();
 		}
+
 		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(id, null);
 		ContainerClosePacket containerClosePacket = new ContainerClosePacket();
-		containerClosePacket.setId(id);
+		containerClosePacket.setId((byte) id);
 		
 		bedrockConnection.sendPacket(containerClosePacket);
 	}

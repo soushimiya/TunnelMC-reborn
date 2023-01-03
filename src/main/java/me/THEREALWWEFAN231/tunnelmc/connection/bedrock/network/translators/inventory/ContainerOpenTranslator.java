@@ -6,7 +6,7 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers.GenericContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers.DynamicContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.type.ContainerTypeTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
@@ -22,6 +22,7 @@ public class ContainerOpenTranslator extends PacketTranslator<ContainerOpenPacke
 	@Override
 	public void translate(ContainerOpenPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		if (packet.getType() == ContainerType.INVENTORY) {
+			bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(packet.getId(), bedrockConnection.getWrappedContainers().getPlayerInventory());
 			return;
 		}
 		
@@ -51,9 +52,9 @@ public class ContainerOpenTranslator extends PacketTranslator<ContainerOpenPacke
 			}
 		}
 
-		OpenScreenS2CPacket openScreenS2CPacket = new OpenScreenS2CPacket(packet.getId() & 0xff, screenHandlerType, Text.of(name));
+		OpenScreenS2CPacket openScreenS2CPacket = new OpenScreenS2CPacket(packet.getId(), screenHandlerType, Text.of(name));
 		javaConnection.processJavaPacket(openScreenS2CPacket);
 
-		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(packet.getId(), new GenericContainer(size));
+		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(packet.getId(), new DynamicContainer(size));
 	}
 }

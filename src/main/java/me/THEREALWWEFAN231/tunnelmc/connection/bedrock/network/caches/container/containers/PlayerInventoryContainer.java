@@ -20,4 +20,9 @@ public class PlayerInventoryContainer extends GenericContainer {
 		
 		return super.convertJavaSlotIdToBedrockSlotId(javaSlotId);
 	}
+
+	@Override
+	public boolean isStatic() {
+		return true;
+	}
 }

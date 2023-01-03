@@ -16,14 +16,11 @@ public class BedrockContainers {
 	public static final int PLAYER_ARMOR_COTNAINER_ID = 120;
 	public static final int PLAYER_CONTAINER_CURSOR_COTNAINER_ID = 124;
 
+	private final Map<Integer, BedrockContainer> containers = new HashMap<>();
 	private int revision = 0;
 	private int currentlyOpenContainerId;
 	
-	private final Map<Integer, BedrockContainer> containers;
-	
 	public BedrockContainers() {
-		this.containers = new HashMap<>();
-		
 		this.containers.put(BedrockContainers.PLAYER_INVENTORY_COTNAINER_ID, new PlayerInventoryContainer());
 		this.containers.put(BedrockContainers.PLAYER_OFFHAND_COTNAINER_ID, new PlayerOffhandContainer());
 		this.containers.put(BedrockContainers.PLAYER_ARMOR_COTNAINER_ID, new PlayerArmorContainer());
@@ -63,13 +60,23 @@ public class BedrockContainers {
 	}
 
 	public void setCurrentlyOpenContainer(int id, BedrockContainer currentlyOpenContainer) {
-		if(currentlyOpenContainer == null) {
-			this.containers.remove(id);
-		}else{
-			this.containers.put(id, currentlyOpenContainer);
+		if(currentlyOpenContainer != null) {
+			if(!currentlyOpenContainer.isStatic()) {
+				this.containers.put(id, currentlyOpenContainer);
+			}
+
+			this.currentlyOpenContainerId = id;
+			return;
 		}
 
-		this.currentlyOpenContainerId = id;
+		BedrockContainer container = this.getContainer(this.currentlyOpenContainerId);
+		if(container != null) {
+			if (!container.isStatic()) {
+				this.containers.remove(id);
+			}
+		}
+
+		this.currentlyOpenContainerId = -1;
 	}
 
 	public int nextRevision() {

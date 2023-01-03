@@ -1,4 +1,4 @@
-package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators;
+package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.inventory;
 
 import com.nukkitx.api.event.Listener;
 import com.nukkitx.protocol.bedrock.data.inventory.InventoryActionData;

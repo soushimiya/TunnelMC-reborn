@@ -6,4 +6,9 @@ public class PlayerOffhandContainer extends GenericContainer {
 	public PlayerOffhandContainer() {
 		super(PlayerOffhandContainer.SIZE);
 	}
+
+	@Override
+	public boolean isStatic() {
+		return true;
+	}
 }

@@ -39,4 +39,6 @@ public abstract class BedrockContainer {
 	public Collection<ItemData> getItems() {
 		return this.items.values();
 	}
+
+	public abstract boolean isStatic();
 }

@@ -2,6 +2,8 @@ package me.THEREALWWEFAN231.tunnelmc.connection.java.network;
 
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.*;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.inventory.ClickSlotC2STranslator;
+import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.inventory.CloseHandledScreenC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.FullMoveC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.LookAndOnGroundMoveC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.movement.PlayerMoveC2STranslator;

@@ -6,4 +6,9 @@ public class PlayerArmorContainer extends GenericContainer {
 	public PlayerArmorContainer() {
 		super(PlayerArmorContainer.SIZE);
 	}
+
+	@Override
+	public boolean isStatic() {
+		return true;
+	}
 }

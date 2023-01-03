@@ -7,4 +7,8 @@ public class PlayerContainerCursorContainer extends GenericContainer {
 		super(PlayerContainerCursorContainer.SIZE);
 	}
 
+	@Override
+	public boolean isStatic() {
+		return true;
+	}
 }
