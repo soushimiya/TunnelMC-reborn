@@ -1,10 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world;
 
-import com.nukkitx.nbt.NBTInputStream;
-import com.nukkitx.nbt.NbtUtils;
 import com.nukkitx.protocol.bedrock.packet.LevelChunkPacket;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
@@ -25,7 +22,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.*;
 import net.minecraft.world.tick.ChunkTickScheduler;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -90,21 +86,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 			PalettedContainer<RegistryEntry<Biome>> container = (PalettedContainer<RegistryEntry<Biome>>) section.getBiomeContainer();
 			container.readPacket(buf);
 		}
-		byte borderBlocks = byteBuf.readByte();
-		for (int entry = 0; entry < borderBlocks; entry++) {
-			byteBuf.readByte(); // Useless data for us
-		}
-
-		log.debug("start print");
-		while (byteBuf.isReadable()) {
-			try(NBTInputStream nbtStream = NbtUtils.createNetworkReader(new ByteBufInputStream(byteBuf))) {
-				log.debug(nbtStream.readTag());
-			}catch (IOException e) {
-				e.printStackTrace();
-				break;
-			}
-		}
-		log.debug("end print");
+		// Don't need to read more bytes
 
 		Runnable runnable = () -> {
 			WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, chunkSections, null, null);

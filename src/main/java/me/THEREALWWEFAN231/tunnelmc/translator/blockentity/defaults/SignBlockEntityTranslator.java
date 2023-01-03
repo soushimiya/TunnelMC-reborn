@@ -1,23 +1,25 @@
-package me.THEREALWWEFAN231.tunnelmc.translator.blockentity;
+package me.THEREALWWEFAN231.tunnelmc.translator.blockentity.defaults;
 
 import com.nukkitx.nbt.NbtMap;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityTranslator;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
 
 public class SignBlockEntityTranslator extends BlockEntityTranslator {
     @Override
     public NbtCompound translateTag(NbtMap bedrockNbt, NbtCompound newTag) {
         String text = bedrockNbt.getString("Text");
-        int textCount = 0;
         String[] javaText = {"", "", "", ""};
 
         //TODO: Improve this - I want to figure out if we can use Minecraft internals before using Geyser's sign wrapping implementation
+        int textCount = 0;
         StringBuilder builder = new StringBuilder();
         for (char c : text.toCharArray()) {
             if (c == '\n') {
-                javaText[textCount] = builder.toString();
-                textCount++;
+                javaText[textCount++] = builder.toString();
                 if (textCount > 3) {
                     break;
                 }
@@ -27,11 +29,10 @@ public class SignBlockEntityTranslator extends BlockEntityTranslator {
             builder.append(c);
         }
 
-        // TODO use Adventure
-        newTag.putString("Text1", Text.Serializer.toJson(Text.of(javaText[0])));
-        newTag.putString("Text2", Text.Serializer.toJson(Text.of(javaText[1])));
-        newTag.putString("Text3", Text.Serializer.toJson(Text.of(javaText[2])));
-        newTag.putString("Text4", Text.Serializer.toJson(Text.of(javaText[3])));
+        for(int i = 0; i < javaText.length; i++) {
+            TextComponent component = LegacyComponentSerializer.legacySection().deserialize(javaText[i]);
+            newTag.putString("Text" + (i + 1), GsonComponentSerializer.gson().serialize(component));
+        }
         return newTag;
     }
 
