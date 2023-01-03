@@ -4,6 +4,7 @@ import com.nukkitx.protocol.bedrock.BedrockPacket;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.*;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.entity.*;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.ContainerCloseTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.ContainerOpenTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.InventoryContentTranslator;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory.InventorySlotTranslator;
@@ -26,7 +27,7 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new AddEntityTranslator());
 		this.addTranslator(new SetTimeTranslator());
 		this.addTranslator(new RemoveEntityTranslator());
-		this.addTranslator(new InventorySlotTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+		this.addTranslator(new InventorySlotTranslator());
 		this.addTranslator(new AddItemEntityTranslator());
 		this.addTranslator(new MovePlayerTranslator());
 		this.addTranslator(new MoveEntityAbsoluteTranslator());
@@ -36,8 +37,8 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new TakeItemEntityTranslator());
 		this.addTranslator(new NetworkChunkPublisherUpdateTranslator());
 		this.addTranslator(new SetEntityDataTranslator());
-		this.addTranslator(new ContainerOpenTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
-		this.addTranslator(new InventoryContentTranslator()); // TODO: REDO INVENTORIES/CONTAINERS
+		this.addTranslator(new ContainerOpenTranslator());
+		this.addTranslator(new InventoryContentTranslator());
 		this.addTranslator(new DisconnectTranslator());
 		this.addTranslator(new SetPlayerGameTypeTranslator());
 		this.addTranslator(new AnimateTranslator());
@@ -55,5 +56,6 @@ public class BedrockPacketTranslatorManager extends PacketTranslatorManager<Bedr
 		this.addTranslator(new NetworkSettingsTranslator());
 		this.addTranslator(new UpdateAbilitiesTranslator());
 		this.addTranslator(new UpdateAttributesTranslator());
+		this.addTranslator(new ContainerCloseTranslator());
 	}
 }
