@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory;
 
 import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.packet.ContainerOpenPacket;
 import lombok.extern.log4j.Log4j2;
@@ -41,9 +42,18 @@ public class ContainerOpenTranslator extends PacketTranslator<ContainerOpenPacke
 			name = blockEntityData.getString("CustomName");
 		}
 
+		int size = 27;
+		if(packet.getType() == ContainerType.CONTAINER) {
+			boolean doubleChest = blockEntityData.containsKey("pairx", NbtType.INT) && blockEntityData.containsKey("pairz", NbtType.INT);
+			if(doubleChest) {
+				size = size * 2;
+				screenHandlerType = ScreenHandlerType.GENERIC_9X6;
+			}
+		}
+
 		OpenScreenS2CPacket openScreenS2CPacket = new OpenScreenS2CPacket(packet.getId() & 0xff, screenHandlerType, Text.of(name));
 		javaConnection.processJavaPacket(openScreenS2CPacket);
 
-		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(packet.getId(), new GenericContainer(27));
+		bedrockConnection.getWrappedContainers().setCurrentlyOpenContainer(packet.getId(), new GenericContainer(size));
 	}
 }
