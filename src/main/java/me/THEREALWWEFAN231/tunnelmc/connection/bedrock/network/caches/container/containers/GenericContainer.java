@@ -8,7 +8,7 @@ public class GenericContainer extends BedrockContainer {
     }
 
     @Override
-    public int convertJavaSlotIdToBedrockSlotId(int javaSlotId) {
-        return 0;
+    protected int convertJavaSlotIdToBedrockSlotId(int javaSlotId) {
+        return javaSlotId;
     }
 }

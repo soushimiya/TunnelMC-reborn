@@ -8,7 +8,7 @@ public class PlayerInventoryContainer extends GenericContainer {
 	}
 	
 	@Override
-	public int convertJavaSlotIdToBedrockSlotId(int javaSlotId) {
+	protected int convertJavaSlotIdToBedrockSlotId(int javaSlotId) {
 		if(javaSlotId >= 36) {//if it's a java hotbar slot 36->44
 			return javaSlotId - 36;//convert to bedrock slot, 0-8
 		}
