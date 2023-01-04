@@ -58,14 +58,14 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		List<InventoryActionData> actions = switch (packet.getActionType()) {
 			case PICKUP -> translatePickup(packet, containerIdForClickedSlot, bedrockConnection);
 			case PICKUP_ALL -> null;
-			case QUICK_MOVE -> null;
+			case QUICK_MOVE -> translateQuickMove(packet, containerIdForClickedSlot, bedrockConnection);
+			case SWAP -> translateSwap(packet, containerIdForClickedSlot, bedrockConnection);
 			case THROW -> null;
-			case SWAP -> null;
 			case CLONE -> null;
 			case QUICK_CRAFT -> null;
 		};
 		if(actions == null) {
-			return;
+			return; // TODO: add reverting client-side
 		}
 		pk.getActions().addAll(actions);
 
@@ -93,6 +93,81 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		actions.add(new InventoryActionData(InventorySource.fromContainerWindowId(BedrockContainers.PLAYER_CONTAINER_CURSOR_COTNAINER_ID),
 				0, cursorContainer.getItemFromSlot(0), newCursorItem));
 		cursorContainer.setItemBedrock(0, newCursorItem);
+
+		return actions;
+	}
+
+	private List<InventoryActionData> translateQuickMove(ClickSlotC2SPacket packet, int containerId, BedrockConnection bedrockConnection) {
+		List<InventoryActionData> actions = new ArrayList<>();
+		BedrockContainer container = bedrockConnection.getWrappedContainers().getContainer(containerId);
+		Integer slotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
+		if (slotId == null) {
+			return null;
+		}
+
+		for(Int2ObjectMap.Entry<ItemStack> entry : packet.getModifiedStacks().int2ObjectEntrySet()) {
+			Integer modifiedContainerId = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
+			if (modifiedContainerId == null) {
+				return null;
+			}
+			BedrockContainer modifiedContainer = bedrockConnection.getWrappedContainers().getContainer(modifiedContainerId);
+			Integer modifiedSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
+			if (modifiedSlotId == null) {
+				continue;
+			}
+
+			ItemData fromItemData = modifiedContainer.getItemFromSlot(modifiedSlotId);
+			ItemData toItemData = ItemTranslator.itemStackToItemData(entry.getValue());
+
+			actions.add(new InventoryActionData(InventorySource.fromContainerWindowId(modifiedContainerId), modifiedSlotId, fromItemData, toItemData));
+			modifiedContainer.setItemBedrock(modifiedSlotId, toItemData);
+		}
+
+		ItemData newFromItemData = ItemTranslator.itemStackToItemData(packet.getStack());
+		actions.add(new InventoryActionData(InventorySource.fromContainerWindowId(containerId),
+				slotId, container.getItemFromSlot(slotId), newFromItemData));
+		container.setItemBedrock(slotId, newFromItemData);
+
+		return actions;
+	}
+
+	private List<InventoryActionData> translateSwap(ClickSlotC2SPacket packet, int fromContainerId, BedrockConnection bedrockConnection) {
+		List<InventoryActionData> actions = new ArrayList<>();
+		BedrockContainer fromContainer = bedrockConnection.getWrappedContainers().getContainer(fromContainerId);
+		Integer fromSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
+
+		Integer toContainerId = null;
+		BedrockContainer toContainer = null;
+		Integer toSlotId = null;
+
+		if (packet.getModifiedStacks().size() != 2) {
+			return null;
+		}
+		for (Int2ObjectMap.Entry<ItemStack> entry : packet.getModifiedStacks().int2ObjectEntrySet()) {
+			if (packet.getSlot() == entry.getIntKey()) {
+				continue;
+			}
+
+			toContainerId = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
+			if (toContainerId == null) {
+				return null;
+			}
+			toContainer = bedrockConnection.getWrappedContainers().getContainer(toContainerId);
+			toSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
+		}
+		if (fromSlotId == null || toSlotId == null) {
+			return null;
+		}
+
+		ItemData fromItemData = fromContainer.getItemFromSlot(fromSlotId);
+		ItemData toItemData = toContainer.getItemFromSlot(toSlotId);
+
+		actions.add(new InventoryActionData(InventorySource.fromContainerWindowId(fromContainerId),
+				fromSlotId, fromItemData, toItemData));
+		actions.add(new InventoryActionData(InventorySource.fromContainerWindowId(toContainerId),
+				toSlotId, toItemData, fromItemData));
+		fromContainer.setItemBedrock(fromSlotId, toItemData);
+		toContainer.setItemBedrock(toSlotId, fromItemData);
 
 		return actions;
 	}
