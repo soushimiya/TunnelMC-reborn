@@ -1,7 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler;
 
 import lombok.extern.log4j.Log4j2;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.utils.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators.GenericContainerScreenHandlerTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators.PlayerScreenHandlerTranslator;
 import net.minecraft.screen.ScreenHandler;

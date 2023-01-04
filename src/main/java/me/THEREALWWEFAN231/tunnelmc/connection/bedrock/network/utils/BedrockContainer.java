@@ -1,9 +1,10 @@
-package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container;
+package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.utils;
 
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
+import net.minecraft.util.collection.DefaultedList;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class BedrockContainer {
@@ -36,9 +37,15 @@ public abstract class BedrockContainer {
 		return this.size;
 	}
 
-	public Collection<ItemData> getItems() {
-		return this.items.values();
+	public List<ItemData> getItems() {
+		List<ItemData> itemDataList = DefaultedList.ofSize(this.getSize());
+		for(Map.Entry<Integer, ItemData> entry : this.items.entrySet()) {
+			itemDataList.add(entry.getKey(), entry.getValue());
+		}
+		return itemDataList;
 	}
 
 	public abstract boolean isStatic();
+
+	public abstract void updateInventory();
 }

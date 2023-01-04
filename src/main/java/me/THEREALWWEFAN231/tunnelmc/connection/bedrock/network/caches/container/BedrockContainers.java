@@ -4,6 +4,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers.PlayerContainerCursorContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers.PlayerInventoryContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.containers.PlayerOffhandContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.utils.BedrockContainer;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -1,19 +1,12 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.inventory;
 
-import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.InventoryContentPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.utils.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
-import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.ScreenHandlerTranslatorManager;
-import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
-import net.minecraft.util.collection.DefaultedList;
 
 @PacketIdentifier(InventoryContentPacket.class)
 public class InventoryContentTranslator extends PacketTranslator<InventoryContentPacket> {
@@ -21,57 +14,20 @@ public class InventoryContentTranslator extends PacketTranslator<InventoryConten
 	@Override
 	public void translate(InventoryContentPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		int syncId = packet.getContainerId();
-		int javaContainerSize = packet.getContents().size();
 
 		BedrockContainer containerAffected = bedrockConnection.getWrappedContainers().getContainers().get(syncId);
 		if (containerAffected == null) {
 			containerAffected = bedrockConnection.getWrappedContainers().getCurrentlyOpenContainer();
 		}
 
-		switch (syncId) {
-			case BedrockContainers.PLAYER_INVENTORY_COTNAINER_ID -> {
-				for (int i = 0; i < javaContainerSize; i++) {
-					ItemData bedrockItemStack = packet.getContents().get(i);
-					ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
-
-					Integer javaSlotId = ScreenHandlerTranslatorManager.getJavaSlotFromBedrockContainer(TunnelMC.mc.player.currentScreenHandler, containerAffected, i);
-					if (javaSlotId == null) {
-						break;
-					}
-
-					containerAffected.setItemBedrock(i, bedrockItemStack);
-					TunnelMC.mc.player.playerScreenHandler.getSlot(javaSlotId).setStack(translatedStack);
-				}
-			}
-			case BedrockContainers.PLAYER_ARMOR_COTNAINER_ID -> {
-				for (int i = 0; i < javaContainerSize; i++) {
-					ItemData bedrockItemStack = packet.getContents().get(i);
-					ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
-
-					containerAffected.setItemBedrock(i, bedrockItemStack);
-					TunnelMC.mc.player.playerScreenHandler.getSlot(5 + i).setStack(translatedStack);
-				}
-			}
-			case BedrockContainers.PLAYER_OFFHAND_COTNAINER_ID -> {
-				ItemData bedrockItemStack = packet.getContents().get(0);
-				ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
-
-				containerAffected.setItemBedrock(0, bedrockItemStack);
-				TunnelMC.mc.player.playerScreenHandler.getSlot(45).setStack(translatedStack);
-			}
-			default -> {
-				DefaultedList<ItemStack> javaContents = DefaultedList.ofSize(packet.getContents().size(), ItemStack.EMPTY);
-				for (int i = 0; i < javaContainerSize; i++) {
-					ItemData bedrockItemStack = packet.getContents().get(i);
-					ItemStack translatedStack = ItemTranslator.itemDataToItemStack(bedrockItemStack);
-
-					javaContents.set(i, translatedStack);
-					containerAffected.setItemBedrock(i, packet.getContents().get(i));
-				}
-				InventoryS2CPacket inventoryS2CPacket = new InventoryS2CPacket(syncId, bedrockConnection.getWrappedContainers().nextRevision(), javaContents, ItemStack.EMPTY);
-				javaConnection.processJavaPacket(inventoryS2CPacket);
-			}
+		for (int slot = 0; slot < packet.getContents().size(); slot++) {
+			containerAffected.setItemBedrock(slot, packet.getContents().get(slot));
 		}
+		if (!TunnelMC.mc.isOnThread()) {
+			TunnelMC.mc.executeSync(containerAffected::updateInventory);
+			return;
+		}
+		containerAffected.updateInventory();
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import com.nukkitx.protocol.bedrock.packet.InventorySlotPacket;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainer;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.utils.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.UpdateSelectedSlotC2STranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
