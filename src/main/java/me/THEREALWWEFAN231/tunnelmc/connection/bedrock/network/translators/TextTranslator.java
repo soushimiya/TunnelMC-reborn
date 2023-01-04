@@ -44,6 +44,17 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 			case POPUP:
 			case JUKEBOX_POPUP:
 			case TRANSLATION: {
+				if(packet.getParameters().size() == 0) {
+					if(packet.getType() == TextPacket.Type.TRANSLATION) {
+						packet.setType(TextPacket.Type.RAW);
+					}else{
+						packet.setType(TextPacket.Type.TIP);
+					}
+
+					this.translateType(packet, bedrockConnection, javaConnection);
+					return;
+				}
+
 				TextComponent component = LegacyComponentSerializer.legacySection().deserialize(packet.getMessage().replaceAll("%", ""));
 				String cleaned = component.style(Style.empty()).content();
 				// TODO: translate translation keys, ironic
@@ -51,7 +62,7 @@ public class TextTranslator extends PacketTranslator<TextPacket> {
 				Component translatableComponent = Component.translatable(cleaned, component.color())
 						.args(packet.getParameters().stream().map(Component::text).collect(Collectors.toList()));
 				GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(TunnelMC.ADVENTURE.toNative(translatableComponent),
-						packet.getType() == TextPacket.Type.POPUP);
+						packet.getType() != TextPacket.Type.TRANSLATION);
 				javaConnection.processJavaPacket(gameMessageS2CPacket);
 				break;
 			}
