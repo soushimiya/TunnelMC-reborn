@@ -19,7 +19,6 @@
     "MixinMinecraftClient",
     "MixinMultiplayerScreen",
     "MixinPlayerSkinProvider",
-    "MixinScreenHandler",
     "MixinWorldRenderer",
     "MixinYggdrasilMinecraftSessionService",
     "interfaces.IMixinClientPlayerInteractionManager",

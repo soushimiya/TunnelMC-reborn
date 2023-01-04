@@ -28,7 +28,7 @@ public class JavaPacketTranslatorManager extends PacketTranslatorManager<Packet<
 		this.addTranslator(new PlayerInteractEntityC2STranslator());
 		this.addTranslator(new ClientCommandC2STranslator());
 		this.addTranslator(new CloseHandledScreenC2STranslator());
-		this.addTranslator(new ClickSlotC2STranslator(bedrockConnection));
+		this.addTranslator(new ClickSlotC2STranslator());
 		this.addTranslator(new UpdatePlayerAbilitiesC2STranslator());
 		this.addTranslator(new ClientStatusC2STranslator());
 		this.addTranslator(new CommandExecutionC2STranslator());
