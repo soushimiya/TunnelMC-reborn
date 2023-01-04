@@ -38,9 +38,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 //		}
 		if(packet.getSlot() == -999) {
 			log.debug("Clicking outside container region");
-			for(BedrockContainer container : bedrockConnection.getWrappedContainers().getContainers().values()) {
-				container.updateInventory();
-			}
+			revertActions(bedrockConnection);
 			return;
 		}
 
@@ -49,9 +47,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 
 		Integer containerIdForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
 		if (containerIdForClickedSlot == null) {
-			for(BedrockContainer container : bedrockConnection.getWrappedContainers().getContainers().values()) {
-				container.updateInventory();
-			}
+			revertActions(bedrockConnection);
 			return;
 		}
 
@@ -66,9 +62,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 			case QUICK_CRAFT -> null;
 		};
 		if(actions == null) {
-			for(BedrockContainer container : bedrockConnection.getWrappedContainers().getContainers().values()) {
-				container.updateInventory();
-			}
+			revertActions(bedrockConnection);
 			return;
 		}
 		pk.getActions().addAll(actions.stream().flatMap(actionBuilder -> actionBuilder.execute().stream()).toList());
@@ -162,6 +156,12 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		builders.add(fromContainer.build());
 		builders.add(toContainer.build());
 		return builders;
+	}
+
+	private void revertActions(BedrockConnection bedrockConnection) {
+		for(BedrockContainer container : bedrockConnection.getWrappedContainers().getContainers().values()) {
+			container.updateInventory();
+		}
 	}
 
 	public void onCursorStackAddToStack(ScreenHandler screenHandler, int clickedSlotId) {//for example the user has 64 oak planks in the cursor, and they right-click a slot with oak planks(not an empty slot)
