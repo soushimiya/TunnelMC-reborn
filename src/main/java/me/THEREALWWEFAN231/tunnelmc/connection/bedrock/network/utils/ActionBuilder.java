@@ -7,12 +7,12 @@ import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import java.util.*;
 
 public class ActionBuilder {
-    private final int containerId;
+    private final InventorySource source;
     private final BedrockContainer container;
     private final Map<Integer, ItemData> actions;
 
-    ActionBuilder(int containerId, BedrockContainer container, Map<Integer, ItemData> actions) {
-        this.containerId = containerId;
+    ActionBuilder(InventorySource source, BedrockContainer container, Map<Integer, ItemData> actions) {
+        this.source = source;
         this.container = container;
         this.actions = actions;
     }
@@ -26,7 +26,7 @@ public class ActionBuilder {
         }
 
         for(Map.Entry<Integer, ItemData> entry : this.actions.entrySet()) {
-            actions.add(new InventoryActionData(InventorySource.fromContainerWindowId(this.containerId), entry.getKey(), container.getItemFromSlot(entry.getKey()), entry.getValue()));
+            actions.add(new InventoryActionData(this.source, entry.getKey(), container.getItemFromSlot(entry.getKey()), entry.getValue()));
             container.setItemBedrock(entry.getKey(), entry.getValue());
         }
 
@@ -42,15 +42,15 @@ public class ActionBuilder {
     }
 
     public static class ActionBuilderBuilder {
-        private int containerId;
+        private InventorySource source;
         private BedrockContainer container;
         private final Map<Integer, ItemData> actions = new HashMap<>();
 
         ActionBuilderBuilder() {
         }
 
-        public ActionBuilderBuilder container(int containerId, BedrockContainer container) {
-            this.containerId = containerId;
+        public ActionBuilderBuilder container(InventorySource source, BedrockContainer container) {
+            this.source = source;
             this.container = container;
             return this;
         }
@@ -80,7 +80,7 @@ public class ActionBuilder {
 
             Map<Integer, ItemData> actions = Collections.unmodifiableMap(this.actions);
 
-            return new ActionBuilder(this.containerId, this.container, actions);
+            return new ActionBuilder(this.source, this.container, actions);
         }
     }
 }

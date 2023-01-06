@@ -1,5 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.inventory;
 
+import com.nukkitx.protocol.bedrock.data.inventory.InventorySource;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.data.inventory.TransactionType;
 import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
@@ -36,27 +37,16 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 //		} catch (JsonProcessingException e) {
 //			throw new RuntimeException(e);
 //		}
-		if(packet.getSlot() == -999) {
-			log.debug("Clicking outside container region");
-			revertActions(bedrockConnection);
-			return;
-		}
 
 		InventoryTransactionPacket pk = new InventoryTransactionPacket();
 		pk.setTransactionType(TransactionType.NORMAL);
 
-		Integer containerIdForClickedSlot = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
-		if (containerIdForClickedSlot == null) {
-			revertActions(bedrockConnection);
-			return;
-		}
-
-		Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction = id -> ActionBuilder.builder().container(id, ReadOnlyContainer.wrap(bedrockConnection.getWrappedContainers().getContainer(id)));
+		Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction = id -> ActionBuilder.builder().container(InventorySource.fromContainerWindowId(id), ReadOnlyContainer.wrap(bedrockConnection.getWrappedContainers().getContainer(id)));
 		List<ActionBuilder> actions = switch (packet.getActionType()) {
-			case PICKUP -> translatePickup(packet, containerIdForClickedSlot, containerFunction);
+			case PICKUP -> translatePickup(packet, containerFunction);
 			case PICKUP_ALL -> null;
-			case QUICK_MOVE -> translateQuickMove(packet, containerIdForClickedSlot, containerFunction);
-			case SWAP -> translateSwap(packet, containerIdForClickedSlot, containerFunction);
+			case QUICK_MOVE -> translateQuickMove(packet, containerFunction);
+			case SWAP -> translateSwap(packet, containerFunction);
 			case THROW -> null;
 			case CLONE -> null;
 			case QUICK_CRAFT -> null;
@@ -70,7 +60,12 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		bedrockConnection.sendPacket(pk);
 	}
 
-	private List<ActionBuilder> translatePickup(ClickSlotC2SPacket packet, int containerId, Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction) {
+	private List<ActionBuilder> translatePickup(ClickSlotC2SPacket packet, Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction) {
+		Integer containerId = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
+		if (containerId == null) {
+			return null;
+		}
+
 		ActionBuilder.ActionBuilderBuilder container = containerFunction.apply(containerId);
 		ActionBuilder.ActionBuilderBuilder cursorContainer = containerFunction.apply(BedrockContainers.PLAYER_CONTAINER_CURSOR_COTNAINER_ID);
 
@@ -91,9 +86,13 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		return builders;
 	}
 
-	private List<ActionBuilder> translateQuickMove(ClickSlotC2SPacket packet, int containerId, Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction) {
+	private List<ActionBuilder> translateQuickMove(ClickSlotC2SPacket packet, Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction) {
+		Integer containerId = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
+		if (containerId == null) {
+			return null;
+		}
+
 		List<ActionBuilder> builders = new ArrayList<>();
-		ActionBuilder.ActionBuilderBuilder container = containerFunction.apply(containerId);
 		Integer slotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
 		if (slotId == null) {
 			return null;
@@ -114,13 +113,19 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 			builders.add(modifiedContainer.build());
 		}
 
+		ActionBuilder.ActionBuilderBuilder container = containerFunction.apply(containerId);
 		container.action(slotId, ItemTranslator.itemStackToItemData(packet.getStack()));
 		builders.add(container.build());
 
 		return builders;
 	}
 
-	private List<ActionBuilder> translateSwap(ClickSlotC2SPacket packet, int fromContainerId, Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction) {
+	private List<ActionBuilder> translateSwap(ClickSlotC2SPacket packet, Function<Integer, ActionBuilder.ActionBuilderBuilder> containerFunction) {
+		Integer fromContainerId = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
+		if (fromContainerId == null) {
+			return null;
+		}
+
 		ActionBuilder.ActionBuilderBuilder fromContainer = containerFunction.apply(fromContainerId);
 		Integer fromSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
 
@@ -133,7 +138,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		}
 		for (Int2ObjectMap.Entry<ItemStack> entry : packet.getModifiedStacks().int2ObjectEntrySet()) {
 			if (packet.getSlot() == entry.getIntKey()) {
-				return null;
+				continue;
 			}
 
 			toContainerId = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
