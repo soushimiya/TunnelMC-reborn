@@ -26,7 +26,7 @@ public class DecodedPaletteStorage {
     private final Map<Integer, Integer> palette;
 
     public int get(int x, int y, int z) {
-        return palette.get(bitArray.get(index(x, y, z)));
+        return palette.getOrDefault(bitArray.get(index(x, y, z)), 0);
     }
 
     public void set(int x, int y, int z, int value) {
@@ -60,6 +60,9 @@ public class DecodedPaletteStorage {
         int maxBlocksInSection = 4096;
         BitArray bitArray = bitArrayVersion.createPalette(maxBlocksInSection);
         int wordsSize = bitArrayVersion.getWordsForSize(maxBlocksInSection);
+        if(!byteBuf.isReadable(wordsSize * 4)) {
+            return new DecodedPaletteStorage(BitArrayVersion.V0.createPalette(maxBlocksInSection), new HashMap<>());
+        }
 
         for (int wordIterationIndex = 0; wordIterationIndex < wordsSize; wordIterationIndex++) {
             int word = byteBuf.readIntLE();

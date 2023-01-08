@@ -39,7 +39,7 @@ public class NetworkSettingsTranslator extends PacketTranslator<NetworkSettingsP
         clientData.setDeviceId(String.valueOf(uuid.getMostSignificantBits()));
         clientData.setCurrentInputMode(1);
         clientData.setDefaultInputMode(1);
-        clientData.setDeviceOS(DeviceOS.MICROSOFT_WINDOWS_10);
+        clientData.setDeviceOS(DeviceOS.ANDROID);
         clientData.setGameVersion(BedrockConnection.CODEC.getMinecraftVersion());
         clientData.setSkinGeometryVersion(Base64.getEncoder().encodeToString(BedrockConnection.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
         clientData.setLanguageCode(TunnelMC.mc.getLanguageManager().getLanguage().getCode());

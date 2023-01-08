@@ -54,7 +54,7 @@ public class ClientData {
     @JsonProperty("DeviceOS")
     private DeviceOS deviceOS;
     @JsonProperty("DeviceId")
-    private String deviceId = "";
+    private String deviceId;
     @JsonProperty("GameVersion")
     private String gameVersion;
     @JsonProperty("GuiScale")
