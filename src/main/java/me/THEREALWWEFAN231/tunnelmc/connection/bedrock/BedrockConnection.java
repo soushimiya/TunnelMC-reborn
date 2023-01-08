@@ -1,6 +1,8 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock;
 
 import com.nukkitx.api.event.Listener;
+import com.nukkitx.math.vector.Vector2f;
+import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.protocol.bedrock.BedrockClient;
 import com.nukkitx.protocol.bedrock.BedrockPacket;
@@ -11,6 +13,7 @@ import com.nukkitx.protocol.bedrock.data.PacketCompressionAlgorithm;
 import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
 import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
 import com.nukkitx.protocol.bedrock.data.skin.SerializedSkin;
+import com.nukkitx.protocol.bedrock.packet.DisconnectPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.RequestNetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.v560.Bedrock_v560;
@@ -140,6 +143,7 @@ public class BedrockConnection {
 	public final void expect(Class<? extends BedrockPacket>... packet) {
 		this.expectedPackets.clear();
 		this.expectedPackets.addAll(List.of(packet));
+		this.expectedPackets.add(DisconnectPacket.class);
 	}
 
 	public List<Class<? extends BedrockPacket>> getExpectedPackets() {
