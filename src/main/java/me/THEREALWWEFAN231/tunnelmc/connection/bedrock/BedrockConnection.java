@@ -64,6 +64,8 @@ public class BedrockConnection {
 
 	public long runtimeId;
 	public long uniqueId;
+	public Vector3f spawnLocation;
+	public Vector2f spawnRotation;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
 	public final Map<UUID, String> displayNames = new HashMap<>();
 	public final Map<UUID, SerializedSkin> serializedSkins = new HashMap<>();

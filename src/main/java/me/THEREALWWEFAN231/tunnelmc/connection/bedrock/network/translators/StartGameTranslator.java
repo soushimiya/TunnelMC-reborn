@@ -61,6 +61,8 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
 		TunnelMC.getInstance().getEventManager().fire(new PlayerInitializedEvent());
 		bedrockConnection.movementMode = packet.getPlayerMovementSettings().getMovementMode();
+		bedrockConnection.spawnLocation = packet.getPlayerPosition();
+		bedrockConnection.spawnRotation = packet.getRotation();
 
 		// TODO: Send a complete SynchronizeTagsS2CPacket so that water can work.
 
