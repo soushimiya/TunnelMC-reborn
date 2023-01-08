@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @PacketIdentifier(MovePlayerPacket.class)
 public class MovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
-	private static final AtomicInteger teleportId = new AtomicInteger(1);
+	private static final AtomicInteger teleportId = new AtomicInteger(2);
 
 	@Override
 	public void translate(MovePlayerPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
