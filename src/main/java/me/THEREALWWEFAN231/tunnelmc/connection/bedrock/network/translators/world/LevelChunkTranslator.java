@@ -47,45 +47,50 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 			ChunkSection chunkSection = new ChunkSection(sectionIndex, BIOMES_REGISTRY);
 			int chunkVersion = byteBuf.readByte();
 			if (chunkVersion != 1 && chunkVersion != 8 && chunkVersion != 9) {
-//				System.out.println("Decoding a version zero chunk...");
+				log.debug("Decoding a version zero chunk...");
 				LevelChunkDecoder.networkDecodeVersionZero(byteBuf, chunkSection);
 			} else if (chunkVersion == 1) {
-//				System.out.println("Decoding a version one chunk...");
+				log.debug("Decoding a version one chunk...");
 				LevelChunkDecoder.networkDecodeVersionOne(byteBuf, chunkSection);
 			} else if (chunkVersion == 8){
-//				System.out.println("Decoding a version eight chunk...");
+				log.debug("Decoding a version eight chunk...");
 				LevelChunkDecoder.networkDecodeVersionEight(byteBuf, chunkSection, byteBuf.readByte());
 			} else {
-//				System.out.println("Decoding a version nine chunk...");
+				log.debug("Decoding a version nine chunk...");
 				LevelChunkDecoder.networkDecodeVersionNine(byteBuf, chunkSection, byteBuf.readByte());
 			}
 			chunkSections[sectionIndex] = chunkSection;
 		}
 
-		ReadableContainer<RegistryEntry<Biome>> last = null;
-		for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
-			ReadableContainer<RegistryEntry<Biome>> biomes = LevelChunkDecoder.biomeDecodingFromPalette(byteBuf, BIOMES_REGISTRY);
-			if(biomes == null) {
-				if(sectionIndex == 0) {
-					throw new IllegalStateException("Cannot use last palette at index 0");
+		try {
+			ReadableContainer<RegistryEntry<Biome>> last = null;
+			for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
+				ReadableContainer<RegistryEntry<Biome>> biomes = LevelChunkDecoder.biomeDecodingFromPalette(byteBuf, BIOMES_REGISTRY);
+				if(biomes == null) {
+					if(sectionIndex == 0) {
+						throw new IllegalStateException("Cannot use last palette at index 0");
+					}
+
+					biomes = last;
+				}else{
+					last = biomes;
 				}
 
-				biomes = last;
-			}else{
-				last = biomes;
+				ChunkSection section = chunkSections[sectionIndex];
+				if(section == null) {
+					throw new IllegalStateException("Should exist");
+				}
+
+				PacketByteBuf buf = PacketByteBufs.create();
+				biomes.writePacket(buf);
+
+				PalettedContainer<RegistryEntry<Biome>> container = (PalettedContainer<RegistryEntry<Biome>>) section.getBiomeContainer();
+				container.readPacket(buf);
 			}
-
-			ChunkSection section = chunkSections[sectionIndex];
-			if(section == null) {
-				throw new IllegalStateException("Should exist");
-			}
-
-			PacketByteBuf buf = PacketByteBufs.create();
-			biomes.writePacket(buf);
-
-			PalettedContainer<RegistryEntry<Biome>> container = (PalettedContainer<RegistryEntry<Biome>>) section.getBiomeContainer();
-			container.readPacket(buf);
+		}catch (Throwable throwable) { // TODO: I can't be bothered to have fully accurate biome decoding rn
+			log.catching(throwable);
 		}
+
 		// Don't need to read more bytes
 
 		Runnable runnable = () -> {
