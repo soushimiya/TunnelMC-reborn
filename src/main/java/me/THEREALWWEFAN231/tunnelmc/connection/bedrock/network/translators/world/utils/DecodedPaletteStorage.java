@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Log4j2
 @RequiredArgsConstructor
 public class DecodedPaletteStorage {
     private final BitArray bitArray;
@@ -90,7 +91,7 @@ public class DecodedPaletteStorage {
             map.replace("name", "minecraft:" + map.get("name").toString());
             return BlockPaletteTranslator.getBedrockBlockId(BlockPaletteTranslator.bedrockStateFromNBTMap(map.build()));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.catching(e);
         }
 
         return null;

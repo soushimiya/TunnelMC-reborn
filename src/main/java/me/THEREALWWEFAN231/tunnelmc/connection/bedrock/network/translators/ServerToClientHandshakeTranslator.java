@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.nukkitx.protocol.bedrock.packet.ClientToServerHandshakePacket;
 import com.nukkitx.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import com.nukkitx.protocol.bedrock.util.EncryptionUtils;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
@@ -14,6 +15,7 @@ import javax.crypto.SecretKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Base64;
 
+@Log4j2
 @PacketIdentifier(ServerToClientHandshakePacket.class)
 public class ServerToClientHandshakeTranslator extends PacketTranslator<ServerToClientHandshakePacket> {
 
@@ -33,7 +35,7 @@ public class ServerToClientHandshakeTranslator extends PacketTranslator<ServerTo
 
 			bedrockConnection.enableEncryption(key);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.catching(e);
 		}
 
 		ClientToServerHandshakePacket clientToServerHandshake = new ClientToServerHandshakePacket();
