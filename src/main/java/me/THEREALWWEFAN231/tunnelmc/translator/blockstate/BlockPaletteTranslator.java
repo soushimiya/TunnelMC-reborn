@@ -10,7 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
-B/*
+/*
  * as of 1.16.100, the block palette is static between all servers, so we can load this once and be over it
  * it uses BlockStateTranslator which loaded blocks.json, from BlockStateTranslator we can match blocks and get their runtime id for a Bedrock server
  */
