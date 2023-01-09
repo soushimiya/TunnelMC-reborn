@@ -12,6 +12,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.BitArrayVersion;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.EmptyBitArray;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.TunnelBlockState;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class DecodedPaletteStorage {
             NbtMapBuilder map = nbt.toBuilder();
 
             map.replace("name", "minecraft:" + map.get("name").toString());
-            return BlockPaletteTranslator.getBedrockBlockId(BlockPaletteTranslator.bedrockStateFromNBTMap(map.build()));
+            return BlockPaletteTranslator.getBedrockBlockId(TunnelBlockState.getStateFromNBTMap(map.build()));
         } catch (IOException e) {
             e.printStackTrace();
         }

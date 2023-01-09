@@ -10,9 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
-import java.util.Map;
-
-/*
+B/*
  * as of 1.16.100, the block palette is static between all servers, so we can load this once and be over it
  * it uses BlockStateTranslator which loaded blocks.json, from BlockStateTranslator we can match blocks and get their runtime id for a Bedrock server
  */
@@ -31,16 +29,16 @@ public class BlockPaletteTranslator {
 	public static void loadMap(NbtList<NbtMap> blockPaletteData) {
 		int runtimeId = 0;
 		for (NbtMap nbtMap : blockPaletteData) {
-			BedrockBlockState bedrockBlockState = bedrockStateFromNBTMap(nbtMap);
+			TunnelBlockState bedrockBlockState = TunnelBlockState.getStateFromNBTMap(nbtMap);
 			BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.put(bedrockBlockState.toString(), runtimeId);
 
-			BlockState blockState = BlockStateTranslator.BEDROCK_BLOCK_STATE_STRING_TO_JAVA_BLOCK_STATE.get(bedrockBlockState.toString());
-			if (blockState != null) {
-				RUNTIME_ID_TO_BLOCK_STATE.put(runtimeId, blockState);
-				BLOCK_STATE_TO_RUNTIME_ID.put(blockState, runtimeId);
-				if (bedrockBlockState.identifier.equals("minecraft:air")) {
+			TunnelBlockState javaBlockState = BlockStateTranslator.BEDROCK_TO_JAVA.get(bedrockBlockState);
+			if (javaBlockState.equals(bedrockBlockState)) {
+				RUNTIME_ID_TO_BLOCK_STATE.put(runtimeId, javaBlockState.getBlockState());
+				BLOCK_STATE_TO_RUNTIME_ID.put(javaBlockState.getBlockState(), runtimeId);
+				if (bedrockBlockState.getIdentifier().equals("minecraft:air")) {
 					AIR_BEDROCK_BLOCK_ID = runtimeId;
-				} else if (bedrockBlockState.identifier.equals("minecraft:water")) {
+				} else if (bedrockBlockState.getIdentifier().equals("minecraft:water")) {
 					WATER_BEDROCK_BLOCK_ID = runtimeId;
 				}
 			} else {
@@ -53,31 +51,7 @@ public class BlockPaletteTranslator {
 
 	}
 
-	public static int getBedrockBlockId(BedrockBlockState state) {
+	public static int getBedrockBlockId(TunnelBlockState state) {
 		return BlockPaletteTranslator.BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.getOrDefault(state.toString(), AIR_BEDROCK_BLOCK_ID);
-	}
-
-	public static BedrockBlockState bedrockStateFromNBTMap(NbtMap nbtMap) {
-		String mcbeStringBlockName = nbtMap.getString("name");
-		NbtMap blockStates = nbtMap.getCompound("states");
-
-		BedrockBlockState bedrockBlockState = new BedrockBlockState();
-		bedrockBlockState.identifier = mcbeStringBlockName;
-
-		for (Map.Entry<String, Object> blockState : blockStates.entrySet()) {
-			String value = "";
-			if (blockState.getValue() instanceof String || blockState.getValue() instanceof Integer) {
-				value = blockState.getValue().toString();
-			} else if (blockState.getValue() instanceof Byte) {
-				byte theByte = (byte) blockState.getValue();
-				value = theByte == 0 ? "false" : "true";
-			} else {
-				log.debug("Unknown type: " + blockState.getValue().getClass());
-			}
-
-			bedrockBlockState.properties.put(blockState.getKey(), value);
-		}
-
-		return bedrockBlockState;
 	}
 }
