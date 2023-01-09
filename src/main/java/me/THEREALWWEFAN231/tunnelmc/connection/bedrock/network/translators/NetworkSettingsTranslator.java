@@ -36,12 +36,12 @@ public class NetworkSettingsTranslator extends PacketTranslator<NetworkSettingsP
         ClientData clientData = new ClientData();
         clientData.setArmSize(ClientData.ArmSizeType.fromUUID(uuid));
         clientData.setClientRandomId(uuid.getLeastSignificantBits());
+        clientData.setDeviceId(String.valueOf(uuid.getMostSignificantBits()));
         clientData.setCurrentInputMode(1);
         clientData.setDefaultInputMode(1);
-        clientData.setPlayFabId("");
-        clientData.setDeviceOS(DeviceOS.MICROSOFT_WINDOWS_10);
+        clientData.setDeviceOS(DeviceOS.ANDROID);
         clientData.setGameVersion(BedrockConnection.CODEC.getMinecraftVersion());
-        clientData.setSkinGeometryVersion(Base64.getEncoder().withoutPadding().encodeToString(BedrockConnection.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
+        clientData.setSkinGeometryVersion(Base64.getEncoder().encodeToString(BedrockConnection.CODEC.getMinecraftVersion().getBytes(StandardCharsets.UTF_8)));
         clientData.setLanguageCode(TunnelMC.mc.getLanguageManager().getLanguage().getCode());
         clientData.setSelfSignedId(uuid);
         clientData.setServerAddress(bedrockConnection.getTargetAddress().getHostName() + ":" + bedrockConnection.getTargetAddress().getPort());
@@ -55,7 +55,7 @@ public class NetworkSettingsTranslator extends PacketTranslator<NetworkSettingsP
                     .orElse(new MinecraftProfileTexture(clientData.getArmSize().getDefaultSkinUrl(), Collections.emptyMap()));
             clientData.setSkin(ImageIO.read(new URL(skinTexture.getUrl())));
 
-            clientData.setSkinGeometryData(Base64.getEncoder().withoutPadding().encodeToString(
+            clientData.setSkinGeometryData(Base64.getEncoder().encodeToString(
                     JSON_MAPPER.writeValueAsBytes(FileUtils.getJsonFromResource("tunnel/geometry_data.json"))));
         } catch (IOException e) {
             throw new RuntimeException(e);

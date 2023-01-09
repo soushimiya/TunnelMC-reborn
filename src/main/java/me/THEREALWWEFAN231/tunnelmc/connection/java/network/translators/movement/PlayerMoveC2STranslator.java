@@ -65,7 +65,7 @@ public class PlayerMoveC2STranslator extends PacketTranslator<PlayerMoveC2SPacke
 				movePacket.setOnGround(currentlyOnGround);
 				bedrockConnection.sendPacket(movePacket);
 			}
-			case SERVER -> {
+			case SERVER, SERVER_WITH_REWIND -> {
 				PlayerAuthInputPacket movePacket = new PlayerAuthInputPacket();
 				movePacket.setInputMode(InputMode.MOUSE);
 				movePacket.setPlayMode(ClientPlayMode.NORMAL);

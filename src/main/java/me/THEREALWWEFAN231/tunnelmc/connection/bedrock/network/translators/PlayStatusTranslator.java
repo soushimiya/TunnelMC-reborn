@@ -6,8 +6,10 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 
 import java.time.Instant;
+import java.util.Collections;
 
 @PacketIdentifier(PlayStatusPacket.class)
 public class PlayStatusTranslator extends PacketTranslator<PlayStatusPacket> {
@@ -27,6 +29,14 @@ public class PlayStatusTranslator extends PacketTranslator<PlayStatusPacket> {
                 setLocalPlayerAsInitializedPacket.setRuntimeEntityId(bedrockConnection.runtimeId);
                 bedrockConnection.sendPacketImmediately(setLocalPlayerAsInitializedPacket);
                 bedrockConnection.spawned();
+
+                javaConnection.translatePacket(new PlayerPositionLookS2CPacket(
+                        bedrockConnection.spawnLocation.getX(),
+                        bedrockConnection.spawnLocation.getY(),
+                        bedrockConnection.spawnLocation.getZ(),
+                        bedrockConnection.spawnRotation.getX(),
+                        bedrockConnection.spawnRotation.getY(),
+                        Collections.emptySet(), 1, false));
             }
             case LOGIN_FAILED_CLIENT_OLD -> BedrockConnectionAccessor.closeConnection("Tell the developer to update the mod!");
             case LOGIN_FAILED_SERVER_OLD -> BedrockConnectionAccessor.closeConnection("Server is outdated.");

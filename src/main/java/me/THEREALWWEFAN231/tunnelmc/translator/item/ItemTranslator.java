@@ -153,7 +153,7 @@ public class ItemTranslator {
 			Map<String, Object> map = JSON_MAPPER.readValue(flattened, new TypeReference<>() {});
 			builder.putAll(map);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.catching(e);
 		}
 
 		return builder.build();
@@ -163,7 +163,7 @@ public class ItemTranslator {
 		try {
 			return StringNbtReader.parse(root.toString());
 		} catch (CommandSyntaxException e) {
-			e.printStackTrace();
+			log.catching(e);
 		}
 
 		return new NbtCompound();

@@ -51,7 +51,7 @@ public abstract class PacketTranslatorManager<P> extends TranslatorManager<Packe
 		try {
 			packetTranslator.translateType(packet, bedrockConnection, connection);
 		} catch (Throwable throwable) {
-			throwable.printStackTrace();
+			log.catching(throwable);
 		}
 	}
 
@@ -66,7 +66,7 @@ public abstract class PacketTranslatorManager<P> extends TranslatorManager<Packe
 			try {
 				idlePacket.getPacketTranslator().translateType(idlePacket.getPacket(), idlePacket.getBedrockConnection(), idlePacket.getJavaConnection());
 			} catch (Throwable throwable) {
-				throwable.printStackTrace();
+				log.catching(throwable);
 			}
 			this.idlePackets.remove(i);
 			i--;

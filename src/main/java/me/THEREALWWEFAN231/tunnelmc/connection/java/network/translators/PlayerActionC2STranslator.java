@@ -123,7 +123,7 @@ public class PlayerActionC2STranslator extends PacketTranslator<PlayerActionC2SP
 			case CLIENT -> {
 				return packet;
 			}
-			case SERVER -> {
+			case SERVER, SERVER_WITH_REWIND -> {
 				PlayerBlockActionData actionData = new PlayerBlockActionData();
 				actionData.setAction(packet.getAction());
 				actionData.setFace(packet.getFace());

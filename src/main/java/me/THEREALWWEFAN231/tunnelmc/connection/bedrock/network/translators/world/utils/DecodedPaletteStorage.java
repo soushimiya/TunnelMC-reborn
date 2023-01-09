@@ -8,6 +8,7 @@ import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.BitArray;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.BitArrayVersion;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray.EmptyBitArray;
@@ -19,13 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Log4j2
 @RequiredArgsConstructor
 public class DecodedPaletteStorage {
     private final BitArray bitArray;
     private final Map<Integer, Integer> palette;
 
     public int get(int x, int y, int z) {
-        return palette.get(bitArray.get(index(x, y, z)));
+        return palette.getOrDefault(bitArray.get(index(x, y, z)), 0);
     }
 
     public void set(int x, int y, int z, int value) {
@@ -59,6 +61,9 @@ public class DecodedPaletteStorage {
         int maxBlocksInSection = 4096;
         BitArray bitArray = bitArrayVersion.createPalette(maxBlocksInSection);
         int wordsSize = bitArrayVersion.getWordsForSize(maxBlocksInSection);
+        if(!byteBuf.isReadable(wordsSize * 4)) {
+            return new DecodedPaletteStorage(BitArrayVersion.V0.createPalette(maxBlocksInSection), new HashMap<>());
+        }
 
         for (int wordIterationIndex = 0; wordIterationIndex < wordsSize; wordIterationIndex++) {
             int word = byteBuf.readIntLE();
@@ -91,7 +96,7 @@ public class DecodedPaletteStorage {
             map.replace("name", "minecraft:" + map.get("name").toString());
             return BlockPaletteTranslator.getBedrockBlockId(TunnelBlockState.getStateFromNBTMap(map.build()));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.catching(e);
         }
 
         return null;

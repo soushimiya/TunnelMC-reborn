@@ -50,11 +50,11 @@ public class ClientData {
     @JsonProperty("DefaultInputMode")
     private int defaultInputMode; // Enum?
     @JsonProperty("DeviceModel")
-    private String deviceModel = "";
+    private String deviceModel = "TunnelMC";
     @JsonProperty("DeviceOS")
     private DeviceOS deviceOS;
     @JsonProperty("DeviceId")
-    private String deviceId = "";
+    private String deviceId;
     @JsonProperty("GameVersion")
     private String gameVersion;
     @JsonProperty("GuiScale")
@@ -73,7 +73,7 @@ public class ClientData {
     @JsonProperty("PlatformUserId")
     private UUID platformUserId;
     @JsonProperty("PlayFabId")
-    private String playFabId;
+    private String playFabId = UUID.randomUUID().toString();
     @JsonProperty("PremiumSkin")
     private boolean premiumSkin;
     @JsonProperty("SelfSignedId")
@@ -179,7 +179,7 @@ public class ClientData {
         private final String defaultSkinUrl;
 
         public String getEncodedGeometryData() {
-            return Base64.getEncoder().withoutPadding().encodeToString(("{\"geometry\":{\"default\":\"" + geometryName + "\"}}").getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(("{\"geometry\":{\"default\":\"" + geometryName + "\"}}").getBytes(StandardCharsets.UTF_8));
         }
 
         public static ArmSizeType fromUUID(UUID uuid) {

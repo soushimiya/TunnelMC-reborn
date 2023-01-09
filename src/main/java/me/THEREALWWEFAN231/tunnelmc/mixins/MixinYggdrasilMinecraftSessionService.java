@@ -29,8 +29,13 @@ public class MixinYggdrasilMinecraftSessionService {
         BedrockConnection connection = BedrockConnectionAccessor.getCurrentConnection();
         Optional.ofNullable(connection.serializedSkins.get(profile.getId())).ifPresent(serializedSkin -> {
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = new HashMap<>();
+            String armSize = serializedSkin.getArmSize();
+            if(armSize.isEmpty()) {
+                armSize = ClientData.ArmSizeType.WIDE.name();
+            }
+
             map.put(MinecraftProfileTexture.Type.SKIN, new MinecraftProfileTexture(profile.getId().toString(), getImageDataMetadata(serializedSkin.getSkinData(),
-                    ClientData.ArmSizeType.valueOf(serializedSkin.getArmSize().toUpperCase()))));
+                    ClientData.ArmSizeType.valueOf(armSize.toUpperCase()))));
             if(serializedSkin.getCapeData().getImage().length != 0) {
                 map.put(MinecraftProfileTexture.Type.CAPE, new MinecraftProfileTexture(profile.getId().toString(), getImageDataMetadata(serializedSkin.getCapeData(),
                         ClientData.ArmSizeType.WIDE)));
