@@ -10,7 +10,6 @@ import lombok.Getter;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityRegistry;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.ScreenHandlerTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.enchantment.EnchantmentTranslator;
-import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.json.ItemStackSerializer;
 import me.THEREALWWEFAN231.tunnelmc.utils.json.OAuth2AccessTokenDeserializer;
 import me.THEREALWWEFAN231.tunnelmc.utils.json.OAuth2AccessTokenSerializer;
@@ -48,7 +47,6 @@ public class TunnelMC implements ClientModInitializer {
 		this.configPath.toFile().mkdirs();
 
 		BlockEntityRegistry.load();
-		ItemTranslator.load();
 		EnchantmentTranslator.load();
 		ScreenHandlerTranslatorManager.load();
 	}

@@ -37,45 +37,46 @@ public class ItemTranslator {
 	public static final HashBiMap<String, Item> BEDROCK_ITEM_INFO_TO_JAVA_ITEM = HashBiMap.create();
 	public static final List<Item> BLOCKED_ITEMS = new ArrayList<>();
 
-	public static void load() {
-		ObjectNode itemsObject = (ObjectNode) FileUtils.getJsonFromResource("geyser/items.json");
-		ArrayNode statesArray = (ArrayNode) FileUtils.getJsonFromResource("geyser/runtime_item_states.json");
-		ArrayNode overrideTranslations = (ArrayNode) FileUtils.getJsonFromResource("tunnel/item_override_translations.json");
-		if (itemsObject == null || statesArray == null) {
-			throw new RuntimeException("Items list not found!");
-		}
+	static {  // TODO: make public static fields read only
+		try {
+			ObjectNode itemsObject = (ObjectNode) FileUtils.getJsonFromResource("geyser/items.json");
+			ArrayNode statesArray = (ArrayNode) FileUtils.getJsonFromResource("geyser/runtime_item_states.json");
+			ArrayNode overrideTranslations = (ArrayNode) FileUtils.getJsonFromResource("tunnel/item_override_translations.json");
 
-		HashMap<String, Integer> identifierToIntId = new HashMap<>();
-		for(JsonNode jsonElement : statesArray) {
-			identifierToIntId.put(jsonElement.get("name").asText(), jsonElement.get("id").asInt());
-		}
+			HashMap<String, Integer> identifierToIntId = new HashMap<>();
+			for(JsonNode jsonElement : statesArray) {
+				identifierToIntId.put(jsonElement.get("name").asText(), jsonElement.get("id").asInt());
+			}
 
-		for (Iterator<Map.Entry<String, JsonNode>> it = itemsObject.fields(); it.hasNext(); ) {
-			Map.Entry<String, JsonNode> entry = it.next();
-			String javaStringIdentifier = entry.getKey();
-			Identifier javaIdentifier = new Identifier(javaStringIdentifier);
-			Item item = Registry.ITEM.get(javaIdentifier);
+			for (Iterator<Map.Entry<String, JsonNode>> it = itemsObject.fields(); it.hasNext(); ) {
+				Map.Entry<String, JsonNode> entry = it.next();
+				String javaStringIdentifier = entry.getKey();
+				Identifier javaIdentifier = new Identifier(javaStringIdentifier);
+				Item item = Registry.ITEM.get(javaIdentifier);
 
-			for(JsonNode blockedItem : overrideTranslations) {
-				if(blockedItem.asText().equals(javaStringIdentifier)) {
-					BLOCKED_ITEMS.add(item);
+				for(JsonNode blockedItem : overrideTranslations) {
+					if(blockedItem.asText().equals(javaStringIdentifier)) {
+						BLOCKED_ITEMS.add(item);
+					}
 				}
-			}
-			if(BLOCKED_ITEMS.contains(item)) {
-				continue;
-			}
+				if(BLOCKED_ITEMS.contains(item)) {
+					continue;
+				}
 
-			JsonNode bedrockItemData = entry.getValue();
-			String bedrockIdentifier = bedrockItemData.get("bedrock_identifier").asText();
-			int bedrockId = identifierToIntId.get(bedrockIdentifier);
-			int bedrockData = bedrockItemData.get("bedrock_data").asInt();
+				JsonNode bedrockItemData = entry.getValue();
+				String bedrockIdentifier = bedrockItemData.get("bedrock_identifier").asText();
+				int bedrockId = identifierToIntId.get(bedrockIdentifier);
+				int bedrockData = bedrockItemData.get("bedrock_data").asInt();
 
-			if (item == Items.AIR && !javaStringIdentifier.equals("minecraft:air")) {//item not found
-				log.error(javaStringIdentifier + " item was not found, this generally isn't good.");
-				continue;
+				if (item == Items.AIR && !javaStringIdentifier.equals("minecraft:air")) {//item not found
+					log.error(javaStringIdentifier + " item was not found, this generally isn't good.");
+					continue;
+				}
+
+				BEDROCK_ITEM_INFO_TO_JAVA_ITEM.put(bedrockId + ":" + bedrockData, item);
 			}
-
-			BEDROCK_ITEM_INFO_TO_JAVA_ITEM.put(bedrockId + ":" + bedrockData, item);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
