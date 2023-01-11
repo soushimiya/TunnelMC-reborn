@@ -35,7 +35,7 @@ public class BlockPaletteTranslator {
 	public static final Object2IntMap<BlockState> BLOCK_STATE_TO_RUNTIME_ID = new Object2IntOpenHashMap<>();
 
 	static {
-		InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream("tunnel/block_palette.nbt");
+		InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream("geyser/block_palette.nbt");
 		if (stream == null) {
 			throw new RuntimeException("Could not find the block palette file!");
 		}
@@ -56,8 +56,8 @@ public class BlockPaletteTranslator {
 			BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.put(bedrockBlockState.toString(), runtimeId);
 			RUNTIME_ID_TO_BEDROCK_BLOCK_STATE.put(runtimeId, bedrockBlockState);
 
-			TunnelBlockState javaBlockState = BlockStateTranslator.BEDROCK_TO_JAVA.get(bedrockBlockState);
-			if (javaBlockState.equals(bedrockBlockState)) {
+			TunnelBlockState javaBlockState = BlockStateTranslator.BEDROCK_TO_JAVA.getOrDefault(bedrockBlockState, null);
+			if (javaBlockState != null) {
 				RUNTIME_ID_TO_BLOCK_STATE.put(runtimeId, javaBlockState.getBlockState());
 				BLOCK_STATE_TO_RUNTIME_ID.put(javaBlockState.getBlockState(), runtimeId);
 				if (bedrockBlockState.getIdentifier().equals("minecraft:air")) {
