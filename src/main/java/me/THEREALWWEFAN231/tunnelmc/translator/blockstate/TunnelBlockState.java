@@ -1,7 +1,6 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.blockstate;
 
 import com.nukkitx.nbt.NbtMap;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,13 +9,9 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Getter
-@EqualsAndHashCode
 public class TunnelBlockState {
 	private final String namespace;
 	private final String identifier;
@@ -49,7 +44,7 @@ public class TunnelBlockState {
 		String identifier;
 		int firstLeftBracketIndex = string.indexOf("[");
 		if (firstLeftBracketIndex != -1) {//if its found
-			identifier = string.substring(firstColonIndex, firstLeftBracketIndex);
+			identifier = string.substring(firstColonIndex + 1, firstLeftBracketIndex);
 		} else {
 			identifier = string.substring(firstColonIndex);
 		}
@@ -57,12 +52,14 @@ public class TunnelBlockState {
 		Map<String, String> properties = new HashMap<>();
 		if (firstLeftBracketIndex != -1) {
 			String blockProperties = string.substring(firstLeftBracketIndex + 1, string.length() - 1);
-			String[] blockProperyKeysAndValues = blockProperties.split(",");
+			if(!blockProperties.isEmpty()) {
+				String[] blockProperyKeysAndValues = blockProperties.split(",");
 
-			for (String keyAndValue : blockProperyKeysAndValues) {
-				String[] keyAndValueArray = keyAndValue.split("=");
+				for (String keyAndValue : blockProperyKeysAndValues) {
+					String[] keyAndValueArray = keyAndValue.split("=");
 
-				properties.put(keyAndValueArray[0], keyAndValueArray[1]);
+					properties.put(keyAndValueArray[0], keyAndValueArray[1]);
+				}
 			}
 		}
 
@@ -81,7 +78,7 @@ public class TunnelBlockState {
 			firstColonIndex = 0;
 		}
 
-		String identifier = blockName.substring(firstColonIndex);
+		String identifier = blockName.substring(firstColonIndex + 1);
 
 		Map<String, String> properties = new HashMap<>();
 		for (Map.Entry<String, Object> blockState : blockStates.entrySet()) {
@@ -151,5 +148,53 @@ public class TunnelBlockState {
 		}
 
 		return string.toString();
+	}
+
+	public boolean equals(final Object o) {
+		return equals(o, true);
+	}
+
+	public boolean equals(final Object o, boolean includeProperties) {
+		if (o == this) return true;
+		if (!(o instanceof final TunnelBlockState other)) return false;
+		if (!other.canEqual(this)) return false;
+		final Object this$namespace = this.getNamespace();
+		final Object other$namespace = other.getNamespace();
+		if (!Objects.equals(this$namespace, other$namespace)) return false;
+		final Object this$identifier = this.getIdentifier();
+		final Object other$identifier = other.getIdentifier();
+		if (!Objects.equals(this$identifier, other$identifier)) return false;
+
+		if(includeProperties) {
+			int i = 0;
+			for (Map.Entry<String, String> this$propertyEntry : this.getProperties().entrySet()) {
+				for (Map.Entry<String, String> other$propertyEntry : other.getProperties().entrySet()) {
+					if(this$propertyEntry.getKey().equals(other$propertyEntry.getKey())
+							&& this$propertyEntry.getValue().equals(other$propertyEntry.getValue())) {
+						i++;
+					}
+				}
+			}
+
+			return this.getProperties().size() == i;
+		}
+
+		return true;
+	}
+
+	protected boolean canEqual(final Object other) {
+		return other instanceof TunnelBlockState;
+	}
+
+	public int hashCode() {
+		final int PRIME = 59;
+		int result = 1;
+		final Object $namespace = this.getNamespace();
+		result = result * PRIME + ($namespace == null ? 43 : $namespace.hashCode());
+		final Object $identifier = this.getIdentifier();
+		result = result * PRIME + ($identifier == null ? 43 : $identifier.hashCode());
+		final Object $properties = this.getProperties();
+		result = result * PRIME + ($properties == null ? 43 : $properties.hashCode());
+		return result;
 	}
 }
