@@ -1,43 +1,42 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.blockstate;
 
-import com.nukkitx.nbt.*;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.block.BlockState;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Used for server implementations that use an older chunk encoding version that use a different block palette.
  */
 public final class LegacyBlockPaletteManager {
-    public static final Int2ObjectMap<BlockState> LEGACY_BLOCK_TO_JAVA_ID = new Int2ObjectOpenHashMap<>();
+    public static final Map<Integer, BlockState> LEGACY_BLOCK_TO_JAVA_ID;
 
     static {
-        NbtList<NbtMap> legacyBlockStates;
-        try (InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream("tunnel/runtime_block_states.dat")) {
-            if (stream == null) {
-                throw new AssertionError("Unable to locate block state tag!");
-            }
-            try (NBTInputStream nbtStream = NbtUtils.createGZIPReader(stream)) {
-                //noinspection unchecked
-                legacyBlockStates = (NbtList<NbtMap>) nbtStream.readTag();
+        Map<Integer, BlockState> map = new Int2ObjectOpenHashMap<>();
+        try {
+            JsonNode blockIdMap = FileUtils.getJsonFromResource("pmmp/block_id_map.json");
+            ArrayNode blockStateMetaMap = (ArrayNode) FileUtils.getJsonFromResource("pmmp/block_state_meta_map.json");
+
+            int blockRuntimeId = 0;
+            for (JsonNode metaNode : blockStateMetaMap) {
+                int runtimeId = blockRuntimeId++;
+
+                TunnelBlockState tunnelBlockState = BlockPaletteTranslator.RUNTIME_ID_TO_BEDROCK_BLOCK_STATE.get(runtimeId);
+                String name = tunnelBlockState.toString(false);
+                int id = blockIdMap.get(name).asInt();
+                int meta = metaNode.asInt();
+
+                int legacyId = id << 6 | meta;
+                map.put(legacyId, BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(runtimeId));
             }
         } catch (IOException e) {
-            throw new AssertionError("Unable to load block palette", e);
+            throw new AssertionError("Unable to create legacy mapping", e);
         }
-
-//        int bedrockRuntimeId = -1;
-        for (NbtMap nbt : legacyBlockStates) {
-//            bedrockRuntimeId++;
-            if (nbt.get("id") == null || nbt.get("data") == null || nbt.get("runtimeId") == null) {
-                throw new AssertionError("Unable to map block palette");
-            }
-
-            int legacyId = nbt.getInt("id") << 6 | nbt.getShort("data");
-            LEGACY_BLOCK_TO_JAVA_ID.put(legacyId, BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(nbt.getInt("runtimeId")));
-        }
+        LEGACY_BLOCK_TO_JAVA_ID = Collections.unmodifiableMap(map);
     }
 }

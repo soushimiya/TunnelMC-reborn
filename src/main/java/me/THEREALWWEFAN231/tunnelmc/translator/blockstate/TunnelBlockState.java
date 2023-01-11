@@ -130,6 +130,10 @@ public class TunnelBlockState {
 
 	@Override
 	public String toString() {
+		return toString(true);
+	}
+
+	public String toString(boolean withProperties) {
 		if (this.identifier == null || this.namespace == null) {
 			return null;
 		}
@@ -137,7 +141,7 @@ public class TunnelBlockState {
 		StringBuilder string = new StringBuilder(this.namespace);
 		string.append(":").append(this.identifier);
 
-		if(this.properties.size() >= 1) {
+		if(this.properties.size() >= 1 && withProperties) {
 			string.append("[");
 			for (Map.Entry<String, String> entry : this.properties.entrySet()) {
 				string.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
