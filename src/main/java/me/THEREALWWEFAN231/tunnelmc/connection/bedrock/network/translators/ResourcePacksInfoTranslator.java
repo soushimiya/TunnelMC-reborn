@@ -17,6 +17,6 @@ public class ResourcePacksInfoTranslator extends PacketTranslator<ResourcePacksI
 		resourcePackClientResponsePacket.setStatus(ResourcePackClientResponsePacket.Status.HAVE_ALL_PACKS);
 
 		bedrockConnection.expect(ResourcePackStackPacket.class);
-		bedrockConnection.sendPacketImmediately(resourcePackClientResponsePacket);
+		bedrockConnection.sendPacket(resourcePackClientResponsePacket);
 	}
 }

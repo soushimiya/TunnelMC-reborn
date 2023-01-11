@@ -17,6 +17,6 @@ public class ResourcePackStackTranslator extends PacketTranslator<ResourcePackSt
 		resourcePackClientResponsePacket.setStatus(ResourcePackClientResponsePacket.Status.COMPLETED);
 
 		bedrockConnection.expect(StartGamePacket.class);
-		bedrockConnection.sendPacketImmediately(resourcePackClientResponsePacket);
+		bedrockConnection.sendPacket(resourcePackClientResponsePacket);
 	}
 }
