@@ -12,9 +12,12 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.LoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.XboxToken;
 import me.THEREALWWEFAN231.tunnelmc.utils.exceptions.TokenException;
+import net.minecraft.text.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -27,7 +30,7 @@ import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 @Log4j2
 @RequiredArgsConstructor
 public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
-    protected final Consumer<String> infoCallback;
+    protected final Consumer<Text> infoCallback;
     protected final File rememberAccountFile;
 
     public OnlineModeLoginChainSupplier() {
@@ -38,7 +41,7 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
         this(s -> {}, rememberAccountFile);
     }
 
-    public OnlineModeLoginChainSupplier(Consumer<String> infoCallback) {
+    public OnlineModeLoginChainSupplier(Consumer<Text> infoCallback) {
         this(infoCallback, null);
     }
 
@@ -67,8 +70,19 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
                 LiveAuthorization.INSTANCE.cancel(authorization.getUserCode());
             }
         });
+        
+        MutableText text = Text.literal("Authenticate at ");
+        MutableText urlText = Text.literal(authorization.getVerificationUri());
+        try {
+            URL clickUrl = new URL(authorization.getVerificationUri() + "?otc=" + authorization.getUserCode());
+            urlText.setStyle(Style.EMPTY
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, clickUrl.toString()))
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Opens: " + clickUrl)))
+                    .withUnderline(true));
+        } catch (MalformedURLException ignored) {}
+        text.append(urlText);
 
-        infoCallback.accept("Authenticate at " + authorization.getVerificationUri() + " with code " + authorization.getUserCode());
+        infoCallback.accept(text.append(Text.literal(" with code " + authorization.getUserCode())));
         return future;
     }
 
@@ -87,19 +101,19 @@ public class OnlineModeLoginChainSupplier extends LoginChainSupplier {
     }
 
     private String getAuthenticatedChain(OAuth2AccessToken token, PublicKey publicKey) {
-        infoCallback.accept("Microsoft login successful! Please wait...");
+        infoCallback.accept(Text.of("Microsoft login successful! Please wait..."));
         XboxToken xboxToken = XboxAuthorization.getXBLToken(token, "https://multiplayer.minecraft.net/");
         if(xboxToken == null) {
-            infoCallback.accept("Xbox login unsuccessful. Please try and login again.");
+            infoCallback.accept(Text.of("Xbox login unsuccessful. Please try and login again."));
             return null;
         }
-        infoCallback.accept("Xbox login successful! Please wait...");
+        infoCallback.accept(Text.of("Xbox login successful! Please wait..."));
         String minecraftChain = MinecraftAuthentication.getMinecraftChain(publicKey, xboxToken);
         if(minecraftChain == null) {
-            infoCallback.accept("Minecraft login unsuccessful. Please try and login again.");
+            infoCallback.accept(Text.of("Minecraft login unsuccessful. Please try and login again."));
             return null;
         }
-        infoCallback.accept("Minecraft login successful! Please wait...");
+        infoCallback.accept(Text.of("Minecraft login successful! Please wait..."));
         return minecraftChain;
     }
 
