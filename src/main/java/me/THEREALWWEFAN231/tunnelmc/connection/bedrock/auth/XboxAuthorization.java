@@ -47,7 +47,7 @@ public class XboxAuthorization {
     private XboxToken getXBLToken(ECPublicKey publicKey, ECPrivateKey privateKey, OAuth2AccessToken liveToken, String deviceToken, String relyingParty) {
         ObjectNode data = JSON_MAPPER.createObjectNode()
                 .put("AccessToken", "t=" + liveToken.getAccessToken())
-                .put("AppId", "0000000048183522")
+                .put("AppId", LiveAuthorization.CLIENT_ID)
                 .put("deviceToken", deviceToken)
                 .put("Sandbox", "RETAIL")
                 .put("UseModernGamertag", true)

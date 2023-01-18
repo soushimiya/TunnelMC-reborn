@@ -20,7 +20,9 @@ import java.util.function.Consumer;
 
 public class LiveAuthorization {
     public static final LiveAuthorization INSTANCE = new LiveAuthorization();
-    private static final OAuth20Service SERVICE = new ServiceBuilder("0000000048183522")
+
+    static final String CLIENT_ID = "0000000048183522";
+    private static final OAuth20Service SERVICE = new ServiceBuilder(CLIENT_ID)
             .responseType("device_code")
             .defaultScope("service::user.auth.xboxlive.com::MBI_SSL")
             .build(ExtendedLiveApi.instance());
@@ -56,8 +58,10 @@ public class LiveAuthorization {
 
     public void cancel(String id) {
         Pair<AccessTokenTask, Consumer<OAuth2AccessToken>> pair = tasks.get(id);
-        pair.first().setCancelled(true);
-        tasks.remove(id);
+        if(pair != null) {
+            pair.first().setCancelled(true);
+            tasks.remove(id);
+        }
     }
 
     @Listener
