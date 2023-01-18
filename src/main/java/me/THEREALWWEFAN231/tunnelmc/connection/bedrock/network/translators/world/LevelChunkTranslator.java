@@ -43,6 +43,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		ByteBuf byteBuf = Unpooled.buffer();
 		byteBuf.writeBytes(packet.getData());
 
+		int emptySections = 0;
 		for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
 			ChunkSection chunkSection = new ChunkSection(sectionIndex, BIOMES_REGISTRY);
 			int chunkVersion = byteBuf.readByte();
@@ -59,6 +60,11 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 				log.debug("Decoding a version nine chunk...");
 				LevelChunkDecoder.networkDecodeVersionNine(byteBuf, chunkSection, byteBuf.readByte());
 			}
+			if(chunkSection.isEmpty()) {
+				emptySections++;
+				continue;
+			}
+
 			chunkSections[sectionIndex] = chunkSection;
 		}
 
@@ -78,7 +84,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 
 				ChunkSection section = chunkSections[sectionIndex];
 				if(section == null) {
-					throw new IllegalStateException("Should exist");
+					continue;
 				}
 
 				PacketByteBuf buf = PacketByteBufs.create();
@@ -93,8 +99,12 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 
 		// Don't need to read more bytes
 
+		int finalEmptySections = emptySections;
 		Runnable runnable = () -> {
-			WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, chunkSections, null, null);
+			ChunkSection[] sections = new ChunkSection[24];
+			System.arraycopy(chunkSections, finalEmptySections, sections, 4, sections.length - 4);
+
+			WorldChunk worldChunk = new WorldChunk(Objects.requireNonNull(TunnelMC.mc.world), new ChunkPos(chunkX, chunkZ), UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0, sections, null, null);
 
 			ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, TunnelMC.mc.world.getLightingProvider(), null, null, true);
 			javaConnection.processJavaPacket(chunkDeltaUpdateS2CPacket);
