@@ -17,6 +17,8 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
+import static me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator.getFromMap;
+
 /*
  * as of 1.16.100, the block palette is static between all servers, so we can load this once and be over it
  * it uses BlockStateTranslator which loaded blocks.json, from BlockStateTranslator we can match blocks and get their runtime id for a Bedrock server
@@ -29,7 +31,7 @@ public class BlockPaletteTranslator {
 
 	// Used for persistent v8 decoding.
 	static final Int2ObjectMap<TunnelBlockState> RUNTIME_ID_TO_BEDROCK_BLOCK_STATE = new Int2ObjectOpenHashMap<>();
-	private static final Object2IntMap<String> BEDROCK_BLOCK_STATE_TO_RUNTIME_ID = new Object2IntOpenHashMap<>();
+	private static final Object2IntMap<TunnelBlockState> BEDROCK_BLOCK_STATE_TO_RUNTIME_ID = new Object2IntOpenHashMap<>();
 
 	public static final Int2ObjectMap<BlockState> RUNTIME_ID_TO_BLOCK_STATE = new Int2ObjectOpenHashMap<>();
 	public static final Object2IntMap<BlockState> BLOCK_STATE_TO_RUNTIME_ID = new Object2IntOpenHashMap<>();
@@ -53,10 +55,10 @@ public class BlockPaletteTranslator {
 		int runtimeId = 0;
 		for (NbtMap nbtMap : blockPaletteData) {
 			TunnelBlockState bedrockBlockState = TunnelBlockState.getStateFromNBTMap(nbtMap);
-			BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.put(bedrockBlockState.toString(), runtimeId);
+			BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.put(bedrockBlockState, runtimeId);
 			RUNTIME_ID_TO_BEDROCK_BLOCK_STATE.put(runtimeId, bedrockBlockState);
 
-			TunnelBlockState javaBlockState = BlockStateTranslator.BEDROCK_TO_JAVA.getOrDefault(bedrockBlockState, null);
+			TunnelBlockState javaBlockState = getFromMap(BlockStateTranslator.BEDROCK_TO_JAVA, bedrockBlockState);
 			if (javaBlockState != null) {
 				RUNTIME_ID_TO_BLOCK_STATE.put(runtimeId, javaBlockState.getBlockState());
 				BLOCK_STATE_TO_RUNTIME_ID.put(javaBlockState.getBlockState(), runtimeId);
@@ -75,6 +77,12 @@ public class BlockPaletteTranslator {
 	}
 
 	public static int getBedrockBlockId(TunnelBlockState state) {
-		return BlockPaletteTranslator.BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.getOrDefault(state.toString(), AIR_BEDROCK_BLOCK_ID);
+		for (TunnelBlockState entry : BlockPaletteTranslator.BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.keySet()) {
+			if(entry.equals(state, false)) {
+				return BlockPaletteTranslator.BEDROCK_BLOCK_STATE_TO_RUNTIME_ID.getOrDefault(state, AIR_BEDROCK_BLOCK_ID);
+			}
+		}
+
+		return AIR_BEDROCK_BLOCK_ID;
 	}
 }

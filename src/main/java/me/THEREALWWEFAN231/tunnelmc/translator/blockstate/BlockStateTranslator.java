@@ -51,4 +51,14 @@ public class BlockStateTranslator {
 		JAVA_TO_BEDROCK = Collections.unmodifiableMap(javaBedrock);
 		BEDROCK_TO_JAVA = Collections.unmodifiableMap(bedrockJava);
 	}
+
+	public static <T> T getFromMap(Map<T, T> map, T find) {
+		for (T entry : map.keySet()) {
+			if(entry.equals(find)) {
+				return map.getOrDefault(entry, null);
+			}
+		}
+
+		return null;
+	}
 }
