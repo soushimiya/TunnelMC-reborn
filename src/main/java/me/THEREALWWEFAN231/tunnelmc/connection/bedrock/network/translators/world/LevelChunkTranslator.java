@@ -43,7 +43,6 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		ByteBuf byteBuf = Unpooled.buffer();
 		byteBuf.writeBytes(packet.getData());
 
-		int emptySections = 0;
 		for (int sectionIndex = 0; sectionIndex < packet.getSubChunksLength(); sectionIndex++) {
 			ChunkSection chunkSection = new ChunkSection(sectionIndex, BIOMES_REGISTRY);
 			int chunkVersion = byteBuf.readByte();
@@ -60,12 +59,14 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 				log.debug("Decoding a version nine chunk...");
 				LevelChunkDecoder.networkDecodeVersionNine(byteBuf, chunkSection, byteBuf.readByte());
 			}
-			if(chunkSection.isEmpty()) {
-				emptySections++;
-				continue;
-			}
 
 			chunkSections[sectionIndex] = chunkSection;
+		}
+		int emptySections = 0;
+		if(chunkSections[0] != null && chunkSections[1] != null && chunkSections[2] != null && chunkSections[3] != null) {
+			if(chunkSections[0].isEmpty() && chunkSections[1].isEmpty() && chunkSections[2].isEmpty() && chunkSections[3].isEmpty()) {
+				emptySections = 4;
+			}
 		}
 
 		try {
