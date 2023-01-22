@@ -36,7 +36,7 @@ public class TunnelBlockState {
 		String namespace = "minecraft";
 		int firstColonIndex = string.indexOf(":");
 		if (firstColonIndex != -1) {
-			namespace = string.substring(0, firstColonIndex);
+			namespace = string.substring(0, firstColonIndex++);
 		}else{
 			firstColonIndex = 0;
 		}
@@ -44,14 +44,14 @@ public class TunnelBlockState {
 		String identifier;
 		int firstLeftBracketIndex = string.indexOf("[");
 		if (firstLeftBracketIndex != -1) {//if its found
-			identifier = string.substring(firstColonIndex + 1, firstLeftBracketIndex);
+			identifier = string.substring(firstColonIndex, firstLeftBracketIndex++);
 		} else {
 			identifier = string.substring(firstColonIndex);
 		}
 
 		Map<String, String> properties = new HashMap<>();
 		if (firstLeftBracketIndex != -1) {
-			String blockProperties = string.substring(firstLeftBracketIndex + 1, string.length() - 1);
+			String blockProperties = string.substring(firstLeftBracketIndex, string.length() - 1);
 			if(!blockProperties.isEmpty()) {
 				String[] blockProperyKeysAndValues = blockProperties.split(",");
 
@@ -73,12 +73,12 @@ public class TunnelBlockState {
 		String namespace = "minecraft";
 		int firstColonIndex = blockName.indexOf(":");
 		if (firstColonIndex != -1) {
-			namespace = blockName.substring(0, firstColonIndex);
+			namespace = blockName.substring(0, firstColonIndex++);
 		}else{
 			firstColonIndex = 0;
 		}
 
-		String identifier = blockName.substring(firstColonIndex + 1);
+		String identifier = blockName.substring(firstColonIndex);
 
 		Map<String, String> properties = new HashMap<>();
 		for (Map.Entry<String, Object> blockState : blockStates.entrySet()) {
