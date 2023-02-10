@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.nukkitx.protocol.bedrock.data.skin.ImageData;
 import lombok.extern.log4j.Log4j2;
-import net.minecraft.client.MinecraftClient;
+import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.resource.ResourceManager;
@@ -31,7 +31,7 @@ public class ImageDataPlayerSkinTexture extends ResourceTexture {
             this.loadedCallback.run();
         }
 
-        MinecraftClient.getInstance().execute(() -> {
+        TunnelMC.mc.executeSync(() -> {
             this.loaded = true;
             if (!RenderSystem.isOnRenderThread()) {
                 RenderSystem.recordRenderCall(() -> {
@@ -50,7 +50,7 @@ public class ImageDataPlayerSkinTexture extends ResourceTexture {
 
     @Override
     public void load(ResourceManager manager) throws IOException {
-        MinecraftClient.getInstance().execute(() -> {
+        TunnelMC.mc.executeSync(() -> {
             if (!this.loaded) {
                 try {
                     super.load(manager);

@@ -1,12 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.packet;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
-import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.VoidTranslator;
 
+// For backwards compat
 public abstract class PacketTranslator<T> implements VoidTranslator<T> {
-
-	public boolean idleUntil(T packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		return true;
-	}
 }

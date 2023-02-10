@@ -13,7 +13,6 @@ import me.THEREALWWEFAN231.tunnelmc.translator.dimension.Dimension;
 import me.THEREALWWEFAN231.tunnelmc.translator.gamemode.GameModeTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.util.math.MathHelper;
@@ -66,7 +65,7 @@ public class StartGameTranslator extends PacketTranslator<StartGamePacket> {
 
 		// TODO: Send a complete SynchronizeTagsS2CPacket so that water can work.
 
-		MinecraftClient.getInstance().execute(() -> GameRulesChangedTranslator.onGameRulesChanged(packet.getGamerules()));
+		TunnelMC.mc.executeSync(() -> GameRulesChangedTranslator.onGameRulesChanged(packet.getGamerules()));
 
 		int chunkX = MathHelper.floor(packet.getPlayerPosition().getX()) >> 4;
 		int chunkZ = MathHelper.floor(packet.getPlayerPosition().getZ()) >> 4;

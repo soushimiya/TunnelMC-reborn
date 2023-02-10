@@ -29,28 +29,25 @@ public class MovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
 
 		boolean onGround = packet.isOnGround();
 
-		if (id == TunnelMC.mc.player.getId()) {
-			// This works best
-			PlayerPositionLookS2CPacket positionPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), teleportId.getAndIncrement(), false);
-			javaConnection.processJavaPacket(positionPacket);
-			return;
-		}
-		if (TunnelMC.mc.world == null) {
-			return;
-		}
+		TunnelMC.mc.executeSync(() -> {
+			if (id == TunnelMC.mc.player.getId()) {
+				// This works best
+				PlayerPositionLookS2CPacket positionPacket = new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), teleportId.getAndIncrement(), false);
+				javaConnection.processJavaPacket(positionPacket);
+				return;
+			}
+			if (TunnelMC.mc.world == null) {
+				return;
+			}
 
-		Entity entity = TunnelMC.mc.world.getEntityById(id);
-		if (entity == null) {
-			return;
-		}
+			Entity entity = TunnelMC.mc.world.getEntityById(id);
+			if (entity == null) {
+				return;
+			}
 
-		entity.updateTrackedPositionAndAngles(x, y, z, yaw, pitch, 3, true);
-		entity.updateTrackedHeadRotation(headYaw, 3);
-		entity.setOnGround(onGround);
-	}
-	
-	@Override
-	public boolean idleUntil(MovePlayerPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		return TunnelMC.mc.player != null;
+			entity.updateTrackedPositionAndAngles(x, y, z, yaw, pitch, 3, true);
+			entity.updateTrackedHeadRotation(headYaw, 3);
+			entity.setOnGround(onGround);
+		});
 	}
 }

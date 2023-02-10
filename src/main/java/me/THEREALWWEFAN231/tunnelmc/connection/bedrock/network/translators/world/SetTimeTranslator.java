@@ -13,12 +13,9 @@ public class SetTimeTranslator extends PacketTranslator<SetTimePacket> {
 
 	@Override
 	public void translate(SetTimePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		WorldTimeUpdateS2CPacket worldTimeUpdateS2CPacket = new WorldTimeUpdateS2CPacket(packet.getTime(), packet.getTime(), true);//TODO: remove true and replace it with the gamerule
-		javaConnection.processJavaPacket(worldTimeUpdateS2CPacket);
-	}
-	
-	@Override
-	public boolean idleUntil(SetTimePacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		return TunnelMC.mc.world != null;
+		TunnelMC.mc.executeSync(() -> {
+			WorldTimeUpdateS2CPacket worldTimeUpdateS2CPacket = new WorldTimeUpdateS2CPacket(packet.getTime(), packet.getTime(), true);//TODO: remove true and replace it with the gamerule
+			javaConnection.processJavaPacket(worldTimeUpdateS2CPacket);
+		});
 	}
 }

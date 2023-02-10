@@ -11,7 +11,6 @@ import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.util.math.ChunkPos;
@@ -101,7 +100,7 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 		// Don't need to read more bytes
 
 		int finalEmptySections = emptySections;
-		Runnable runnable = () -> {
+		TunnelMC.mc.executeSync(() -> {
 			ChunkSection[] sections = new ChunkSection[24];
 			System.arraycopy(chunkSections, finalEmptySections, sections, 4, sections.length - 4);
 
@@ -109,12 +108,6 @@ public class LevelChunkTranslator extends PacketTranslator<LevelChunkPacket> {
 
 			ChunkDataS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDataS2CPacket(worldChunk, TunnelMC.mc.world.getLightingProvider(), null, null, true);
 			javaConnection.processJavaPacket(chunkDeltaUpdateS2CPacket);
-		};
-
-		if (TunnelMC.mc.world != null) {
-			runnable.run();
-		} else {
-			MinecraftClient.getInstance().execute(runnable);
-		}
+		});
 	}
 }

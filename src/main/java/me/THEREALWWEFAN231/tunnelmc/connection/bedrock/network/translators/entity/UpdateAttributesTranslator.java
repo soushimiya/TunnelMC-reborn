@@ -38,8 +38,10 @@ public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttribute
             }
         }
 
-        javaConnection.processJavaPacket(new HealthUpdateS2CPacket(this.health, this.food, this.saturation));
-        javaConnection.processJavaPacket(new ExperienceBarUpdateS2CPacket(this.experience, getTotalExperience(this.level), this.level));
+        TunnelMC.mc.executeSync(() -> {
+            javaConnection.processJavaPacket(new HealthUpdateS2CPacket(this.health, this.food, this.saturation));
+            javaConnection.processJavaPacket(new ExperienceBarUpdateS2CPacket(this.experience, getTotalExperience(this.level), this.level));
+        });
     }
 
     private int getTotalExperience(int level) {
@@ -50,10 +52,5 @@ public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttribute
         }
 
         return (int) (4.5 * MathHelper.square(level) - 162.5 * level + 2220);
-    }
-
-    @Override
-    public boolean idleUntil(UpdateAttributesPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-        return TunnelMC.mc.player != null;
     }
 }

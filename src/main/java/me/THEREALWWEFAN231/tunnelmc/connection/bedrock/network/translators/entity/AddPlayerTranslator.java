@@ -11,7 +11,6 @@ import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerListS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -45,7 +44,7 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 		float headYaw = packet.getRotation().getZ();
 		Vec3d velocity = new Vec3d(packet.getMotion().getX(), packet.getMotion().getY(), packet.getMotion().getZ());
 
-		Runnable runnable = () -> {
+		TunnelMC.mc.executeSync(() -> {
 			GameProfile profile = new GameProfile(uuid, name);
 			OtherClientPlayerEntity player = new OtherClientPlayerEntity(TunnelMC.mc.world, profile, null);
 			player.setId(id);
@@ -71,12 +70,6 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 			EntityEquipmentUpdateS2CPacket equipmentUpdatePacket = new EntityEquipmentUpdateS2CPacket((int) packet.getRuntimeEntityId(),
 					Collections.singletonList(itemStackPair));
 			javaConnection.processJavaPacket(equipmentUpdatePacket);
-		};
-
-		if (TunnelMC.mc.world != null) {
-			runnable.run();
-		} else {
-			MinecraftClient.getInstance().execute(runnable);
-		}
+		});
 	}
 }

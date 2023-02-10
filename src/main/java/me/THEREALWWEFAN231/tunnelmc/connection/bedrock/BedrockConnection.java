@@ -166,7 +166,7 @@ public class BedrockConnection {
 		FakeJavaConnection javaConnection = new FakeJavaConnection(this);
 
 		bedrockSession.setPacketCodec(BedrockConnection.CODEC);
-		bedrockSession.addDisconnectHandler(reason -> MinecraftClient.getInstance().execute(() -> {
+		bedrockSession.addDisconnectHandler(reason -> TunnelMC.mc.executeSync(() -> {
 			// We disconnected ourselves.
 			if (reason == DisconnectReason.DISCONNECTED) {
 				return;

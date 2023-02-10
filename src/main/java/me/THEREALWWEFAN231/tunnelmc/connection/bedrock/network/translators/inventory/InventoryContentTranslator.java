@@ -23,15 +23,6 @@ public class InventoryContentTranslator extends PacketTranslator<InventoryConten
 		for (int slot = 0; slot < packet.getContents().size(); slot++) {
 			containerAffected.setItemBedrock(slot, packet.getContents().get(slot));
 		}
-		if (!TunnelMC.mc.isOnThread()) {
-			TunnelMC.mc.executeSync(containerAffected::updateInventory);
-			return;
-		}
-		containerAffected.updateInventory();
-	}
-
-	@Override
-	public boolean idleUntil(InventoryContentPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		return TunnelMC.mc.player != null;
+		TunnelMC.mc.executeSync(containerAffected::updateInventory);
 	}
 }

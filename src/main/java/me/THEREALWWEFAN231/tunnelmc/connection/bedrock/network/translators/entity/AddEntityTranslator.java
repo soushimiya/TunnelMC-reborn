@@ -8,7 +8,6 @@ import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.entity.EntityTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
@@ -38,7 +37,7 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 		float yaw = packet.getRotation().getY();
 		float headYaw = packet.getRotation().getZ();
 
-		Runnable runnable = () -> {
+		TunnelMC.mc.executeSync(() -> {
 			Entity entity = entityType.create(TunnelMC.mc.world);
 			if (entity == null) {
 				log.error("Could not create entity type: " + packet.getIdentifier());
@@ -54,12 +53,6 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 
 			javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
 			entity.updateTrackedHeadRotation(headYaw, 3);
-		};
-
-		if (TunnelMC.mc.world != null) {
-			runnable.run();
-		} else {
-			MinecraftClient.getInstance().execute(runnable);
-		}
+		});
 	}
 }

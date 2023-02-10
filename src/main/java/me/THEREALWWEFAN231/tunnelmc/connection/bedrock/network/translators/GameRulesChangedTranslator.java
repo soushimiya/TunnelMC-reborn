@@ -17,7 +17,7 @@ public class GameRulesChangedTranslator extends PacketTranslator<GameRulesChange
     @Override
     public void translate(GameRulesChangedPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
         if (TunnelMC.mc.world == null) {
-            TunnelMC.mc.execute(() -> onGameRulesChanged(packet.getGameRules()));
+            TunnelMC.mc.executeSync(() -> onGameRulesChanged(packet.getGameRules()));
         } else {
             onGameRulesChanged(packet.getGameRules());
         }

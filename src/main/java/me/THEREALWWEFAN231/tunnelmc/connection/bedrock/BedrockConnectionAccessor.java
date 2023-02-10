@@ -51,7 +51,7 @@ public class BedrockConnectionAccessor {
             }
         }
         if(message != null && !message.isEmpty()) {
-            TunnelMC.mc.execute(() -> TunnelMC.mc.disconnect(
+            TunnelMC.mc.executeSync(() -> TunnelMC.mc.disconnect(
                     new DisconnectedScreen(
                             new TitleScreen(false),
                             Text.of("TunnelMC"),
