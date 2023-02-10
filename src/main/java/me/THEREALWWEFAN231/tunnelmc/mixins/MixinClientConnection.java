@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import net.fabricmc.loader.impl.util.SystemProperties;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketCallbacks;
@@ -21,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Log4j2
 @Mixin(ClientConnection.class)
 public class MixinClientConnection {
+	private final boolean isDevelopment = Boolean.parseBoolean(System.getProperty(SystemProperties.DEVELOPMENT, "false"));
+
 	@Shadow private Channel channel;
 	@Shadow private Text disconnectReason;
 
@@ -51,12 +54,12 @@ public class MixinClientConnection {
 
 	@Inject(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;)V", at = @At("HEAD"))
 	public void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo callback) {
-		if (this.channel.isOpen()) {
+		if (this.channel.isOpen() && isDevelopment) {
 			if (packet instanceof ParticleS2CPacket || packet instanceof QueryResponseS2CPacket || packet instanceof QueryPongS2CPacket) {
 				return;
 			}
 			
-			log.debug("Received: " + packet.getClass());
+			log.info("Received: " + packet.getClass());
 		}
 	}
 
