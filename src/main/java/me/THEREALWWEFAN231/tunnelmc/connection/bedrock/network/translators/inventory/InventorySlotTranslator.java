@@ -7,11 +7,8 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.utils.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.network.translators.UpdateSelectedSlotC2STranslator;
-import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 
 @Log4j2
 @PacketIdentifier(InventorySlotPacket.class)
@@ -20,35 +17,16 @@ public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacke
 	@Override
 	public void translate(InventorySlotPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		int syncId = packet.getContainerId();
-		BedrockContainer containerToChange = bedrockConnection.getWrappedContainers().getContainers().get(syncId);
-		if(containerToChange == null) {//TODO: create some sort of "temp" container, we use to do this, but for testing purposes this does for now
-			log.error("Couldn't find the correct container id for: " + packet);
-			return;
-		}
-		
-		int javaInventorySlot = packet.getSlot();
-		int packetSlot = packet.getSlot();
-		ItemStack stack = ItemTranslator.itemDataToItemStack(packet.getItem());
 
-		if (syncId == 0) {//TODO: change this/find a better way
-			if (javaInventorySlot < 9) {
-				javaInventorySlot += 36;
-			}
+		BedrockContainer containerAffected = bedrockConnection.getWrappedContainers().getContainers().get(syncId);
+		if (containerAffected == null) {
+			containerAffected = bedrockConnection.getWrappedContainers().getCurrentlyOpenContainer();
 		}
 
-		ScreenHandlerSlotUpdateS2CPacket handlerSlotUpdateS2CPacket = new ScreenHandlerSlotUpdateS2CPacket(syncId, bedrockConnection.getWrappedContainers().nextRevision(), javaInventorySlot, stack);
-		javaConnection.processJavaPacket(handlerSlotUpdateS2CPacket);
-
-		containerToChange.setItemBedrock(packet.getSlot(), packet.getItem());
-
-		//not fully sure if "vanilla" bedrock does it like this, but for example, we could be at slot 0, and get a new item in that slot, and we are still holding nothing, so we have to update our held item, this is stupid though, it should be server side
-		if (packetSlot == TunnelMC.mc.player.getInventory().selectedSlot) {
-			UpdateSelectedSlotC2STranslator.updateHotbarItem(packetSlot, bedrockConnection);
+		containerAffected.setItemBedrock(packet.getSlot(), packet.getItem());
+		if (packet.getSlot() == TunnelMC.mc.player.getInventory().selectedSlot) {
+			UpdateSelectedSlotC2STranslator.updateHotbarItem(packet.getSlot(), bedrockConnection);
 		}
-	}
-
-	@Override
-	public boolean idleUntil(InventorySlotPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		return TunnelMC.mc.player != null;
+		TunnelMC.mc.executeSync(containerAffected::updateInventory);
 	}
 }

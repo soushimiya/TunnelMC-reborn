@@ -79,9 +79,4 @@ public class BedrockContainers {
 
 		this.currentlyOpenContainerId = -1;
 	}
-
-	public int nextRevision() {
-		this.revision = this.revision + 1 & Short.MAX_VALUE;
-		return this.revision;
-	}
 }

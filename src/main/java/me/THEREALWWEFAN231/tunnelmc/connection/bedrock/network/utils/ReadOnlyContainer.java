@@ -36,8 +36,13 @@ public class ReadOnlyContainer extends BedrockContainer{
     }
 
     @Override
-    protected int convertJavaSlotIdToBedrockSlotId(int javaSlotId) {
-        return wrapped.convertJavaSlotIdToBedrockSlotId(javaSlotId);
+    public int getJavaSlotId(int bedrockSlotId) {
+        return wrapped.getJavaSlotId(bedrockSlotId);
+    }
+
+    @Override
+    public int getBedrockSlotId(int javaSlotId) {
+        return wrapped.getBedrockSlotId(javaSlotId);
     }
 
     @Override

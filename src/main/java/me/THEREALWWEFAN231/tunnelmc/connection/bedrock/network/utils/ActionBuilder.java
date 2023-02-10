@@ -55,12 +55,8 @@ public class ActionBuilder {
             return this;
         }
 
-        public ItemData slot(int slot) {
-            if(this.container == null) {
-                return null;
-            }
-
-            return this.container.getItemFromSlot(slot);
+        public BedrockContainer wrapped() {
+            return this.container;
         }
 
         public ActionBuilderBuilder action(int slot, ItemData action) {

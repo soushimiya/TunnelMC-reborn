@@ -10,20 +10,6 @@ public class PlayerInventoryContainer extends GenericContainer {
 	public PlayerInventoryContainer() {
 		super(PlayerInventoryContainer.SIZE);
 	}
-	
-	@Override
-	protected int convertJavaSlotIdToBedrockSlotId(int javaSlotId) {
-		if(javaSlotId >= 36) {//if it's a java hotbar slot 36->44
-			return javaSlotId - 36;//convert to bedrock slot, 0-8
-		}
-		
-		//this check *isn't* needed *if* we are in the correct container, which we should be, for now I'm keeping this if statement, and return 0 for debugging purposes
-		if(javaSlotId >= 9) {
-			return javaSlotId;//java main inventory, the 27 slots have the same id on bedrock
-		}
-		
-		return super.convertJavaSlotIdToBedrockSlotId(javaSlotId);
-	}
 
 	@Override
 	public boolean isStatic() {
@@ -31,11 +17,29 @@ public class PlayerInventoryContainer extends GenericContainer {
 	}
 
 	@Override
+	public int getJavaSlotId(int bedrockSlotId) {
+		if(bedrockSlotId < 9) { // for the hotbar
+			return bedrockSlotId + 36;
+		}
+
+		return super.getJavaSlotId(bedrockSlotId);
+	}
+
+	@Override
+	public int getBedrockSlotId(int javaSlotId) {
+		if(javaSlotId >= 36 && javaSlotId < 45) { // for the hotbar
+			return javaSlotId - 36;
+		}
+
+		return super.getBedrockSlotId(javaSlotId);
+	}
+
+	@Override
 	public void updateInventory() {
 		for (int i = 0; i < this.getSize(); i++) {
 			ItemStack stack = ItemTranslator.itemDataToItemStack(this.getItemFromSlot(i));
 
-			TunnelMC.mc.player.playerScreenHandler.getSlot(convertJavaSlotIdToBedrockSlotId(i)).setStack(stack);
+			TunnelMC.mc.player.playerScreenHandler.getSlot(this.getJavaSlotId(i)).setStack(stack);
 		}
 	}
 }

@@ -23,11 +23,9 @@ public abstract class BedrockContainer {
 		this.items.put(slot, itemData);
 	}
 
-	public void setItemFromJavaSlot(int javaSlot, ItemData itemData) {
-		this.setItemBedrock(convertJavaSlotIdToBedrockSlotId(javaSlot), itemData);
-	}
-	
-	protected abstract int convertJavaSlotIdToBedrockSlotId(int javaSlotId);
+	public abstract int getJavaSlotId(int bedrockSlotId);
+
+	public abstract int getBedrockSlotId(int javaSlotId);
 
 	public ItemData getItemFromSlot(int slot) {
 		return this.items.get(slot);

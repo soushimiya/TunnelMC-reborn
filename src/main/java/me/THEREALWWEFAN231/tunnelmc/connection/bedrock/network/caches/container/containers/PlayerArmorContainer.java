@@ -17,10 +17,20 @@ public class PlayerArmorContainer extends GenericContainer {
 	}
 
 	@Override
+	public int getJavaSlotId(int bedrockSlotId) {
+		return bedrockSlotId + 5;
+	}
+
+	@Override
+	public int getBedrockSlotId(int javaSlotId) {
+		return javaSlotId - 5;
+	}
+
+	@Override
 	public void updateInventory() {
 		for (int i = 0; i < this.getSize(); i++) {
 			ItemStack stack = ItemTranslator.itemDataToItemStack(this.getItemFromSlot(i));
-			TunnelMC.mc.player.playerScreenHandler.getSlot(i + 5).setStack(stack);
+			TunnelMC.mc.player.playerScreenHandler.getSlot(this.getJavaSlotId(i)).setStack(stack);
 		}
 	}
 }

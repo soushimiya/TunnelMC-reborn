@@ -70,11 +70,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		ActionBuilder.ActionBuilderBuilder cursorContainer = containerFunction.apply(BedrockContainers.PLAYER_CONTAINER_CURSOR_COTNAINER_ID);
 
 		for(Int2ObjectMap.Entry<ItemStack> entry : packet.getModifiedStacks().int2ObjectEntrySet()) {
-			Integer slotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
-			if (slotId == null) {
-				return null;
-			}
-
+			int slotId = container.wrapped().getBedrockSlotId(entry.getIntKey());
 			container.action(slotId, ItemTranslator.itemStackToItemData(entry.getValue()));
 		}
 
@@ -91,29 +87,22 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		if (containerId == null) {
 			return null;
 		}
+		ActionBuilder.ActionBuilderBuilder container = containerFunction.apply(containerId);
+		int slotId = container.wrapped().getBedrockSlotId(packet.getSlot());
 
 		List<ActionBuilder> builders = new ArrayList<>();
-		Integer slotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
-		if (slotId == null) {
-			return null;
-		}
-
 		for(Int2ObjectMap.Entry<ItemStack> entry : packet.getModifiedStacks().int2ObjectEntrySet()) {
 			Integer modifiedContainerId = ScreenHandlerTranslatorManager.getBedrockContainerIdFromJava(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
 			if (modifiedContainerId == null) {
 				return null;
 			}
 			ActionBuilder.ActionBuilderBuilder modifiedContainer = containerFunction.apply(modifiedContainerId);
-			Integer modifiedSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
-			if (modifiedSlotId == null) {
-				return null;
-			}
+			int modifiedSlotId = modifiedContainer.wrapped().getBedrockSlotId(entry.getIntKey());
 
 			modifiedContainer.action(modifiedSlotId, ItemTranslator.itemStackToItemData(entry.getValue()));
 			builders.add(modifiedContainer.build());
 		}
 
-		ActionBuilder.ActionBuilderBuilder container = containerFunction.apply(containerId);
 		container.action(slotId, ItemTranslator.itemStackToItemData(packet.getStack()));
 		builders.add(container.build());
 
@@ -127,7 +116,7 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 		}
 
 		ActionBuilder.ActionBuilderBuilder fromContainer = containerFunction.apply(fromContainerId);
-		Integer fromSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, packet.getSlot());
+		int fromSlotId = fromContainer.wrapped().getBedrockSlotId(packet.getSlot());
 
 		Integer toContainerId;
 		ActionBuilder.ActionBuilderBuilder toContainer = null;
@@ -146,14 +135,14 @@ public class ClickSlotC2STranslator extends PacketTranslator<ClickSlotC2SPacket>
 				return null;
 			}
 			toContainer = containerFunction.apply(toContainerId);
-			toSlotId = ScreenHandlerTranslatorManager.getBedrockSlotFromJavaContainer(TunnelMC.mc.player.currentScreenHandler, entry.getIntKey());
+			toSlotId = toContainer.wrapped().getBedrockSlotId(entry.getIntKey());
 		}
-		if (fromSlotId == null || toSlotId == null) {
+		if (toSlotId == null) {
 			return null;
 		}
 
-		ItemData fromItemData = fromContainer.slot(fromSlotId);
-		ItemData toItemData = toContainer.slot(toSlotId);
+		ItemData fromItemData = fromContainer.wrapped().getItemFromSlot(fromSlotId);
+		ItemData toItemData = toContainer.wrapped().getItemFromSlot(toSlotId);
 		fromContainer.action(fromSlotId, toItemData);
 		toContainer.action(toSlotId, fromItemData);
 

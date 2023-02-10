@@ -1,16 +1,16 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler;
 
 import lombok.extern.log4j.Log4j2;
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.utils.BedrockContainer;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators.GenericContainerScreenHandlerTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.translators.PlayerScreenHandlerTranslator;
 import net.minecraft.screen.ScreenHandler;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Log4j2
 public class ScreenHandlerTranslatorManager {
-	private static final HashMap<Class<? extends ScreenHandler>, ScreenHandlerTranslator<?>> REGISTRY = new HashMap<>();
+	private static final Map<Class<? extends ScreenHandler>, ScreenHandlerTranslator<?>> REGISTRY = new HashMap<>();
 	
 	public static void load() {
 		ScreenHandlerTranslatorManager.add(new PlayerScreenHandlerTranslator());
@@ -45,23 +45,5 @@ public class ScreenHandlerTranslatorManager {
 		}
 
 		return containerId;
-	}
-
-	public static Integer getJavaSlotFromBedrockContainer(ScreenHandler javaContainer, BedrockContainer bedrockContainer, int bedrockSlotId) {
-		ScreenHandlerTranslator<ScreenHandler> translator = ScreenHandlerTranslatorManager.getTranslator(javaContainer);
-		if(translator == null) {
-			return null;
-		}
-
-		return translator.getJavaSlotId(bedrockContainer, bedrockSlotId);
-	}
-
-	public static Integer getBedrockSlotFromJavaContainer(ScreenHandler javaContainer, int javaSlotId) {
-		ScreenHandlerTranslator<ScreenHandler> translator = ScreenHandlerTranslatorManager.getTranslator(javaContainer);
-		if(translator == null) {
-			return null;
-		}
-
-		return translator.getBedrockSlotId(javaContainer, javaSlotId);
 	}
 }

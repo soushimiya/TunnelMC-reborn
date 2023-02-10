@@ -20,24 +20,7 @@ public class GenericContainerScreenHandlerTranslator extends ScreenHandlerTransl
 	}
 
 	@Override
-	public int getBedrockSlotId(GenericContainerScreenHandler javaContainer, int javaSlotId) {
-		int slotsInContainer = javaContainer.getRows() * 9;
-		if (javaSlotId < slotsInContainer) {//the ids are the same in java and bedrock for chest containers
-			return javaSlotId;
-		}
-
-		javaSlotId -= slotsInContainer;
-
-		if (javaSlotId > 26) {//hotbar
-			return javaSlotId - 27;
-		}
-
-		return javaSlotId + 9;
-	}
-
-	@Override
 	public Class<? extends ScreenHandler> getScreenHandlerClass() {
 		return GenericContainerScreenHandler.class;
 	}
-
 }
