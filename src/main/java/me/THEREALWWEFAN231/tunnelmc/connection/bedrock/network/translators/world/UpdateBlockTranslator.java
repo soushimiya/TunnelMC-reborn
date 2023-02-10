@@ -1,9 +1,11 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world;
 
 import com.nukkitx.protocol.bedrock.packet.UpdateBlockPacket;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.block.BlockState;
@@ -12,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 
+@Log4j2
 @PacketIdentifier(UpdateBlockPacket.class)
 public class UpdateBlockTranslator extends PacketTranslator<UpdateBlockPacket> {
 	//TODO: Probably want to check out flags.
@@ -19,29 +22,23 @@ public class UpdateBlockTranslator extends PacketTranslator<UpdateBlockPacket> {
 	@Override
 	public void translate(UpdateBlockPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
 		BlockPos blockPos = new BlockPos(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ());
-		if (packet.getDataLayer() == 0) {
-			BlockState blockState = BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(packet.getRuntimeId());
+		BlockState translatedBlockState = BlockStateTranslator.getBlockStateFromRuntimeId(packet.getRuntimeId());
 
-			BlockUpdateS2CPacket blockUpdateS2CPacket = new BlockUpdateS2CPacket(blockPos, blockState);
+		if (packet.getDataLayer() == 0) {
+			BlockUpdateS2CPacket blockUpdateS2CPacket = new BlockUpdateS2CPacket(blockPos, translatedBlockState);
 			javaConnection.processJavaPacket(blockUpdateS2CPacket);
 		} else if (packet.getDataLayer() == 1) {
 			// Set waterlogged state of existing block.
 			BlockState blockState = MinecraftClient.getInstance().world.getBlockState(blockPos);
-			BlockState newBlockState;
-			if (blockState.isAir()) {
-				newBlockState = BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(packet.getRuntimeId());
-				if (blockState.isAir()) {
-					return;
+			if (!blockState.isAir()) {
+				if (!blockState.contains(Properties.WATERLOGGED)) {
+					return; // TODO: display block anyway (without collision of course)
 				}
-			} else {
-				if (blockState.contains(Properties.WATERLOGGED)) {
-					newBlockState = blockState.with(Properties.WATERLOGGED, packet.getRuntimeId() == BlockPaletteTranslator.WATER_BEDROCK_BLOCK_ID);
-				} else {
-					return;
-				}
+
+				translatedBlockState = blockState.with(Properties.WATERLOGGED, packet.getRuntimeId() == BlockPaletteTranslator.WATER_BEDROCK_BLOCK_ID);
 			}
 
-			BlockUpdateS2CPacket blockUpdateS2CPacket = new BlockUpdateS2CPacket(blockPos, newBlockState);
+			BlockUpdateS2CPacket blockUpdateS2CPacket = new BlockUpdateS2CPacket(blockPos, translatedBlockState);
 			javaConnection.processJavaPacket(blockUpdateS2CPacket);
 		}
 	}

@@ -12,7 +12,7 @@ import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinNbtCompound;
-import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.enchantment.EnchantmentTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
 import net.minecraft.block.Block;
@@ -132,7 +132,7 @@ public class ItemTranslator {
 		String idDamageString = BEDROCK_ITEM_INFO_TO_JAVA_ITEM.inverse().get(itemStack.getItem());
 		String[] idDamageSplit = idDamageString.split(":");
 
-		int blockRuntimeId = BlockPaletteTranslator.BLOCK_STATE_TO_RUNTIME_ID.getOrDefault(Block.getBlockFromItem(itemStack.getItem()).getDefaultState(), 0);
+		int blockRuntimeId = BlockStateTranslator.getRuntimeIdFromBlockState(Block.getBlockFromItem(itemStack.getItem()).getDefaultState());
 		return ItemData.builder()
 				.id(Integer.parseInt(idDamageSplit[0]))
 				.damage(Integer.parseInt(idDamageSplit[1]))

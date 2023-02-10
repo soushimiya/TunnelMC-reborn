@@ -26,7 +26,7 @@ public class DecodedPaletteStorage {
     private final BitArray bitArray;
     private final Map<Integer, Integer> palette;
 
-    public int get(int x, int y, int z) {
+    public Integer get(int x, int y, int z) {
         return palette.getOrDefault(bitArray.get(index(x, y, z)), 0);
     }
 

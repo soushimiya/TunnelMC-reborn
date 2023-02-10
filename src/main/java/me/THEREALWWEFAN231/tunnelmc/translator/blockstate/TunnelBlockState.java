@@ -2,6 +2,7 @@ package me.THEREALWWEFAN231.tunnelmc.translator.blockstate;
 
 import com.nukkitx.nbt.NbtMap;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,14 +13,19 @@ import net.minecraft.util.registry.Registry;
 import java.util.*;
 
 @Getter
+@Log4j2
 public class TunnelBlockState {
 	private final String namespace;
 	private final String identifier;
 	//this holds the block states properties, for example, stone_type, granite
 	private final Map<String, String> properties;
 
-	public TunnelBlockState(String identifier) {
-		this(identifier.split(":")[0], identifier.split(":")[1]);
+	public TunnelBlockState(String namespaceAndIdentifier) {
+		this(namespaceAndIdentifier, new HashMap<>());
+	}
+
+	public TunnelBlockState(String namespaceAndIdentifier, Map<String, String> properties) {
+		this(namespaceAndIdentifier.split(":")[0], namespaceAndIdentifier.split(":")[1], properties);
 	}
 
 	public TunnelBlockState(String namespace, String identifier) {
@@ -53,9 +59,9 @@ public class TunnelBlockState {
 		if (firstLeftBracketIndex != -1) {
 			String blockProperties = string.substring(firstLeftBracketIndex, string.length() - 1);
 			if(!blockProperties.isEmpty()) {
-				String[] blockProperyKeysAndValues = blockProperties.split(",");
+				String[] blockPropertyKeysAndValues = blockProperties.split(",");
 
-				for (String keyAndValue : blockProperyKeysAndValues) {
+				for (String keyAndValue : blockPropertyKeysAndValues) {
 					String[] keyAndValueArray = keyAndValue.split("=");
 
 					properties.put(keyAndValueArray[0], keyAndValueArray[1]);
@@ -103,17 +109,23 @@ public class TunnelBlockState {
 
 	public BlockState getBlockState() {
 		Block block = this.getVanillaBlock();
+		if(block == null) {
+			return null;
+		}
 		BlockState blockState = block.getDefaultState();
 
 		for(Map.Entry<String, String> stateEntry : this.getProperties().entrySet()) {
 			Property<?> property = block.getStateManager().getProperty(stateEntry.getKey());
 			if (property == null) {
-				throw new NullPointerException("Could not find property " + stateEntry.getKey());
+				log.debug("{}: Could not find property {}", this.toString(), stateEntry.getKey());
+				continue;
 			}
 
+			BlockState before = blockState;
 			blockState = parsePropertyValue(blockState, property, stateEntry.getValue());
 			if (blockState == null) {
-				throw new NullPointerException("Could not find state " + stateEntry.getKey() + " or set the value " + stateEntry.getValue() + ": " + stateEntry);
+				log.debug("{}: Could not find state {} or set the value {}: {}", this.toString(), stateEntry.getKey(), stateEntry.getValue(), stateEntry);
+				blockState = before;
 			}
 		}
 
@@ -166,17 +178,24 @@ public class TunnelBlockState {
 		if (!Objects.equals(this$identifier, other$identifier)) return false;
 
 		if(includeProperties) {
-			int i = 0;
+			if (this.getProperties().size() != other.getProperties().size()) return false;
+
 			for (Map.Entry<String, String> this$propertyEntry : this.getProperties().entrySet()) {
-				for (Map.Entry<String, String> other$propertyEntry : other.getProperties().entrySet()) {
-					if(this$propertyEntry.getKey().equals(other$propertyEntry.getKey())
-							&& this$propertyEntry.getValue().equals(other$propertyEntry.getValue())) {
-						i++;
-					}
+				String key = this$propertyEntry.getKey();
+
+				String this$propertyEntryValue = this$propertyEntry.getValue();
+				if(this$propertyEntryValue.equals("true") || this$propertyEntryValue.equals("false")) {
+					this$propertyEntryValue = Boolean.parseBoolean(this$propertyEntryValue) ? "1" : "0";
+				}
+				String other$propertyEntryValue = other.getProperties().get(key);
+				if(other$propertyEntryValue.equals("true") || other$propertyEntryValue.equals("false")) {
+					other$propertyEntryValue = Boolean.parseBoolean(other$propertyEntryValue) ? "1" : "0";
+				}
+
+				if (!Objects.deepEquals(this$propertyEntryValue, other$propertyEntryValue)) {
+					return false;
 				}
 			}
-
-			return this.getProperties().size() == i;
 		}
 
 		return true;

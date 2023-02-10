@@ -32,7 +32,7 @@ public final class LegacyBlockPaletteManager {
                 int meta = metaNode.asInt();
 
                 int legacyId = id << 6 | meta;
-                map.put(legacyId, BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(runtimeId));
+                map.put(legacyId, BlockStateTranslator.getBlockStateFromRuntimeId(runtimeId));
             }
         } catch (IOException e) {
             throw new AssertionError("Unable to create legacy mapping", e);

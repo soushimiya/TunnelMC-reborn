@@ -1,7 +1,9 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils;
 
 import io.netty.buffer.ByteBuf;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.LegacyBlockPaletteManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.registry.Registry;
@@ -15,6 +17,7 @@ import net.minecraft.world.chunk.ReadableContainer;
 /**
  * The LevelChunkDecoder class contains methods on decoding every existing Bedrock sub chunk format.
  */
+@Log4j2
 public class LevelChunkDecoder {
 
     /**
@@ -42,10 +45,10 @@ public class LevelChunkDecoder {
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         for (int y = 0; y < 16; y++) {
-                            int id = storage.get(x, y, z);
+                            Integer id = storage.get(x, y, z);
 
-                            if (id != BlockPaletteTranslator.AIR_BEDROCK_BLOCK_ID) {
-                                BlockState blockState = BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(id);
+                            if (id != null && id != BlockPaletteTranslator.AIR_BEDROCK_BLOCK_ID) {
+                                BlockState blockState = BlockStateTranslator.getBlockStateFromRuntimeId(id);
 
                                 chunkSection.setBlockState(x, y, z, blockState);
                             }

@@ -13,7 +13,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinClientPlayerInteractionManager;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinWorldRenderer;
-import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtils;
@@ -77,7 +77,7 @@ public class LevelEventTranslator extends PacketTranslator<LevelEventPacket> {
             case PARTICLE_CRACK_BLOCK -> {
                 Direction direction = Direction.byId(packet.getData() >> 24);
                 int bedrockRuntimeId = packet.getData() & 0xffffff; // Strip out the above encoding
-                BlockState blockState = BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(bedrockRuntimeId);
+                BlockState blockState = BlockStateTranslator.getBlockStateFromRuntimeId(bedrockRuntimeId);
                 Vector3i vector = packet.getPosition().toInt();
                 BlockPos pos = PositionUtils.toBlockPos(vector);
                 if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
@@ -102,7 +102,7 @@ public class LevelEventTranslator extends PacketTranslator<LevelEventPacket> {
             }
             case PARTICLE_DESTROY_BLOCK -> MinecraftClient.getInstance().world.syncWorldEvent(MinecraftClient.getInstance().player, 2001,
                     PositionUtils.toBlockPos(packet.getPosition().toInt()),
-                    Block.getRawIdFromState(BlockPaletteTranslator.RUNTIME_ID_TO_BLOCK_STATE.get(packet.getData())));
+                    Block.getRawIdFromState(BlockStateTranslator.getBlockStateFromRuntimeId(packet.getData())));
         }
     }
 

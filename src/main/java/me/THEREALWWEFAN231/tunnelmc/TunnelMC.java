@@ -8,6 +8,7 @@ import com.nukkitx.api.event.EventManager;
 import com.nukkitx.event.SimpleEventManager;
 import lombok.Getter;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockentity.BlockEntityRegistry;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.container.screenhandler.ScreenHandlerTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.enchantment.EnchantmentTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.json.ItemStackSerializer;
@@ -49,5 +50,7 @@ public class TunnelMC implements ClientModInitializer {
 		BlockEntityRegistry.load();
 		EnchantmentTranslator.load();
 		ScreenHandlerTranslatorManager.load();
+		// For initializing
+		BlockStateTranslator.getBlockStateFromRuntimeId(0);
 	}
 }
