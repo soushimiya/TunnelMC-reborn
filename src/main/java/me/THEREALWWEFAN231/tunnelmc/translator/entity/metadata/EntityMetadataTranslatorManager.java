@@ -18,6 +18,7 @@ import java.util.Map;
 
 @Log4j2
 public class EntityMetadataTranslatorManager extends TranslatorManager<EntityMetadataTranslator<?>, Pair<Entity, EntityDataMap>> {
+    public static final int MAX_DATATRACKER_VALUE_ID = Byte.MAX_VALUE * 2; // Same as DataTracker.MAX_DATA_VALUE_ID
     private final Map<EntityData, EntityMetadataTranslator<?>> translatorsByEntityDataKey = new HashMap<>();
     private final List<EntityMetadataTranslator<EntityFlags>> flagTranslators = new ArrayList<>();
 
@@ -29,6 +30,7 @@ public class EntityMetadataTranslatorManager extends TranslatorManager<EntityMet
 
         // Flags
         this.addTranslator(new SneakingMetadataTranslator());
+        this.addTranslator(new ImmobileMetadataTranslator());
         // TODO: Climbing and swimming
     }
 

@@ -12,7 +12,6 @@ import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
@@ -74,8 +73,7 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 			bedrockConnection.getEntityMetadataTranslatorManager().translateData(
 					it.unimi.dsi.fastutil.Pair.of(player, packet.getMetadata()), bedrockConnection, javaConnection);
 
-			DataTracker dataTracker = player.getDataTracker();
-			EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, dataTracker, false);
+			EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, player.getDataTracker(), true);
 			javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
 		});
 	}

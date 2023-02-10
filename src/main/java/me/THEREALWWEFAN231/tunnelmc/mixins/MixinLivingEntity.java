@@ -2,30 +2,25 @@ package me.THEREALWWEFAN231.tunnelmc.mixins;
 
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinEntity;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.defaults.ImmobileMetadataTranslator.NO_AI;
 
-@Mixin(Entity.class)
-public class MixinEntity {
+@Mixin(LivingEntity.class)
+public class MixinLivingEntity {
 
-    @Inject(method = "pushAwayFrom", at = @At(value = "HEAD"), cancellable = true)
-    public void pushAwayFrom(Entity entity, CallbackInfo ci) {
+    @Inject(method = "isImmobile", at = @At(value = "TAIL"), cancellable = true)
+    public void isImmobile(CallbackInfoReturnable<Boolean> cir) {
         if(!BedrockConnectionAccessor.isConnectionOpen()) {
             return;
         }
-        ci.cancel();
-    }
-
-    @Inject(method = "<init>", at = @At(value = "TAIL"))
-    public void initDataTracker(CallbackInfo ci) {
-        if(!BedrockConnectionAccessor.isConnectionOpen()) {
+        if(cir.getReturnValue()) {
             return;
         }
-        ((IMixinEntity) this).getDataTracker().startTracking(NO_AI, false);
+        cir.setReturnValue(((IMixinEntity) this).getDataTracker().get(NO_AI));
     }
 }
