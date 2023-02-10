@@ -57,7 +57,6 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 			javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
 			entity.updateTrackedHeadRotation(headYaw, 3);
 
-			log.info(packet.getMetadata());
 			bedrockConnection.getEntityMetadataTranslatorManager().translateData(Pair.of(entity, packet.getMetadata()), bedrockConnection, javaConnection);
 
 			DataTracker dataTracker = entity.getDataTracker();
