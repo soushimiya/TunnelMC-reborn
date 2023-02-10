@@ -24,9 +24,11 @@ public class InventorySlotTranslator extends PacketTranslator<InventorySlotPacke
 		}
 
 		containerAffected.setItemBedrock(packet.getSlot(), packet.getItem());
-		if (packet.getSlot() == TunnelMC.mc.player.getInventory().selectedSlot) {
-			UpdateSelectedSlotC2STranslator.updateHotbarItem(packet.getSlot(), bedrockConnection);
-		}
+		TunnelMC.mc.executeSync(() -> {
+			if (packet.getSlot() == TunnelMC.mc.player.getInventory().selectedSlot) {
+				UpdateSelectedSlotC2STranslator.updateHotbarItem(packet.getSlot(), bedrockConnection);
+			}
+		});
 		TunnelMC.mc.executeSync(containerAffected::updateInventory);
 	}
 }

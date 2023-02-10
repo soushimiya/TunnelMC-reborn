@@ -23,22 +23,22 @@ public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttribute
 
     @Override
     public void translate(UpdateAttributesPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-        int id = (int) packet.getRuntimeEntityId();
-        if (TunnelMC.mc.player.getId() != id) {
-            return;
-        }
-
-        for(AttributeData attributeData : packet.getAttributes()) {
-            switch(attributeData.getName()) {
-                case "minecraft:health" -> this.health = attributeData.getValue();
-                case "minecraft:player.hunger" -> this.food = (int) attributeData.getValue();
-                case "minecraft:player.saturation" -> this.saturation = attributeData.getValue();
-                case "minecraft:player.level" -> this.level = (int) attributeData.getValue();
-                case "minecraft:player.experience" -> this.experience = attributeData.getValue();
-            }
-        }
-
         TunnelMC.mc.executeSync(() -> {
+            int id = (int) packet.getRuntimeEntityId();
+            if (TunnelMC.mc.player.getId() != id) {
+                return;
+            }
+
+            for(AttributeData attributeData : packet.getAttributes()) {
+                switch(attributeData.getName()) {
+                    case "minecraft:health" -> this.health = attributeData.getValue();
+                    case "minecraft:player.hunger" -> this.food = (int) attributeData.getValue();
+                    case "minecraft:player.saturation" -> this.saturation = attributeData.getValue();
+                    case "minecraft:player.level" -> this.level = (int) attributeData.getValue();
+                    case "minecraft:player.experience" -> this.experience = attributeData.getValue();
+                }
+            }
+
             javaConnection.processJavaPacket(new HealthUpdateS2CPacket(this.health, this.food, this.saturation));
             javaConnection.processJavaPacket(new ExperienceBarUpdateS2CPacket(this.experience, getTotalExperience(this.level), this.level));
         });
