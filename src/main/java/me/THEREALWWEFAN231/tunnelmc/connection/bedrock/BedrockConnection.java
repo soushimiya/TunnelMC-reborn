@@ -30,6 +30,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.SessionInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
+import me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -61,13 +62,14 @@ public class BedrockConnection {
 	private BedrockContainers wrappedContainers;
 	@Getter
 	private BlockEntityDataCache blockEntityDataCache;
+	@Getter
+	private final EntityMetadataTranslatorManager entityMetadataTranslatorManager = new EntityMetadataTranslatorManager();
 
 	public long runtimeId;
 	public long uniqueId;
 	public Vector3f spawnLocation;
 	public Vector2f spawnRotation;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
-	public final Map<UUID, String> displayNames = new HashMap<>();
 	public final Map<UUID, SerializedSkin> serializedSkins = new HashMap<>();
 	private final List<Class<? extends BedrockPacket>> expectedPackets = new ArrayList<>();
 	private final AtomicBoolean spawned = new AtomicBoolean(false);

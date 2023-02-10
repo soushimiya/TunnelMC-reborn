@@ -1,6 +1,7 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.entity;
 
 import com.nukkitx.protocol.bedrock.packet.AddItemEntityPacket;
+import it.unimi.dsi.fastutil.Pair;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
@@ -28,19 +29,23 @@ public class AddItemEntityTranslator extends PacketTranslator<AddItemEntityPacke
 		double motionX = packet.getMotion().getX();
 		double motionY = packet.getMotion().getY();
 		double motionZ = packet.getMotion().getZ();
-		
-		EntityType<ItemEntity> entityType = EntityType.ITEM;
-		ItemEntity itemEntity = entityType.create(TunnelMC.mc.world);
-		itemEntity.setId(id);
-		itemEntity.setPos(x, y, z);
-		itemEntity.setVelocity(motionX, motionY, motionZ);
-		itemEntity.setStack(ItemTranslator.itemDataToItemStack(packet.getItemInHand()));
-		itemEntity.setUuid(UUID.randomUUID());
-		
-		javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) itemEntity.createSpawnPacket());
-		
-		DataTracker dataTracker = itemEntity.getDataTracker();
-		EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, dataTracker, false);
-		javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
+
+		TunnelMC.mc.executeSync(() -> {
+			EntityType<ItemEntity> entityType = EntityType.ITEM;
+			ItemEntity itemEntity = entityType.create(TunnelMC.mc.world);
+			itemEntity.setId(id);
+			itemEntity.setPos(x, y, z);
+			itemEntity.setVelocity(motionX, motionY, motionZ);
+			itemEntity.setStack(ItemTranslator.itemDataToItemStack(packet.getItemInHand()));
+			itemEntity.setUuid(UUID.randomUUID());
+
+			javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) itemEntity.createSpawnPacket());
+
+			bedrockConnection.getEntityMetadataTranslatorManager().translateData(Pair.of(itemEntity, packet.getMetadata()), bedrockConnection, javaConnection);
+
+			DataTracker dataTracker = itemEntity.getDataTracker();
+			EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, dataTracker, false);
+			javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
+		});
 	}
 }

@@ -1,6 +1,5 @@
 package me.THEREALWWEFAN231.tunnelmc.mixins;
 
-import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinTextRenderer;
 import net.minecraft.client.font.FontStorage;
@@ -41,9 +40,7 @@ public abstract class MixinEntityRenderer {
 		Function<Integer, Float> getY = (i) -> y - i * (textRenderer.fontHeight + 1);
 		Function<String, Float> getX = (str) -> (float)-textRenderer.getWidth(str) / 2;
 
-		BedrockConnection connection = BedrockConnectionAccessor.getCurrentConnection();
-		String nameTag = Optional.ofNullable(connection.displayNames.get(this.currentEntity.getUuid()))
-				.orElse(text.getString());
+		String nameTag = Optional.ofNullable(this.currentEntity.getCustomName()).orElse(text).getString();
 
 		List<String> lines = new ArrayList<>(List.of(nameTag.split("\n")));
 		Collections.reverse(lines);

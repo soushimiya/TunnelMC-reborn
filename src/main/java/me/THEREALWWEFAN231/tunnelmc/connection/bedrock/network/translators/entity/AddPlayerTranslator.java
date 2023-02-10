@@ -2,7 +2,6 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.enti
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
-import com.nukkitx.protocol.bedrock.data.entity.EntityData;
 import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
@@ -13,8 +12,10 @@ import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.text.Text;
@@ -60,7 +61,6 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 						profile, 0, GameMode.SURVIVAL, Text.of(profile.getName()), null));
 				javaConnection.processJavaPacket(playerListS2CPacket);
 			}
-			bedrockConnection.displayNames.put(profile.getId(), packet.getMetadata().getString(EntityData.NAMETAG, profile.getName()));
 
 			PlayerSpawnS2CPacket playerSpawnS2CPacket = new PlayerSpawnS2CPacket(player);
 			javaConnection.processJavaPacket(playerSpawnS2CPacket);
@@ -70,6 +70,13 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 			EntityEquipmentUpdateS2CPacket equipmentUpdatePacket = new EntityEquipmentUpdateS2CPacket((int) packet.getRuntimeEntityId(),
 					Collections.singletonList(itemStackPair));
 			javaConnection.processJavaPacket(equipmentUpdatePacket);
+
+			bedrockConnection.getEntityMetadataTranslatorManager().translateData(
+					it.unimi.dsi.fastutil.Pair.of(player, packet.getMetadata()), bedrockConnection, javaConnection);
+
+			DataTracker dataTracker = player.getDataTracker();
+			EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, dataTracker, false);
+			javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
 		});
 	}
 }
