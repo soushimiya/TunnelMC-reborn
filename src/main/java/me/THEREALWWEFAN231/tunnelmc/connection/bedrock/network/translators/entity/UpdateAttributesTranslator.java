@@ -8,6 +8,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.util.math.MathHelper;
@@ -36,6 +37,14 @@ public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttribute
                     case "minecraft:player.saturation" -> this.saturation = attributeData.getValue();
                     case "minecraft:player.level" -> this.level = (int) attributeData.getValue();
                     case "minecraft:player.experience" -> this.experience = attributeData.getValue();
+                    case "minecraft:absorption" -> {
+                        TunnelMC.mc.player.setAbsorptionAmount(attributeData.getValue());
+
+                        EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, TunnelMC.mc.player.getDataTracker(), true);
+                        javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
+
+                        return;
+                    }
                 }
             }
 
