@@ -9,15 +9,12 @@ import me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityDataIdentif
 import me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataPair;
 import me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataTranslator;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 
-import static me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataTranslatorManager.MAX_DATATRACKER_VALUE_ID;
+import static me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataTranslatorManager.NO_AI;
 
 @EntityDataIdentifier(EntityData.FLAGS)
 public class ImmobileMetadataTranslator implements EntityMetadataTranslator<EntityFlags> {
-    public static final TrackedData<Boolean> NO_AI = TrackedDataHandlerRegistry.BOOLEAN.create(MAX_DATATRACKER_VALUE_ID - 1);
 
     @Override
     public void translate(EntityMetadataPair<EntityFlags> data, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {

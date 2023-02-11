@@ -10,6 +10,8 @@ import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.translator.TranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.defaults.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ import java.util.Map;
 @Log4j2
 public class EntityMetadataTranslatorManager extends TranslatorManager<EntityMetadataTranslator<?>, Pair<Entity, EntityDataMap>> {
     public static final int MAX_DATATRACKER_VALUE_ID = Byte.MAX_VALUE * 2; // Same as DataTracker.MAX_DATA_VALUE_ID
+    public static final TrackedData<Boolean> NO_AI = TrackedDataHandlerRegistry.BOOLEAN.create(MAX_DATATRACKER_VALUE_ID - 1);
+
     private final Map<EntityData, EntityMetadataTranslator<?>> translatorsByEntityDataKey = new HashMap<>();
     private final List<EntityMetadataTranslator<EntityFlags>> flagTranslators = new ArrayList<>();
 

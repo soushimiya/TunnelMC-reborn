@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.defaults.ImmobileMetadataTranslator.NO_AI;
+import static me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataTranslatorManager.NO_AI;
 
 @Mixin(LivingEntity.class)
 public class MixinLivingEntity {
