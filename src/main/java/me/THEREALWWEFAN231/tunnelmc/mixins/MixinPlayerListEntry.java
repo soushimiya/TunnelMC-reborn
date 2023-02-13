@@ -37,7 +37,11 @@ public abstract class MixinPlayerListEntry {
         if(!BedrockConnectionAccessor.isConnectionOpen()) {
             return;
         }
-        cir.setReturnValue(this.getTexturePart(MinecraftProfileTexture.Type.SKIN));
+        Identifier identifier = this.getTexturePart(MinecraftProfileTexture.Type.SKIN);
+        if(identifier == null) {
+            return;
+        }
+        cir.setReturnValue(identifier);
     }
 
     @Inject(method = "getCapeTexture", at = @At(value = "HEAD"), cancellable = true)

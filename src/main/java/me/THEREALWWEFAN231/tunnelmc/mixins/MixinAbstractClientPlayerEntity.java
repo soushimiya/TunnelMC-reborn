@@ -39,10 +39,11 @@ public abstract class MixinAbstractClientPlayerEntity {
 
 	@Inject(method = "getSkinTexture", at = @At(value = "TAIL"), cancellable = true)
 	public void getSkinTexture(CallbackInfoReturnable<Identifier> cir) {
-		if(!BedrockConnectionAccessor.isConnectionOpen() || cir.getReturnValue() != null) {
+		Identifier identifier = this.getTexturePart(MinecraftProfileTexture.Type.SKIN);
+		if(identifier == null) {
 			return;
 		}
-		cir.setReturnValue(this.getTexturePart(MinecraftProfileTexture.Type.SKIN));
+		cir.setReturnValue(identifier);
 	}
 
 	@Inject(method = "canRenderCapeTexture", at = @At(value = "HEAD"), cancellable = true)
@@ -52,10 +53,11 @@ public abstract class MixinAbstractClientPlayerEntity {
 
 	@Inject(method = "getCapeTexture", at = @At(value = "TAIL"), cancellable = true)
 	public void getCapeTexture(CallbackInfoReturnable<Identifier> cir) {
-		if(!BedrockConnectionAccessor.isConnectionOpen() || cir.getReturnValue() != null) {
+		Identifier identifier = this.getTexturePart(MinecraftProfileTexture.Type.CAPE);
+		if(identifier == null) {
 			return;
 		}
-		cir.setReturnValue(this.getTexturePart(MinecraftProfileTexture.Type.CAPE));
+		cir.setReturnValue(identifier);
 	}
 
 	@Inject(method = "canRenderElytraTexture", at = @At(value = "HEAD"), cancellable = true)
