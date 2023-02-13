@@ -92,7 +92,7 @@ public abstract class MixinAbstractClientPlayerEntity {
 		AbstractTexture texture = TunnelMC.mc.getTextureManager().getOrDefault(identifier, null);
 		if(texture == null) {
 			ImageData imageData = serializedSkin.first().getCapeData();
-			texture = new ImageDataPlayerSkinTexture(imageData, DefaultSkinHelper.getTexture(), true, null);
+			texture = new ImageDataPlayerSkinTexture(imageData, DefaultSkinHelper.getTexture(), false, null);
 
 			TunnelMC.mc.getTextureManager().registerTexture(identifier, texture);
 		}
