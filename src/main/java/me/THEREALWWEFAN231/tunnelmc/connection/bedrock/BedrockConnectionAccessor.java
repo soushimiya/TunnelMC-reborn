@@ -3,6 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.connection.bedrock;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
+import me.THEREALWWEFAN231.tunnelmc.events.SessionClosedEvent;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinClientWorld;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -38,11 +39,8 @@ public class BedrockConnectionAccessor {
             return;
         }
 
+        TunnelMC.getInstance().getEventManager().fire(new SessionClosedEvent(currentConnection));
         TunnelMC.getInstance().getEventManager().deregisterAllListeners(currentConnection);
-        if(currentConnection.bedrockClient.getSession() != null) {
-            currentConnection.bedrockClient.getSession().disconnect();
-        }
-        currentConnection.bedrockClient.close();
         currentConnection = null;
 
         if (TunnelMC.mc.world != null) {
@@ -62,6 +60,6 @@ public class BedrockConnectionAccessor {
     }
 
     public boolean isConnectionOpen() {
-        return currentConnection != null && currentConnection.bedrockClient.getRakNet() != null && currentConnection.bedrockClient.getRakNet().isRunning();
+        return currentConnection != null && currentConnection.isConnected();
     }
 }

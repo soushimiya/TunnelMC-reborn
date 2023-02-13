@@ -29,6 +29,8 @@ import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.BlockEntit
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.caches.container.BedrockContainers;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerInitializedEvent;
+import me.THEREALWWEFAN231.tunnelmc.events.PlayerSpawnedEvent;
+import me.THEREALWWEFAN231.tunnelmc.events.SessionClosedEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.SessionInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataTranslatorManager;
@@ -50,7 +52,7 @@ public class BedrockConnection {
 	@Getter
 	private final InetSocketAddress targetAddress;
 	private final PacketTranslatorManager<BedrockPacket> packetTranslatorManager;
-	final BedrockClient bedrockClient;
+	private final BedrockClient bedrockClient;
 	private FakeJavaConnection javaConnection;
 
 	@Getter
@@ -144,6 +146,10 @@ public class BedrockConnection {
 		this.bedrockClient.getSession().enableEncryption(key);
 	}
 
+	public boolean isConnected() {
+		return this.bedrockClient.getRakNet() != null && this.bedrockClient.getRakNet().isRunning();
+	}
+
 	@SafeVarargs
 	public final void expect(Class<? extends BedrockPacket>... packet) {
 		this.expectedPackets.clear();
@@ -157,10 +163,6 @@ public class BedrockConnection {
 
 	public boolean isSpawned() {
 		return this.spawned.get();
-	}
-
-	public void spawned() {
-		this.spawned.set(true);
 	}
 
 	public Pair<SerializedSkin, Integer> getSerializedSkin(UUID uuid) {
@@ -218,5 +220,18 @@ public class BedrockConnection {
 	public void onEvent(PlayerInitializedEvent event) {
 		this.wrappedContainers = new BedrockContainers();
 		this.blockEntityDataCache = new BlockEntityDataCache();
+	}
+
+	@Listener
+	public void onEvent(PlayerSpawnedEvent event) {
+		this.spawned.set(true);
+	}
+
+	@Listener
+	public void onEvent(SessionClosedEvent event) {
+		if(this.bedrockClient.getSession() != null) {
+			this.bedrockClient.getSession().disconnect();
+		}
+		this.bedrockClient.close();
 	}
 }

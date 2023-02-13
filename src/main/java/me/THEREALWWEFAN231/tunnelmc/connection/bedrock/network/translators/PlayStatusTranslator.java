@@ -5,6 +5,7 @@ import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.events.PlayerSpawnedEvent;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerEntity;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
@@ -32,7 +33,7 @@ public class PlayStatusTranslator extends PacketTranslator<PlayStatusPacket> {
                 SetLocalPlayerAsInitializedPacket setLocalPlayerAsInitializedPacket = new SetLocalPlayerAsInitializedPacket();
                 setLocalPlayerAsInitializedPacket.setRuntimeEntityId(bedrockConnection.runtimeId);
                 bedrockConnection.sendPacketImmediately(setLocalPlayerAsInitializedPacket);
-                bedrockConnection.spawned();
+                TunnelMC.getInstance().getEventManager().fire(new PlayerSpawnedEvent());
 
                 javaConnection.processJavaPacket(new PlayerPositionLookS2CPacket(
                         bedrockConnection.spawnLocation.getX(),
