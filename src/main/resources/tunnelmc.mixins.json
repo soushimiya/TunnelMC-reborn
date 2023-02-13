@@ -20,6 +20,7 @@
     "MixinLivingEntity",
     "MixinMinecraftClient",
     "MixinMultiplayerScreen",
+    "MixinPlayerListEntry",
     "MixinWorldRenderer",
     "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinClientWorld",

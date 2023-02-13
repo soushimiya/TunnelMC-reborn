@@ -17,6 +17,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * This is kept for backup if there isn't a PlayerListEntry
+ */
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class MixinAbstractClientPlayerEntity {
 
@@ -44,9 +47,9 @@ public abstract class MixinAbstractClientPlayerEntity {
 		cir.setReturnValue(getSerializedSkin() != null);
 	}
 
-	@Inject(method = "getSkinTexture", at = @At(value = "HEAD"), cancellable = true)
+	@Inject(method = "getSkinTexture", at = @At(value = "TAIL"), cancellable = true)
 	public void getSkinTexture(CallbackInfoReturnable<Identifier> cir) {
-		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+		if(!BedrockConnectionAccessor.isConnectionOpen() || cir.getReturnValue() != null) {
 			return;
 		}
 		Pair<SerializedSkin, Integer> serializedSkin = getSerializedSkin();
@@ -78,9 +81,9 @@ public abstract class MixinAbstractClientPlayerEntity {
 		cir.setReturnValue(!serializedSkin.first().getCapeData().equals(ImageData.EMPTY));
 	}
 
-	@Inject(method = "getCapeTexture", at = @At(value = "HEAD"), cancellable = true)
+	@Inject(method = "getCapeTexture", at = @At(value = "TAIL"), cancellable = true)
 	public void getCapeTexture(CallbackInfoReturnable<Identifier> cir) {
-		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+		if(!BedrockConnectionAccessor.isConnectionOpen() || cir.getReturnValue() != null) {
 			return;
 		}
 		Pair<SerializedSkin, Integer> serializedSkin = getSerializedSkin();
