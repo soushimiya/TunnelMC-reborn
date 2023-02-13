@@ -80,7 +80,8 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 					| PlayerModelPart.LEFT_SLEEVE.getBitFlag()
 					| PlayerModelPart.LEFT_PANTS_LEG.getBitFlag()
 					| PlayerModelPart.RIGHT_SLEEVE.getBitFlag()
-					| PlayerModelPart.RIGHT_PANTS_LEG.getBitFlag()));
+					| PlayerModelPart.RIGHT_PANTS_LEG.getBitFlag()
+					| PlayerModelPart.CAPE.getBitFlag()));
 			EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, player.getDataTracker(), true);
 			javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
 		});

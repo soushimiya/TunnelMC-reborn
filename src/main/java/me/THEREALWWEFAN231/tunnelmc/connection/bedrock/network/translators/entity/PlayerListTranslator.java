@@ -1,19 +1,13 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.entity;
 
 import com.mojang.authlib.GameProfile;
-import com.nukkitx.protocol.bedrock.data.skin.ImageData;
 import com.nukkitx.protocol.bedrock.packet.PlayerListPacket;
-import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
-import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerEntity;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerListS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 import net.minecraft.text.Text;
@@ -39,24 +33,6 @@ public class PlayerListTranslator extends PacketTranslator<PlayerListPacket> {
 
 			if(packet.getAction() == PlayerListPacket.Action.ADD) {
 				bedrockConnection.addSerializedSkin(profile.getId(), entry.getSkin());
-
-				TunnelMC.mc.executeSync(() -> {
-					PlayerEntity player = TunnelMC.mc.world.getPlayerByUuid(profile.getId());
-					if(player == null) {
-						return;
-					}
-
-					byte capeBitFlag = (byte) (entry.getSkin().getCapeData().equals(ImageData.EMPTY) ? 0x0 : PlayerModelPart.CAPE.getBitFlag());
-					player.getDataTracker().set(IMixinPlayerEntity.PLAYER_MODEL_PARTS(), (byte) (PlayerModelPart.JACKET.getBitFlag()
-							| PlayerModelPart.HAT.getBitFlag()
-							| PlayerModelPart.LEFT_SLEEVE.getBitFlag()
-							| PlayerModelPart.LEFT_PANTS_LEG.getBitFlag()
-							| PlayerModelPart.RIGHT_SLEEVE.getBitFlag()
-							| PlayerModelPart.RIGHT_PANTS_LEG.getBitFlag()
-							| capeBitFlag));
-					EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true);
-					javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
-				});
 
 				PlayerListEntry javaEntry = javaConnection.getClientPlayNetworkHandler().getPlayerListEntry(profile.getId());
 				if(javaEntry != null) {
