@@ -1,11 +1,15 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 
 import com.nukkitx.protocol.bedrock.packet.*;
+import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerEntity;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
+import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 
 import java.time.Instant;
@@ -37,6 +41,19 @@ public class PlayStatusTranslator extends PacketTranslator<PlayStatusPacket> {
                         bedrockConnection.spawnRotation.getX(),
                         bedrockConnection.spawnRotation.getY(),
                         Collections.emptySet(), 1, false));
+
+                // TODO: respect the client settings
+                TunnelMC.mc.executeSync(() -> {
+                    TunnelMC.mc.player.getDataTracker().set(IMixinPlayerEntity.PLAYER_MODEL_PARTS(), (byte) (PlayerModelPart.JACKET.getBitFlag()
+                            | PlayerModelPart.HAT.getBitFlag()
+                            | PlayerModelPart.LEFT_SLEEVE.getBitFlag()
+                            | PlayerModelPart.LEFT_PANTS_LEG.getBitFlag()
+                            | PlayerModelPart.RIGHT_SLEEVE.getBitFlag()
+                            | PlayerModelPart.RIGHT_PANTS_LEG.getBitFlag()
+                            | PlayerModelPart.CAPE.getBitFlag()));
+                    EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket((int) bedrockConnection.runtimeId, TunnelMC.mc.player.getDataTracker(), true);
+                    javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
+                });
             }
             case LOGIN_FAILED_CLIENT_OLD -> BedrockConnectionAccessor.closeConnection("Tell the developer to update the mod!");
             case LOGIN_FAILED_SERVER_OLD -> BedrockConnectionAccessor.closeConnection("Server is outdated.");
