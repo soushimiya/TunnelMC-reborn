@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PacketIdentifier(PlayerListPacket.class)
-public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacket> {
+public class PlayerListTranslator extends PacketTranslator<PlayerListPacket> {
 
 	@Override
 	public void translate(PlayerListPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
@@ -32,7 +32,7 @@ public class PlayerListPacketTranslator extends PacketTranslator<PlayerListPacke
 			Entry listEntry = new Entry(profile, 0, GameMode.SURVIVAL, Text.of(profile.getName()), null);
 
 			if(packet.getAction() == PlayerListPacket.Action.ADD) {
-				bedrockConnection.serializedSkins.put(profile.getId(), entry.getSkin());
+				bedrockConnection.addSerializedSkin(profile.getId(), entry.getSkin());
 
 				PlayerListEntry javaEntry = javaConnection.getClientPlayNetworkHandler().getPlayerListEntry(profile.getId());
 				if(javaEntry != null) {
