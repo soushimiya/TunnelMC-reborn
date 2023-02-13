@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.Pair;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
@@ -34,6 +35,10 @@ public class SkinTextureManager {
     }
 
     public Identifier getTexturePart(MinecraftProfileTexture.Type type, UUID uuid) {
+        if(!BedrockConnectionAccessor.isConnectionOpen()) {
+            return null;
+        }
+
         Pair<SerializedSkin, Integer> serializedSkin = serializedSkins.getOrDefault(uuid, null);
         if(serializedSkin == null) {
             return null;
@@ -59,6 +64,10 @@ public class SkinTextureManager {
     }
 
     public void addSerializedSkin(UUID uuid, SerializedSkin skin) {
+        if(!BedrockConnectionAccessor.isConnectionOpen()) {
+            return;
+        }
+
         if(!skin.getGeometryName().equals("geometry.humanoid.custom") && !skin.getGeometryName().equals("geometry.humanoid.customSlim")) {
             log.warn("Discarding unknown geometry skin: {}", skin.getGeometryName());
             return;
