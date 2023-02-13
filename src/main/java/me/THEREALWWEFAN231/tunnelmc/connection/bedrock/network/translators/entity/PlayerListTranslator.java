@@ -7,6 +7,7 @@ import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerListS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
+import me.THEREALWWEFAN231.tunnelmc.utils.skins.SkinTextureManager;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
@@ -32,7 +33,7 @@ public class PlayerListTranslator extends PacketTranslator<PlayerListPacket> {
 			Entry listEntry = new Entry(profile, 0, GameMode.SURVIVAL, Text.of(profile.getName()), null);
 
 			if(packet.getAction() == PlayerListPacket.Action.ADD) {
-				bedrockConnection.addSerializedSkin(profile.getId(), entry.getSkin());
+				SkinTextureManager.addSerializedSkin(profile.getId(), entry.getSkin());
 
 				PlayerListEntry javaEntry = javaConnection.getClientPlayNetworkHandler().getPlayerListEntry(profile.getId());
 				if(javaEntry != null) {

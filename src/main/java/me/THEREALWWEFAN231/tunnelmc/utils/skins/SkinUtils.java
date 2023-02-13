@@ -1,4 +1,4 @@
-package me.THEREALWWEFAN231.tunnelmc.utils;
+package me.THEREALWWEFAN231.tunnelmc.utils.skins;
 
 import com.nukkitx.protocol.bedrock.data.skin.ImageData;
 import lombok.experimental.UtilityClass;

@@ -1,4 +1,4 @@
-package me.THEREALWWEFAN231.tunnelmc.utils;
+package me.THEREALWWEFAN231.tunnelmc.utils.skins;
 
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;

@@ -12,12 +12,10 @@ import com.nukkitx.protocol.bedrock.data.AuthoritativeMovementMode;
 import com.nukkitx.protocol.bedrock.data.PacketCompressionAlgorithm;
 import com.nukkitx.protocol.bedrock.data.PlayerAuthInputData;
 import com.nukkitx.protocol.bedrock.data.PlayerBlockActionData;
-import com.nukkitx.protocol.bedrock.data.skin.SerializedSkin;
 import com.nukkitx.protocol.bedrock.packet.DisconnectPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.RequestNetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.v560.Bedrock_v560;
-import it.unimi.dsi.fastutil.Pair;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
@@ -73,7 +71,6 @@ public class BedrockConnection {
 	public Vector3f spawnLocation;
 	public Vector2f spawnRotation;
 	public AuthoritativeMovementMode movementMode = AuthoritativeMovementMode.CLIENT;
-	private final Map<UUID, Pair<SerializedSkin, Integer>> serializedSkins = new HashMap<>();
 	private final List<Class<? extends BedrockPacket>> expectedPackets = new ArrayList<>();
 	private final AtomicBoolean spawned = new AtomicBoolean(false);
 	public final AtomicBoolean jumping = new AtomicBoolean();
@@ -163,26 +160,6 @@ public class BedrockConnection {
 
 	public boolean isSpawned() {
 		return this.spawned.get();
-	}
-
-	public Pair<SerializedSkin, Integer> getSerializedSkin(UUID uuid) {
-		return this.serializedSkins.getOrDefault(uuid, null);
-	}
-
-	public void addSerializedSkin(UUID uuid, SerializedSkin skin) {
-		if(!skin.getGeometryName().equals("geometry.humanoid.custom") && !skin.getGeometryName().equals("geometry.humanoid.customSlim")) {
-			log.warn("Discarding unknown geometry skin: {}", skin.getGeometryName());
-			return;
-		}
-
-		this.serializedSkins.compute(uuid, (uuid1, pair) -> {
-			int version = 0;
-			if(pair != null) {
-				version = pair.second() + 1;
-			}
-
-			return Pair.of(skin, version);
-		});
 	}
 
 	@Listener

@@ -2,15 +2,9 @@ package me.THEREALWWEFAN231.tunnelmc.mixins;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.nukkitx.protocol.bedrock.data.skin.ImageData;
-import com.nukkitx.protocol.bedrock.data.skin.SerializedSkin;
-import it.unimi.dsi.fastutil.Pair;
-import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
-import me.THEREALWWEFAN231.tunnelmc.utils.ImageDataPlayerSkinTexture;
+import me.THEREALWWEFAN231.tunnelmc.utils.skins.SkinTextureManager;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,20 +17,11 @@ public abstract class MixinPlayerListEntry {
 
     @Shadow public abstract GameProfile getProfile();
 
-    private Pair<SerializedSkin, Integer> getSerializedSkin() {
+    private Identifier getTexturePart(MinecraftProfileTexture.Type type) {
         if(!BedrockConnectionAccessor.isConnectionOpen()) {
             return null;
         }
-        return BedrockConnectionAccessor.getCurrentConnection().getSerializedSkin(getProfile().getId());
-    }
-
-    private Identifier getIdentifier(MinecraftProfileTexture.Type skinType, int version) {
-        String string = switch (skinType) {
-            case SKIN -> "skins";
-            case CAPE -> "capes";
-            case ELYTRA -> "elytra";
-        };
-        return new Identifier(string + "/" + getProfile().getId().toString() + "/v" + version);
+        return SkinTextureManager.getTexturePart(type, getProfile().getId());
     }
 
     @Inject(method = "getSkinTexture", at = @At(value = "HEAD"), cancellable = true)
@@ -44,20 +29,7 @@ public abstract class MixinPlayerListEntry {
         if(!BedrockConnectionAccessor.isConnectionOpen()) {
             return;
         }
-        Pair<SerializedSkin, Integer> serializedSkin = getSerializedSkin();
-        if(serializedSkin == null) {
-            return;
-        }
-
-        Identifier identifier = getIdentifier(MinecraftProfileTexture.Type.SKIN, serializedSkin.second());
-        AbstractTexture texture = TunnelMC.mc.getTextureManager().getOrDefault(identifier, null);
-        if(texture == null) {
-            ImageData imageData = serializedSkin.first().getSkinData();
-            texture = new ImageDataPlayerSkinTexture(imageData, DefaultSkinHelper.getTexture(), true, null);
-
-            TunnelMC.mc.getTextureManager().registerTexture(identifier, texture);
-        }
-        cir.setReturnValue(identifier);
+        cir.setReturnValue(this.getTexturePart(MinecraftProfileTexture.Type.SKIN));
     }
 
     @Inject(method = "getCapeTexture", at = @At(value = "HEAD"), cancellable = true)
@@ -65,20 +37,7 @@ public abstract class MixinPlayerListEntry {
         if(!BedrockConnectionAccessor.isConnectionOpen()) {
             return;
         }
-        Pair<SerializedSkin, Integer> serializedSkin = getSerializedSkin();
-        if(serializedSkin == null) {
-            return;
-        }
-
-        Identifier identifier = getIdentifier(MinecraftProfileTexture.Type.CAPE, serializedSkin.second());
-        AbstractTexture texture = TunnelMC.mc.getTextureManager().getOrDefault(identifier, null);
-        if(texture == null) {
-            ImageData imageData = serializedSkin.first().getCapeData();
-            texture = new ImageDataPlayerSkinTexture(imageData, DefaultSkinHelper.getTexture(), false, null);
-
-            TunnelMC.mc.getTextureManager().registerTexture(identifier, texture);
-        }
-        cir.setReturnValue(identifier);
+        cir.setReturnValue(this.getTexturePart(MinecraftProfileTexture.Type.CAPE));
     }
 
     @Inject(method = "getElytraTexture", at = @At(value = "HEAD"), cancellable = true)

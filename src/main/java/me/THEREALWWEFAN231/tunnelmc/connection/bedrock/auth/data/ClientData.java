@@ -10,7 +10,7 @@ import com.nukkitx.protocol.bedrock.data.skin.ImageData;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.THEREALWWEFAN231.tunnelmc.utils.SkinUtils;
+import me.THEREALWWEFAN231.tunnelmc.utils.skins.SkinUtils;
 
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
