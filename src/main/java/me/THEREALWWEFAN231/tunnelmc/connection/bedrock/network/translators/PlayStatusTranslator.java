@@ -30,7 +30,7 @@ public class PlayStatusTranslator extends PacketTranslator<PlayStatusPacket> {
                 bedrockConnection.sendPacketImmediately(setLocalPlayerAsInitializedPacket);
                 bedrockConnection.spawned();
 
-                javaConnection.translatePacket(new PlayerPositionLookS2CPacket(
+                javaConnection.processJavaPacket(new PlayerPositionLookS2CPacket(
                         bedrockConnection.spawnLocation.getX(),
                         bedrockConnection.spawnLocation.getY(),
                         bedrockConnection.spawnLocation.getZ(),
