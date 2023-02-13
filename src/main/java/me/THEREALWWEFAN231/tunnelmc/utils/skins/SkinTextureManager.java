@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ClientData;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
@@ -32,6 +33,23 @@ public class SkinTextureManager {
             case ELYTRA -> "elytra";
         };
         return new Identifier(string + "/" + uuid.toString() + "/v" + version);
+    }
+
+    public String getModel(UUID uuid) {
+        if(!BedrockConnectionAccessor.isConnectionOpen()) {
+            return DefaultSkinHelper.getModel(uuid);
+        }
+
+        Pair<SerializedSkin, Integer> serializedSkin = serializedSkins.getOrDefault(uuid, null);
+        if(serializedSkin == null) {
+            return DefaultSkinHelper.getModel(uuid);
+        }
+
+        String armSize = serializedSkin.first().getArmSize().toUpperCase();
+        if(armSize.isEmpty()) {
+            return DefaultSkinHelper.getModel(uuid);
+        }
+        return ClientData.ArmSizeType.valueOf(armSize).getModel();
     }
 
     public Identifier getTexturePart(MinecraftProfileTexture.Type type, UUID uuid) {

@@ -24,6 +24,14 @@ public abstract class MixinAbstractClientPlayerEntity {
 		return SkinTextureManager.getTexturePart(type, ((IMixinEntity) this).getUuid());
 	}
 
+	@Inject(method = "getModel", at = @At(value = "HEAD"), cancellable = true)
+	public void getModel(CallbackInfoReturnable<String> cir) {
+		if(!BedrockConnectionAccessor.isConnectionOpen()) {
+			return;
+		}
+		cir.setReturnValue(SkinTextureManager.getModel(((IMixinEntity) this).getUuid()));
+	}
+
 	@Inject(method = "hasSkinTexture", at = @At(value = "HEAD"), cancellable = true)
 	public void hasSkinTexture(CallbackInfoReturnable<Boolean> cir) {
 		cir.setReturnValue(this.getTexturePart(MinecraftProfileTexture.Type.SKIN) != null);

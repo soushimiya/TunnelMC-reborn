@@ -3,6 +3,7 @@ package me.THEREALWWEFAN231.tunnelmc.mixins;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnectionAccessor;
+import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinEntity;
 import me.THEREALWWEFAN231.tunnelmc.utils.skins.SkinTextureManager;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.util.Identifier;
@@ -22,6 +23,14 @@ public abstract class MixinPlayerListEntry {
             return null;
         }
         return SkinTextureManager.getTexturePart(type, getProfile().getId());
+    }
+
+    @Inject(method = "getModel", at = @At(value = "HEAD"), cancellable = true)
+    public void getModel(CallbackInfoReturnable<String> cir) {
+        if(!BedrockConnectionAccessor.isConnectionOpen()) {
+            return;
+        }
+        cir.setReturnValue(SkinTextureManager.getModel(((IMixinEntity) this).getUuid()));
     }
 
     @Inject(method = "getSkinTexture", at = @At(value = "HEAD"), cancellable = true)
