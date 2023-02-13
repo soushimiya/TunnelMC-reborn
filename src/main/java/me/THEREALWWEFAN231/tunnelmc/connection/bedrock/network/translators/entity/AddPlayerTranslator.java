@@ -6,11 +6,13 @@ import com.nukkitx.protocol.bedrock.packet.AddPlayerPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerEntity;
 import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinPlayerListS2CPacket;
 import me.THEREALWWEFAN231.tunnelmc.translator.item.ItemTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
@@ -73,6 +75,12 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 			bedrockConnection.getEntityMetadataTranslatorManager().translateData(
 					it.unimi.dsi.fastutil.Pair.of(player, packet.getMetadata()), bedrockConnection, javaConnection);
 
+			player.getDataTracker().set(IMixinPlayerEntity.PLAYER_MODEL_PARTS(), (byte) (PlayerModelPart.JACKET.getBitFlag()
+					| PlayerModelPart.HAT.getBitFlag()
+					| PlayerModelPart.LEFT_SLEEVE.getBitFlag()
+					| PlayerModelPart.LEFT_PANTS_LEG.getBitFlag()
+					| PlayerModelPart.RIGHT_SLEEVE.getBitFlag()
+					| PlayerModelPart.RIGHT_PANTS_LEG.getBitFlag()));
 			EntityTrackerUpdateS2CPacket entityTrackerUpdateS2CPacket = new EntityTrackerUpdateS2CPacket(id, player.getDataTracker(), true);
 			javaConnection.processJavaPacket(entityTrackerUpdateS2CPacket);
 		});
