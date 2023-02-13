@@ -168,6 +168,11 @@ public class BedrockConnection {
 	}
 
 	public void addSerializedSkin(UUID uuid, SerializedSkin skin) {
+		if(!skin.getGeometryName().equals("geometry.humanoid.custom") && !skin.getGeometryName().equals("geometry.humanoid.customSlim")) {
+			log.warn("Discarding unknown geometry skin: {}", skin.getGeometryName());
+			return;
+		}
+
 		this.serializedSkins.compute(uuid, (uuid1, pair) -> {
 			int version = 0;
 			if(pair != null) {
