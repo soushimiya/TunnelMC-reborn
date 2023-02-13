@@ -102,6 +102,13 @@ public class BedrockLoggingInScreen extends Screen {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    public void resize(MinecraftClient client, int width, int height) {
+        if(this.future != null) {
+            this.future.completeExceptionally(new CancellationException());
+        }
+        this.init(client, width, height);
+    }
+
     private Style getTextComponentUnderMouse(int mouseX) {
         if (this.status.getContent() == TextContent.EMPTY) {
             return null;
