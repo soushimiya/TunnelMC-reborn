@@ -30,11 +30,8 @@ import me.THEREALWWEFAN231.tunnelmc.events.PlayerInitializedEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.PlayerSpawnedEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.SessionClosedEvent;
 import me.THEREALWWEFAN231.tunnelmc.events.SessionInitializedEvent;
-import me.THEREALWWEFAN231.tunnelmc.gui.BedrockConnectingScreen;
 import me.THEREALWWEFAN231.tunnelmc.translator.entity.metadata.EntityMetadataTranslatorManager;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslatorManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.network.Packet;
 import net.minecraft.text.Text;
 
@@ -42,6 +39,8 @@ import javax.crypto.SecretKey;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Log4j2
 public class BedrockConnection {
@@ -57,7 +56,6 @@ public class BedrockConnection {
 	private ChainData chainData;
 	@Getter
 	private AuthData authData;
-	private BedrockConnectingScreen connectScreen;
 
 	@Getter
 	private BedrockContainers wrappedContainers;
@@ -87,21 +85,22 @@ public class BedrockConnection {
 		TunnelMC.getInstance().getEventManager().registerListeners(this, this);
 	}
 
-	public void connect(ChainData chainData, Screen parent) {
-		this.connectScreen = new BedrockConnectingScreen(parent, MinecraftClient.getInstance(), BedrockConnectionAccessor::closeConnection);
-		TunnelMC.mc.setScreen(this.connectScreen);
-
+	public void connect(ChainData chainData, Consumer<Text> status, Supplier<Boolean> cancelled) {
 		this.chainData = chainData;
 		this.authData = this.chainData.decodeAuthData();
-		this.connectScreen.setStatus(Text.translatable("connect.connecting"));
+		status.accept(Text.translatable("connect.connecting"));
 
 		this.bedrockClient.connect(this.targetAddress).whenComplete((session, throwable1) -> {
+			if(cancelled.get()) {
+				BedrockConnectionAccessor.closeConnection();
+				return;
+			}
 			if (throwable1 != null) {
 				BedrockConnectionAccessor.closeConnection(throwable1);
 				return;
 			}
 
-			this.connectScreen.setStatus(Text.of("Logging in..."));
+			status.accept(Text.of("Logging in..."));
 			TunnelMC.getInstance().getEventManager().fire(new SessionInitializedEvent(session));
 		});
 	}
@@ -186,7 +185,6 @@ public class BedrockConnection {
 			packet.setProtocolVersion(BedrockConnection.CODEC.getProtocolVersion());
 			this.sendPacketImmediately(packet);
 
-			this.connectScreen.setStatus(Text.of("Loading resources..."));
 			this.javaConnection = javaConnection;
 		} catch (Exception e) {
 			BedrockConnectionAccessor.closeConnection(e);

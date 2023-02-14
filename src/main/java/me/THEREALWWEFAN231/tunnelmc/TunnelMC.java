@@ -21,6 +21,8 @@ import net.kyori.adventure.platform.fabric.FabricClientAudiences;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.nio.file.Path;
 
 public class TunnelMC implements ClientModInitializer {
@@ -52,5 +54,13 @@ public class TunnelMC implements ClientModInitializer {
 		ScreenHandlerTranslatorManager.load();
 		// For initializing
 		BlockStateTranslator.getBlockStateFromRuntimeId(0);
+	}
+
+	public static int getRandomPort() {
+		try (DatagramSocket datagramSocket = new DatagramSocket(0)) {
+			return datagramSocket.getLocalPort();
+		} catch(SocketException e) {
+			throw new RuntimeException("Could not open socket to find next free port", e);
+		}
 	}
 }

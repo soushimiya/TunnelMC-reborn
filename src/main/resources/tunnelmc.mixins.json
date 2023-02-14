@@ -19,7 +19,6 @@
     "MixinKeyboard",
     "MixinLivingEntity",
     "MixinMinecraftClient",
-    "MixinMultiplayerScreen",
     "MixinPlayerListEntry",
     "MixinWorldRenderer",
     "interfaces.IMixinClientPlayerInteractionManager",
@@ -30,6 +29,10 @@
     "interfaces.IMixinPlayerInteractEntityC2SPacket",
     "interfaces.IMixinPlayerListS2CPacket",
     "interfaces.IMixinTextRenderer",
-    "interfaces.IMixinWorldRenderer"
+    "interfaces.IMixinWorldRenderer",
+    "serverlist.MixinConnectScreen",
+    "serverlist.MixinMultiplayerScreen",
+    "serverlist.MixinMultiplayerServerListWidget",
+    "serverlist.MixinServerList"
   ]
 }
