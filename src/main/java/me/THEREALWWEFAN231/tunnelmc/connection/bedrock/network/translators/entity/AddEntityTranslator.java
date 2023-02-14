@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.util.math.Vec3d;
 
 @Log4j2
 @PacketIdentifier(AddEntityPacket.class)
@@ -32,12 +33,10 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 		double x = packet.getPosition().getX();
 		double y = packet.getPosition().getY();
 		double z = packet.getPosition().getZ();
-		double motionX = packet.getMotion().getX();
-		double motionY = packet.getMotion().getY();
-		double motionZ = packet.getMotion().getZ();
 		float pitch = packet.getRotation().getX();
 		float yaw = packet.getRotation().getY();
 		float headYaw = packet.getRotation().getZ();
+		Vec3d velocity = new Vec3d(packet.getMotion().getX(), packet.getMotion().getY(), packet.getMotion().getZ());
 
 		TunnelMC.mc.executeSync(() -> {
 			Entity entity = entityType.create(TunnelMC.mc.world);
@@ -48,13 +47,12 @@ public class AddEntityTranslator extends PacketTranslator<AddEntityPacket> {
 
 			entity.setId(id);
 			entity.setPos(x, y, z);
-			entity.setVelocity(motionX, motionY, motionZ);
 			entity.setYaw(yaw);
 			entity.setHeadYaw(headYaw);
 			entity.setPitch(pitch);
+			entity.setVelocity(velocity);
 
 			javaConnection.processJavaPacket((Packet<ClientPlayPacketListener>) entity.createSpawnPacket());
-			entity.updateTrackedHeadRotation(headYaw, 3);
 
 			bedrockConnection.getEntityMetadataTranslatorManager().translateData(Pair.of(entity, packet.getMetadata()), bedrockConnection, javaConnection);
 

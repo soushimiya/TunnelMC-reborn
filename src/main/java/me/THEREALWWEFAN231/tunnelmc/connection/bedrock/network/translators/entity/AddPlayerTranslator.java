@@ -52,7 +52,6 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 			player.setId(id);
 			player.setPos(x, y, z);
 			player.setYaw(yaw);
-			player.setHeadYaw(headYaw);
 			player.setPitch(pitch);
 			player.setVelocity(velocity);
 
@@ -65,7 +64,6 @@ public class AddPlayerTranslator extends PacketTranslator<AddPlayerPacket> {
 
 			PlayerSpawnS2CPacket playerSpawnS2CPacket = new PlayerSpawnS2CPacket(player);
 			javaConnection.processJavaPacket(playerSpawnS2CPacket);
-			player.updateTrackedHeadRotation(headYaw, 3);
 
 			Pair<EquipmentSlot, ItemStack> itemStackPair = new Pair<>(EquipmentSlot.MAINHAND, ItemTranslator.itemDataToItemStack(packet.getHand()));
 			EntityEquipmentUpdateS2CPacket equipmentUpdatePacket = new EntityEquipmentUpdateS2CPacket((int) packet.getRuntimeEntityId(),
