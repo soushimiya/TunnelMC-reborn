@@ -63,6 +63,7 @@ public abstract class MixinConnectScreen extends Screen {
 					new InetSocketAddress(address.getAddress(), address.getPort()));
 			connection.connect(chainData, this::setStatus, () -> {
 				if(this.connectingCancelled) {
+					BedrockConnectionAccessor.closeConnection();
 					this.client.setScreen(this.parent);
 				}
 				return this.connectingCancelled;
