@@ -1,6 +1,8 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.authlib.properties.PropertyMap;
 import com.nukkitx.protocol.bedrock.packet.LoginPacket;
 import com.nukkitx.protocol.bedrock.packet.NetworkSettingsPacket;
 import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
@@ -49,7 +51,14 @@ public class NetworkSettingsTranslator extends PacketTranslator<NetworkSettingsP
         clientData.setSkinResourcePatch(clientData.getArmSize().getEncodedGeometryData());
         clientData.setTrustedSkin(true);
 
+        PropertyMap map = TunnelMC.mc.getSessionProperties();
+        TunnelMC.mc.getSession().getProfile().getProperties().putAll(map);
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = TunnelMC.mc.getSessionService().getTextures(TunnelMC.mc.getSession().getProfile(), false);
+        if (textures.isEmpty()) {
+            GameProfile profile = TunnelMC.mc.getSessionService().fillProfileProperties(TunnelMC.mc.getSession().getProfile(), false);
+            textures = TunnelMC.mc.getSessionService().getTextures(profile, false);
+        }
+
         try {
             MinecraftProfileTexture skinTexture = Optional.ofNullable(textures.get(MinecraftProfileTexture.Type.SKIN))
                     .orElse(new MinecraftProfileTexture(clientData.getArmSize().getDefaultSkinUrl(), Collections.emptyMap()));
