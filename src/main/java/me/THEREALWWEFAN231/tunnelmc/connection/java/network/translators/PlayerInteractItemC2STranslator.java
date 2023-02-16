@@ -8,6 +8,7 @@ import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.entity.EntityPose;
@@ -27,21 +28,22 @@ public class PlayerInteractItemC2STranslator extends PacketTranslator<PlayerInte
 		ItemData usingItem = bedrockConnection.getWrappedContainers().getPlayerInventory().getItemFromSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 
 		if (TunnelMC.mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
-			BlockPos blockPos = ((BlockHitResult) TunnelMC.mc.crosshairTarget).getBlockPos();
+			BlockHitResult blockHitResult = (BlockHitResult) TunnelMC.mc.crosshairTarget;
+			BlockPos blockPos = blockHitResult.getBlockPos();
 			Vector3i blockPosition = Vector3i.from(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-			Vec3d sideHitOffset = ((BlockHitResult) TunnelMC.mc.crosshairTarget).getPos().subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			Vec3d sideHitOffset = blockHitResult.getPos().subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
 			InventoryTransactionPacket useInventoryTransactionPacket = new InventoryTransactionPacket();
 			useInventoryTransactionPacket.setTransactionType(TransactionType.ITEM_USE);
 			useInventoryTransactionPacket.setActionType(0);
 			useInventoryTransactionPacket.setBlockPosition(blockPosition);
-			useInventoryTransactionPacket.setBlockFace(((BlockHitResult) TunnelMC.mc.crosshairTarget).getSide().ordinal());
+			useInventoryTransactionPacket.setBlockFace(blockHitResult.getSide().ordinal());
 			useInventoryTransactionPacket.setHotbarSlot(TunnelMC.mc.player.getInventory().selectedSlot);
 			useInventoryTransactionPacket.setItemInHand(usingItem);
 			useInventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y + TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING), TunnelMC.mc.player.getPos().z));
 			useInventoryTransactionPacket.setClickPosition(Vector3f.from(sideHitOffset.x, sideHitOffset.y, sideHitOffset.z));
-			useInventoryTransactionPacket.setBlockRuntimeId(0);//TODO: get the runtime id of the block we are holding(i actually think its the block we are right clicking not holding, in that case its easier), currently works(on nukkit) with it being zero, but we *should* do it correctly
+			useInventoryTransactionPacket.setBlockRuntimeId(BlockStateTranslator.getRuntimeIdFromBlockState(TunnelMC.mc.world.getBlockState(blockPos)));
 			bedrockConnection.sendPacket(useInventoryTransactionPacket);
 
 		} else {

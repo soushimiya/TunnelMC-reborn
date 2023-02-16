@@ -8,6 +8,7 @@ import com.nukkitx.protocol.bedrock.packet.InventoryTransactionPacket;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.BedrockConnection;
 import me.THEREALWWEFAN231.tunnelmc.connection.java.FakeJavaConnection;
+import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
 import net.minecraft.entity.EntityPose;
@@ -17,11 +18,9 @@ import net.minecraft.util.math.Vec3d;
 
 @PacketIdentifier(PlayerInteractBlockC2SPacket.class)
 public class PlayerInteractBlockC2STranslator extends PacketTranslator<PlayerInteractBlockC2SPacket> {
-	//TODO: so when ever we jump then place a block under us, our head freaks out(to other players), on nukkit servers(probably all), not fully sure why, maybe because we aren't sending PlayerActionPacket.JUMP
 
 	@Override
 	public void translate(PlayerInteractBlockC2SPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-
 		BlockPos blockPos = packet.getBlockHitResult().getBlockPos();
 		Vector3i blockPosition = Vector3i.from(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		Vec3d sideHitOffset = packet.getBlockHitResult().getPos().subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -38,7 +37,7 @@ public class PlayerInteractBlockC2STranslator extends PacketTranslator<PlayerInt
 		placeInventoryTransactionPacket.setItemInHand(placingItem);
 		placeInventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y + TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING), TunnelMC.mc.player.getPos().z));
 		placeInventoryTransactionPacket.setClickPosition(Vector3f.from(sideHitOffset.x, sideHitOffset.y, sideHitOffset.z));
-		placeInventoryTransactionPacket.setBlockRuntimeId(0);//TODO: get the runtime id of the block we are holding(i actually think its the block we are right clicking not holding, in that case its easier), currently works(on nukkit) with it being zero, but we *should* do it correctly
+		placeInventoryTransactionPacket.setBlockRuntimeId(BlockStateTranslator.getRuntimeIdFromBlockState(TunnelMC.mc.world.getBlockState(blockPos)));
 		bedrockConnection.sendPacket(placeInventoryTransactionPacket);
 
 		//when using proxy pass and spying on the client it sends 2 InventoryTransactionPackets
@@ -51,9 +50,7 @@ public class PlayerInteractBlockC2STranslator extends PacketTranslator<PlayerInt
 		idkInventoryTransactionPacket.setItemInHand(placingItem);
 		idkInventoryTransactionPacket.setPlayerPosition(Vector3f.from(TunnelMC.mc.player.getPos().x, TunnelMC.mc.player.getPos().y + TunnelMC.mc.player.getEyeHeight(EntityPose.STANDING), TunnelMC.mc.player.getPos().z));
 		idkInventoryTransactionPacket.setClickPosition(Vector3f.ZERO);
-		idkInventoryTransactionPacket.setBlockRuntimeId(0);
 
 		bedrockConnection.sendPacket(idkInventoryTransactionPacket);
-
 	}
 }
