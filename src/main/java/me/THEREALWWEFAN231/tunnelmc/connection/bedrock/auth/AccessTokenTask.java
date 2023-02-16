@@ -6,6 +6,7 @@ import com.github.scribejava.core.model.OAuth2AccessTokenErrorResponse;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.oauth2.OAuth2Error;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -17,7 +18,10 @@ public class AccessTokenTask implements Supplier<OAuth2AccessToken> {
     @Getter
     private long intervalMillis;
     private long nextExecution;
+    @Setter
     private boolean cancelled;
+    @Getter
+    private Throwable throwable;
 
     public AccessTokenTask(OAuth20Service service, DeviceAuthorization authorization) {
         this.service = service;
@@ -35,11 +39,11 @@ public class AccessTokenTask implements Supplier<OAuth2AccessToken> {
                 if (e.getError() == OAuth2Error.SLOW_DOWN) {
                     this.intervalMillis += 5000;
                 } else {
-                    throw e;
+                    this.throwable = e;
                 }
             }
         } catch (InterruptedException | ExecutionException | IOException e) {
-            throw new RuntimeException(e);
+            this.throwable = e;
         }
 
         return null;
@@ -50,10 +54,6 @@ public class AccessTokenTask implements Supplier<OAuth2AccessToken> {
     }
 
     public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
+        return this.cancelled || this.throwable != null;
     }
 }

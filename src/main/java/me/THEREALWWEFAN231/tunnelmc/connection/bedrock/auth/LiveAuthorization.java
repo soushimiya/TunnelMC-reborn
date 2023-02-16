@@ -6,6 +6,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.nukkitx.api.event.Listener;
 import it.unimi.dsi.fastutil.Pair;
+import lombok.extern.log4j.Log4j2;
 import me.THEREALWWEFAN231.tunnelmc.TunnelMC;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.oauth.ExtendedLiveApi;
 import me.THEREALWWEFAN231.tunnelmc.events.GameTickEvent;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+@Log4j2
 public class LiveAuthorization {
     public static final LiveAuthorization INSTANCE = new LiveAuthorization();
 
@@ -70,6 +72,9 @@ public class LiveAuthorization {
             Pair<AccessTokenTask, Consumer<OAuth2AccessToken>> pair = tasks.get(id);
             AccessTokenTask task = pair.first();
             if(task.isCancelled()) {
+                if(task.getThrowable() != null) {
+                    log.error("Got error from acquiring access token", task.getThrowable());
+                }
                 cancel(id);
                 return;
             }

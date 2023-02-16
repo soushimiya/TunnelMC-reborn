@@ -7,10 +7,12 @@ import lombok.RequiredArgsConstructor;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.LoginChainSupplier;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.AuthData;
 import me.THEREALWWEFAN231.tunnelmc.connection.bedrock.auth.data.ChainData;
-import me.THEREALWWEFAN231.tunnelmc.utils.JoseUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.time.Instant;
@@ -53,7 +55,7 @@ public class OfflineModeLoginChainSupplier extends LoginChainSupplier {
 
             jwt = header + "." + payload + "." + signature;
         } catch (JsonProcessingException | NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
-            throw new RuntimeException(e);
+            return CompletableFuture.failedFuture(e);
         }
 
         return CompletableFuture.completedFuture(new ChainData(JSON_MAPPER.createObjectNode()
