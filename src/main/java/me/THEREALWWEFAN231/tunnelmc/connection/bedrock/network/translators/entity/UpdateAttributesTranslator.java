@@ -19,7 +19,7 @@ public class UpdateAttributesTranslator extends PacketTranslator<UpdateAttribute
     private float health = 20;
     private int food = 20;
     private float saturation = 5;
-    private int level = 1;
+    private int level = 0;
     private float experience = 0;
 
     @Override
