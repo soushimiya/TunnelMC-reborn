@@ -8,6 +8,7 @@ import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockPaletteTranslator
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketIdentifier;
 import me.THEREALWWEFAN231.tunnelmc.translator.packet.PacketTranslator;
+import me.THEREALWWEFAN231.tunnelmc.utils.PositionUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -21,7 +22,7 @@ public class UpdateBlockTranslator extends PacketTranslator<UpdateBlockPacket> {
 	
 	@Override
 	public void translate(UpdateBlockPacket packet, BedrockConnection bedrockConnection, FakeJavaConnection javaConnection) {
-		BlockPos blockPos = new BlockPos(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ());
+		BlockPos blockPos = PositionUtils.toBlockPos(packet.getBlockPosition());
 		BlockState translatedBlockState = BlockStateTranslator.getBlockStateFromRuntimeId(packet.getRuntimeId());
 
 		if (packet.getDataLayer() == 0) {
