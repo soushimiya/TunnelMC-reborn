@@ -24,7 +24,6 @@
     "interfaces.IMixinClientPlayerInteractionManager",
     "interfaces.IMixinClientWorld",
     "interfaces.IMixinEntity",
-    "interfaces.IMixinNbtCompound",
     "interfaces.IMixinPlayerEntity",
     "interfaces.IMixinPlayerInteractEntityC2SPacket",
     "interfaces.IMixinPlayerListS2CPacket",

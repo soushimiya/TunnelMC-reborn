@@ -1,35 +1,30 @@
 package me.THEREALWWEFAN231.tunnelmc.translator.item;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.HashBiMap;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nukkitx.nbt.NbtMap;
-import com.nukkitx.nbt.NbtMapBuilder;
 import com.nukkitx.nbt.NbtType;
 import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import lombok.extern.log4j.Log4j2;
-import me.THEREALWWEFAN231.tunnelmc.mixins.interfaces.IMixinNbtCompound;
 import me.THEREALWWEFAN231.tunnelmc.translator.blockstate.BlockStateTranslator;
 import me.THEREALWWEFAN231.tunnelmc.translator.enchantment.EnchantmentTranslator;
 import me.THEREALWWEFAN231.tunnelmc.utils.FileUtils;
+import me.THEREALWWEFAN231.tunnelmc.utils.NbtMapOps;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
 import java.util.*;
-
-import static me.THEREALWWEFAN231.tunnelmc.TunnelMC.JSON_MAPPER;
 
 @Log4j2
 public class ItemTranslator {
@@ -147,26 +142,14 @@ public class ItemTranslator {
 			return null;
 		}
 
-		NbtMapBuilder builder = NbtMap.builder();
-
-		try {
-			byte[] flattened = JSON_MAPPER.writeValueAsBytes(((IMixinNbtCompound) root).getEntries());
-			Map<String, Object> map = JSON_MAPPER.readValue(flattened, new TypeReference<>() {});
-			builder.putAll(map);
-		} catch (IOException e) {
-			log.catching(e);
-		}
-
-		return builder.build();
+		return (NbtMap) NbtOps.INSTANCE.convertTo(NbtMapOps.INSTANCE, root);
 	}
 
 	private static NbtCompound convertBedrockToJavaTags(NbtMap root) {
-		try {
-			return StringNbtReader.parse(root.toString());
-		} catch (CommandSyntaxException e) {
-			log.catching(e);
+		if(root == null || root.equals(NbtMap.EMPTY)) {
+			return null;
 		}
 
-		return new NbtCompound();
+		return (NbtCompound) NbtMapOps.INSTANCE.convertTo(NbtOps.INSTANCE, root);
 	}
 }
