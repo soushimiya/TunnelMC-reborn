@@ -1,9 +1,9 @@
 package me.THEREALWWEFAN231.tunnelmc.connection.bedrock.network.translators.world.utils.bitarray;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmptyBitArray implements BitArray {
 	final static BitArray INSTANCE = new EmptyBitArray();
 
