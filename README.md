@@ -1,4 +1,5 @@
 # TunnelMC
+### Development temporarily on hold... (written on 14 March 2023)
 
 TunnelMC allows Minecraft Java Edition Players to join and play Minecraft Bedrock Edition servers
 
@@ -9,53 +10,29 @@ Firstly TunnelMC is a [Fabric Mod](https://fabricmc.net/). What we do is we open
 Well we love fabric ❤️, also making it a mod instead of a proxy allows us to do some stuff we normally could not do. Such as skins, we read the skins from the bedrock server instead of [Minecraft.net](https://minecraft.net/) this would not be possible without some sort of mod. Also *technically* we could add emotes and other stuff Minecraft Java Edition does not have. Granted we probably wont add emotes but we *could*.
 
 # What is left to add
-Yeah well, thats not the correct question to ask, we just recently started development and the real question is what have we added.
-- Offline server authentication(does not work with bedrock dedicated server, but does with nukkit)
-- Basic chunk translation
-- Block translation(thanks to [Geysers' mappings](https://github.com/GeyserMC/mappings), still needs a little work, but its generally there
-- Spawning of players
-- Skins(generally working, layers seem to not work)
-- Chat
-- Swinging animation
+A lot! But luckily basic gameplay is already possible.
+- Block/item translation (thanks to [PrismarineJS' mappings](https://github.com/PrismarineJS/minecraft-data), this still needs work on, for example: stairs
+- Good bedrock bridging
+- Containers, like chests
+- Crafting, and a lot more survival features...
+- Resource packs (with/without encryption)
+- Custom blocks/items/entities or at least have substitutes for them
+- Xbox live features, like joining worlds from invites
+
+# How can I try it
+As of this writing, you cannot\*. We're still in development and a lot has not been added yet.<br>
+*\* = I'm not comfortable with non-technical players using this mod yet. There's obviously nothing stopping you from building this mod, but know that I'm not at fault for any punishments you may gain.*
 
 # Contributing
-I'd like to help or try to help, where do I start? Setting up the project is just like any other [Fabric Mod](https://fabricmc.net/) for eclipse you need to run the gradlew genSources command, then gradlew eclipse, then import it as an existing project into eclipse, if your using another IDE please look at the [Fabric Wiki](https://fabricmc.net/wiki/tutorial:setup).
-
-Also it would be appreciated if you coded in this style
-```java
-if(x) {
-  doSomething();
-}
-x.forEach(new Consumer<X>() {
-
-  @Override
-  public void accept(X x) {
-    doSomething();
-  }
-});
-```
-rather then
-```java
-if(x)
-  doSomething();
-x.forEach((x) -> {
-  doSomething();
-});
-```
-Also if you have any knowledge on xbox live/the api it would be cool if you added xbox live authentication and or joining worlds from invites.😎
+If you'd like to help, then please follow the instructions from [Fabric Wiki](https://fabricmc.net/wiki/tutorial:setup#intellij_idea) 
 
 # Credits
-This generally would not be possible without some open source projects, wheather its just looking how thing works inorder to reverse translate them, looking at their code to see how thing work, and or copying a little bit of their code. We apperiate all these projects.
+This project would not be possible without the amazing work of these open source projects, whether it's just looking how thing works inorder to reverse translate them, looking at their code to see how thing work, and/or copying a little bit of their code. We apperiate all these projects.
 - [Protocol](https://github.com/CloudburstMC/Protocol)
 - [Nukkit](https://github.com/CloudburstMC/Nukkit)
 - [Geyser](https://github.com/GeyserMC/Geyser)
 - [gophertunnel](https://github.com/Sandertv/gophertunnel)
-
-# How can I try it
-You currently can not, we are still in development and a lot has not been added yet.
-
-# [Discord](https://discord.gg/qH6GqxW)
-We might post some screen shots or information about TunnelMC in there, or if you'd like to help out, you can join and we can see whats crackin.
+- [PrismarineJS](https://github.com/PrismarineJS/minecraft-data)
 
 # Pictures
 This is a picture of the Java Edition on a Bedrock Edition server
