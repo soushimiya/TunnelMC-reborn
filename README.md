@@ -1,7 +1,6 @@
-# TunnelMC
-### Development temporarily on hold... (written on 14 March 2023)
+# TunnelMC Reborn
 
-TunnelMC allows Minecraft Java Edition Players to join and play Minecraft Bedrock Edition servers
+TunnelMC Reborn allows Minecraft Java Edition Players to join and play Minecraft Bedrock Edition servers
 
 # How does it work
 Firstly TunnelMC is a [Fabric Mod](https://fabricmc.net/). What we do is we open a connection to a Minecraft Bedrock server and translate any incoming and outgoing packets, so they can be read by both Editions.
